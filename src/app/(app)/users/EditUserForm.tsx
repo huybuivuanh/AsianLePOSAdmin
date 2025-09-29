@@ -56,7 +56,7 @@ export default function EditUserDialog({ user }: { user: User }) {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleUpdate} className="flex flex-col gap-4">
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input
               id="name"
@@ -66,7 +66,7 @@ export default function EditUserDialog({ user }: { user: User }) {
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -77,7 +77,7 @@ export default function EditUserDialog({ user }: { user: User }) {
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
             <Select value={role} onValueChange={(val) => setRole(val)}>
               <SelectTrigger>

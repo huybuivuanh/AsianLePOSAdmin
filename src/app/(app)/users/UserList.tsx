@@ -2,7 +2,6 @@
 
 import { useUserStore } from "@/app/store/useUserStore"; // Zustand store with snapshot
 import EditUserForm from "./EditUserForm";
-import RegisterUserForm from "./RegisterUserForm";
 
 export default function UserList() {
   const { users, loading, deleteUser } = useUserStore();
@@ -20,9 +19,7 @@ export default function UserList() {
   if (loading) return <div>Loading users...</div>;
 
   return (
-    <div className="p-8 text-black">
-      <h1 className="text-3xl font-bold mb-4">Users</h1>
-      <RegisterUserForm />
+    <div>
       <table className="w-full border-collapse border border-gray-300">
         <thead>
           <tr>
