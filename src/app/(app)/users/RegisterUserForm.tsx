@@ -59,28 +59,28 @@ export default function RegisterUserDialog() {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="John Doe"
+              placeholder="Asian Le"
               required
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="user@example.com"
+              placeholder="asianle@example.com"
               required
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
@@ -90,7 +90,7 @@ export default function RegisterUserDialog() {
               placeholder="••••••••"
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
             <Select value={role} onValueChange={(val) => setRole(val)}>
               <SelectTrigger>

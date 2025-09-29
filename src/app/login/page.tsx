@@ -21,14 +21,13 @@ export default function LoginPage() {
       );
       const user = userCredential.user;
 
-      // Get ID token result to check custom claims
       const tokenResult = await user.getIdTokenResult();
 
       if (tokenResult.claims.role === "admin") {
-        router.push("/dashboard"); // Redirect to admin dashboard
+        router.push("/dashboard");
       } else {
         setError("Access denied: You are not an admin.");
-        await auth.signOut(); // Optional: sign out non-admin users
+        await auth.signOut();
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
