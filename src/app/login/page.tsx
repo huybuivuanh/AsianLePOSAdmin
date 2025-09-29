@@ -14,8 +14,22 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/dashboard"); // Redirect to admin dashboard
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Get ID token result to check custom claims
+      const tokenResult = await user.getIdTokenResult();
+
+      if (tokenResult.claims.role === "admin") {
+        router.push("/dashboard"); // Redirect to admin dashboard
+      } else {
+        setError("Access denied: You are not an admin.");
+        await auth.signOut(); // Optional: sign out non-admin users
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
