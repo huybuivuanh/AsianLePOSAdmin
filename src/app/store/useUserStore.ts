@@ -1,14 +1,6 @@
 import { create } from "zustand";
-import { db } from "@/app/lib/firebaseConfig";
+import { clientDb } from "@/app/lib/firebaseConfig";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  createdAt: Date;
-};
 
 type UserStore = {
   users: User[];
@@ -29,7 +21,7 @@ type UserStore = {
 
 export const useUserStore = create<UserStore>((set) => {
   // Firestore snapshot listener (caches + live updates)
-  const usersRef = collection(db, "users");
+  const usersRef = collection(clientDb, "users");
   const q = query(usersRef, orderBy("createdAt", "desc"));
 
   onSnapshot(

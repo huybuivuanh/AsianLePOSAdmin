@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminAuth, db } from "@/app/lib/firebaseAdmin";
+import { adminAuth, adminDb } from "@/app/lib/firebaseAdmin";
 
 export async function POST(req: Request) {
   try {
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     });
 
     // 2️⃣ Update Firestore
-    await db.collection("users").doc(uid).update({
+    await adminDb.collection("users").doc(uid).update({
       name,
       email,
       role,
