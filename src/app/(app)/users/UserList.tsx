@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useUserStore } from "@/app/store/useUserStore";
-import EditUserForm from "./UpdateUserForm";
+import UpdateUserForm from "./UpdateUserForm";
 
 export default function UserList() {
   const { users, loading, deleteUser, subscribe } = useUserStore();
@@ -46,7 +46,7 @@ export default function UserList() {
                   : ""}
               </td>
               <td className="border px-4 py-2 space-x-2">
-                <EditUserForm user={user} />
+                <UpdateUserForm user={user} />
                 <button
                   onClick={() => handleDelete(user.id!)}
                   className="bg-red-500 text-white px-3 py-1 rounded"
