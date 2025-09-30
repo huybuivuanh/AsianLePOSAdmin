@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function EditUserDialog({ user }: { user: User }) {
+export default function UpdateUserForm({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);

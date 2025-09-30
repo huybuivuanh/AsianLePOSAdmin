@@ -18,7 +18,7 @@ import { useCategoriesStore } from "@/app/store/useCategoriesStore";
 export default function CreateCategoryForm() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const addCategory = useCategoriesStore((state) => state.addCategory);
+  const createCategory = useCategoriesStore((state) => state.createCategory);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +26,7 @@ export default function CreateCategoryForm() {
 
     setLoading(true);
     try {
-      await addCategory(name.trim()); // ✅ Firestore + API handles update
+      await createCategory(name.trim()); // ✅ Firestore + API handles update
       setName(""); // clear input
     } catch (err) {
       console.error("Failed to create category:", err);

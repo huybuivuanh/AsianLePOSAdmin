@@ -15,9 +15,9 @@ type State = {
 
 type Actions = {
   subscribe: () => () => void; // return unsubscribe
-  addCategory: (name: string) => Promise<void>;
-  editCategory: (id: string, name: string) => Promise<void>;
-  removeCategory: (id: string) => Promise<void>;
+  createCategory: (name: string) => Promise<void>;
+  updateCategory: (id: string, name: string) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
 };
 
 export const useCategoriesStore = create<State & Actions>((set) => ({
@@ -33,7 +33,7 @@ export const useCategoriesStore = create<State & Actions>((set) => ({
     );
   },
 
-  addCategory: (name) => createCategory(name),
-  editCategory: (id, name) => updateCategory(id, name),
-  removeCategory: (id) => deleteCategory(id),
+  createCategory: (name) => createCategory(name),
+  updateCategory: (id, name) => updateCategory(id, name),
+  deleteCategory: (id) => deleteCategory(id),
 }));

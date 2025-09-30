@@ -1,10 +1,14 @@
-"use client";
-
-import { useUserStore } from "@/app/store/useUserStore"; // Zustand store with snapshot
-import EditUserForm from "./EditUserForm";
+import { useEffect } from "react";
+import { useUserStore } from "@/app/store/useUserStore";
+import EditUserForm from "./UpdateUserForm";
 
 export default function UserList() {
-  const { users, loading, deleteUser } = useUserStore();
+  const { users, loading, deleteUser, subscribe } = useUserStore();
+
+  useEffect(() => {
+    const unsubscribe = subscribe(); // start listening to Firestore
+    return () => unsubscribe(); // cleanup on unmount
+  }, [subscribe]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure?")) return;
@@ -31,15 +35,15 @@ export default function UserList() {
           </tr>
         </thead>
         <tbody>
-          {users.map((user: User) => (
+          {users.map((user) => (
             <tr key={user.id}>
               <td className="border px-4 py-2">{user.name}</td>
               <td className="border px-4 py-2">{user.email}</td>
               <td className="border px-4 py-2">{user.role}</td>
               <td className="border px-4 py-2">
                 {user.createdAt
-                  ? user.createdAt.toLocaleString()
-                  : new Date(user.createdAt).toLocaleString()}
+                  ? new Date(user.createdAt).toLocaleString()
+                  : ""}
               </td>
               <td className="border px-4 py-2 space-x-2">
                 <EditUserForm user={user} />
