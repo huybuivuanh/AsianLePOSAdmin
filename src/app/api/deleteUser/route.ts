@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminAuth, db } from "../../lib/firebaseAdmin";
+import { adminAuth, adminDb } from "../../lib/firebaseAdmin";
 
 export async function POST(req: Request) {
   try {
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     await adminAuth.deleteUser(uid);
 
     // 2️⃣ Delete Firestore document
-    await db.collection("users").doc(uid).delete();
+    await adminDb.collection("users").doc(uid).delete();
 
     return NextResponse.json({ success: true });
   } catch (err: unknown) {

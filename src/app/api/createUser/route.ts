@@ -1,6 +1,6 @@
 // src/app/api/createUser/route.ts
 import { NextResponse } from "next/server";
-import { adminAuth, db } from "../../lib/firebaseAdmin";
+import { adminAuth, adminDb } from "../../lib/firebaseAdmin";
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     await adminAuth.setCustomUserClaims(userRecord.uid, { role });
 
     // 3️⃣ Create Firestore document
-    await db.collection("users").doc(userRecord.uid).set({
+    await adminDb.collection("users").doc(userRecord.uid).set({
       name,
       email,
       role,
