@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import CategoriesTab from "./categories/CategoriesTab";
-import ItemsTab from "./categories/ItemsTab";
-import OptionGroupsTab from "./categories/OptionGroupsTab";
-import OptionsTab from "./categories/OptionsTab";
+import ItemsTab from "./ItemsTab";
+import OptionGroupsTab from "./OptionGroupsTab";
+import OptionsTab from "./OptionsTab";
 
 export default function Menu() {
   const [activeTab, setActiveTab] = useState<
