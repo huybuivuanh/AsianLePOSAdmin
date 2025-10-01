@@ -21,7 +21,7 @@ export default function CreateOptionForm() {
   const [price, setPrice] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const createOption = useOptionStore((state) => state.createOption);
+  const { createOption } = useOptionStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

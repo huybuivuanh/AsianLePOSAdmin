@@ -16,10 +16,8 @@ import { useOptionStore } from "@/app/store/useOptionStore";
 import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
 
 export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
-  const { options } = useOptionStore();
-  const updateOptionGroup = useOptionGroupStore(
-    (state) => state.updateOptionGroup
-  );
+  const { options, updateOption } = useOptionStore();
+  const { updateOptionGroup } = useOptionGroupStore();
 
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(group.itemOptionIds ?? []);
@@ -34,7 +32,25 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
   const handleSave = async () => {
     setLoading(true);
     try {
+      // Update the group with selected option IDs
       await updateOptionGroup(group.id!, { itemOptionIds: selected });
+
+      // Prepare an array of promises for updating each option
+      const updatePromises = selected.map((optionId) => {
+        const option = options.find((opt) => opt.id === optionId);
+        if (!option) return Promise.resolve(); // skip if not found
+
+        // Avoid duplicates
+        const updatedGroupIds = option.groupIds?.includes(group.id!)
+          ? option.groupIds
+          : [...(option.groupIds ?? []), group.id!];
+
+        return updateOption(optionId, { groupIds: updatedGroupIds });
+      });
+
+      // Run all updates in parallel
+      await Promise.all(updatePromises);
+
       setOpen(false);
     } catch (err) {
       console.error("Failed to update options for group:", err);

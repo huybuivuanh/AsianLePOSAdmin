@@ -30,7 +30,7 @@ export default function UpdateItemDialog({ item }: { item: MenuItem }) {
   const [kitchenType, setKitchenType] = useState(item.kitchenType);
   const [loading, setLoading] = useState(false);
 
-  const updateItem = useItemStore((state) => state.updateItem);
+  const { updateItem } = useItemStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
