@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CategoriesTab from "./categories/CategoriesTab";
 import ItemsTab from "./menuItem/ItemsTab";
-import OptionGroupsTab from "./OptionGroupsTab";
+import OptionGroupsTab from "./optionGroup/OptionGroupsTab";
 import OptionsTab from "./OptionsTab";
 
 export default function Menu() {

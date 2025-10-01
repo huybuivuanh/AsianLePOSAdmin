@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useItemsStore } from "@/app/store/useItemStore"; // you'll create this similar to useCategoriesStore
+import { useItemStore } from "@/app/store/useItemStore"; // you'll create this similar to useCategoriesStore
 import { KitchenType } from "@/app/types/enum"; // your enum
 
 export default function CreateItemForm() {
@@ -31,7 +31,7 @@ export default function CreateItemForm() {
   const [kitchenType, setKitchenType] = useState<KitchenType>(KitchenType.A);
   const [loading, setLoading] = useState(false);
 
-  const createItem = useItemsStore((state) => state.createItem);
+  const createItem = useItemStore((state) => state.createItem);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

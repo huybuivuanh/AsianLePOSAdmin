@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { clientDb } from "@/app/lib/firebaseConfig";
 
-type ItemsState = {
+type ItemState = {
   items: MenuItem[];
   loading: boolean;
   subscribe: () => () => void;
@@ -22,7 +22,7 @@ type ItemsState = {
   deleteItem: (id: string) => Promise<void>;
 };
 
-export const useItemsStore = create<ItemsState>((set) => ({
+export const useItemStore = create<ItemState>((set) => ({
   items: [],
   loading: true,
 
