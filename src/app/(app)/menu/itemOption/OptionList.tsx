@@ -1,16 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
 import { useOptionStore } from "@/app/store/useOptionStore";
 import UpdateOptionForm from "./UpdateOptionForm";
 
 export default function OptionsList() {
-  const { options, loading, subscribe, deleteOption } = useOptionStore();
-
-  useEffect(() => {
-    const unsub = subscribe();
-    return () => unsub();
-  }, [subscribe]);
+  const { options, loading, deleteOption } = useOptionStore();
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this option?")) return;

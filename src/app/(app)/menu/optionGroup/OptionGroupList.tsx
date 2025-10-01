@@ -1,23 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
 import { useOptionStore } from "@/app/store/useOptionStore";
-import UpdateOptionGroupDialog from "./UpdateOptionGroupForm";
+import UpdateOptionGroupForm from "./UpdateOptionGroupForm";
 import AddOptionForm from "./AddOptionForm"; // new dialog component
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 export default function OptionGroupsList() {
-  const { optionGroups, loading, subscribe, deleteOptionGroup } =
-    useOptionGroupStore();
+  const { optionGroups, loading, deleteOptionGroup } = useOptionGroupStore();
   const { options } = useOptionStore();
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    const unsub = subscribe();
-    return () => unsub();
-  }, [subscribe]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this option group?")) return;
@@ -59,7 +53,7 @@ export default function OptionGroupsList() {
               </button>
 
               <div className="flex gap-2">
-                <UpdateOptionGroupDialog group={group} />
+                <UpdateOptionGroupForm group={group} />
                 <button
                   onClick={() => handleDelete(group.id!)}
                   className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"

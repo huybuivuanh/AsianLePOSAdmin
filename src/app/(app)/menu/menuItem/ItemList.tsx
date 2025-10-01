@@ -1,16 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
 import { useItemStore } from "@/app/store/useItemStore";
 import UpdateItemForm from "./UpdateItemForm"; // similar to UpdateCategoriesForm
 
 export default function MenuItemsList() {
-  const { items, loading, subscribe, deleteItem } = useItemStore();
-
-  useEffect(() => {
-    const unsub = subscribe();
-    return () => unsub();
-  }, [subscribe]);
+  const { items, loading, deleteItem } = useItemStore();
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
