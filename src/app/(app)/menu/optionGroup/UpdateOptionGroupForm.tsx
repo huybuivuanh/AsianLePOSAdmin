@@ -27,9 +27,7 @@ export default function UpdateOptionGroupForm({
   const [maxSelection, setMaxSelection] = useState(group.maxSelection);
   const [loading, setLoading] = useState(false);
 
-  const updateOptionGroup = useOptionGroupStore(
-    (state) => state.updateOptionGroup
-  );
+  const { updateOptionGroup } = useOptionGroupStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

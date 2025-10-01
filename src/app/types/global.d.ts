@@ -38,6 +38,7 @@ declare global {
     id?: string;
     name: string;
     price: number;
+    groupIds?: string[];
     createdAt: Date;
   };
 }

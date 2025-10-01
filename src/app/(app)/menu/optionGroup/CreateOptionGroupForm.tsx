@@ -23,9 +23,7 @@ export default function CreateOptionGroupForm() {
   const [maxSelection, setMaxSelection] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const createOptionGroup = useOptionGroupStore(
-    (state) => state.createOptionGroup
-  );
+  const { createOptionGroup } = useOptionGroupStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

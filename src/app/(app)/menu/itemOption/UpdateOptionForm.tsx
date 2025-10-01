@@ -21,7 +21,7 @@ export default function UpdateOptionForm({ option }: { option: ItemOption }) {
   const [price, setPrice] = useState(option.price);
   const [loading, setLoading] = useState(false);
 
-  const updateOption = useOptionStore((state) => state.updateOption);
+  const { updateOption } = useOptionStore();
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();

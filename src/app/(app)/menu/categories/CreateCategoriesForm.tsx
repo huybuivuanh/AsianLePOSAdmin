@@ -19,7 +19,7 @@ export default function CreateCategoryForm() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const createCategory = useCategoriesStore((state) => state.createCategory);
+  const { createCategory } = useCategoriesStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

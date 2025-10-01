@@ -31,7 +31,7 @@ export default function CreateItemForm() {
   const [kitchenType, setKitchenType] = useState<KitchenType>(KitchenType.A);
   const [loading, setLoading] = useState(false);
 
-  const createItem = useItemStore((state) => state.createItem);
+  const { createItem } = useItemStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
