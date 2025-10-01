@@ -20,7 +20,7 @@ declare global {
     id?: string;
     name: string;
     price: number;
-    itemOptionGroups?: ItemOptionGroups[];
+    itemOptionGroupIds?: string[];
     kitchenType: string;
     createdAt: Date;
   };
@@ -30,7 +30,7 @@ declare global {
     name: string;
     minSelection: number;
     maxSelection: number;
-    itemOptions?: ItemOption[];
+    itemOptionIds?: string[];
     createdAt: Date;
   };
 

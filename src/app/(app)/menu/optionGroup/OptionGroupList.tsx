@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
+import { useOptionStore } from "@/app/store/useOptionStore";
 import UpdateOptionGroupDialog from "./UpdateOptionGroupForm";
+import AddOptionForm from "./AddOptionForm"; // new dialog component
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 export default function OptionGroupsList() {
   const { optionGroups, loading, subscribe, deleteOptionGroup } =
     useOptionGroupStore();
+  const { options } = useOptionStore();
+
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const unsub = subscribe();
@@ -23,32 +29,71 @@ export default function OptionGroupsList() {
     }
   };
 
+  const toggleExpand = (id: string) => {
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
   if (loading) return <p>Loading...</p>;
 
   return (
     <ul className="space-y-2">
-      {optionGroups.map((group) => (
-        <li
-          key={group.id}
-          className="flex justify-between items-center border px-4 py-2 rounded"
-        >
-          <div>
-            <p className="font-medium">{group.name}</p>
-            <p className="text-sm text-gray-600">
+      {optionGroups.map((group) => {
+        const groupOptions = options.filter((opt) =>
+          group.itemOptionIds?.includes(opt.id!)
+        );
+
+        return (
+          <li key={group.id} className="border px-4 py-2 rounded">
+            <div className="flex justify-between items-center">
+              {/* Expand/Collapse Button */}
+              <button
+                onClick={() => toggleExpand(group.id!)}
+                className="flex items-center gap-2 font-medium"
+              >
+                {expanded[group.id!] ? (
+                  <ChevronDown size={18} />
+                ) : (
+                  <ChevronRight size={18} />
+                )}
+                {group.name}
+              </button>
+
+              <div className="flex gap-2">
+                <UpdateOptionGroupDialog group={group} />
+                <button
+                  onClick={() => handleDelete(group.id!)}
+                  className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <p className="text-sm text-gray-600 ml-6">
               Min: {group.minSelection} • Max: {group.maxSelection}
             </p>
-          </div>
-          <div className="flex gap-2">
-            <UpdateOptionGroupDialog group={group} />
-            <button
-              onClick={() => handleDelete(group.id!)}
-              className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
-            >
-              Delete
-            </button>
-          </div>
-        </li>
-      ))}
+
+            {/* Expandable Options List */}
+            {expanded[group.id!] && (
+              <div className="ml-8 mt-2 space-y-1">
+                {groupOptions.length > 0 &&
+                  groupOptions.map((opt) => (
+                    <div
+                      key={opt.id}
+                      className="flex justify-between items-center border px-3 py-1 rounded bg-gray-50"
+                    >
+                      <span>
+                        {opt.name} – ${opt.price}
+                      </span>
+                    </div>
+                  ))}
+
+                <AddOptionForm group={group} />
+              </div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }
