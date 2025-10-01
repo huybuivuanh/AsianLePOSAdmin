@@ -8,7 +8,8 @@ import AddOptionForm from "./AddOptionForm"; // new dialog component
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 export default function OptionGroupsList() {
-  const { optionGroups, loading, deleteOptionGroup } = useOptionGroupStore();
+  const { optionGroups, loading, deleteOptionGroup, updateOptionGroup } =
+    useOptionGroupStore();
   const { options } = useOptionStore();
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -20,6 +21,22 @@ export default function OptionGroupsList() {
       alert("Option group deleted!");
     } catch {
       alert("Failed to delete option group");
+    }
+  };
+
+  const handleDeleteOption = async (
+    group: ItemOptionGroup,
+    optionId: string
+  ) => {
+    if (!confirm("Are you sure you want to delete this option?")) return;
+    try {
+      const updatedOptionList = group.itemOptionIds?.filter(
+        (option) => option !== optionId
+      );
+      await updateOptionGroup(group.id!, { itemOptionIds: updatedOptionList });
+      alert("Option removed!");
+    } catch {
+      alert("Failed to remmove option");
     }
   };
 
@@ -79,6 +96,12 @@ export default function OptionGroupsList() {
                       <span>
                         {opt.name} – ${opt.price}
                       </span>
+                      <button
+                        onClick={() => handleDeleteOption(group, opt.id!)}
+                        className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
                     </div>
                   ))}
 
