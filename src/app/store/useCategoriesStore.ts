@@ -1,39 +1,54 @@
-// store/useCategoriesStore.ts
+"use client";
+
 import { create } from "zustand";
 import {
-  listenCategories,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-} from "@/app/services/categoriesService";
+  collection,
+  doc,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import { clientDb } from "@/app/lib/firebaseConfig";
 
-type State = {
+type CategoriesState = {
   categories: FoodCategory[];
   loading: boolean;
-  error: string | null;
-};
-
-type Actions = {
-  subscribe: () => () => void; // return unsubscribe
+  subscribe: () => () => void;
   createCategory: (name: string) => Promise<void>;
   updateCategory: (id: string, name: string) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
 };
 
-export const useCategoriesStore = create<State & Actions>((set) => ({
+export const useCategoriesStore = create<CategoriesState>((set) => ({
   categories: [],
   loading: true,
-  error: null,
 
+  // Realtime subscription
   subscribe: () => {
-    return listenCategories(
-      (categories: FoodCategory[]) =>
-        set({ categories, loading: false, error: null }),
-      (err: Error) => set({ error: err.message, loading: false })
-    );
+    const ref = collection(clientDb, "categories");
+    const unsub = onSnapshot(ref, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as FoodCategory[];
+      set({ categories: data, loading: false });
+    });
+    return unsub;
   },
 
-  createCategory: (name) => createCategory(name),
-  updateCategory: (id, name) => updateCategory(id, name),
-  deleteCategory: (id) => deleteCategory(id),
+  createCategory: async (name) => {
+    const ref = collection(clientDb, "categories");
+    await addDoc(ref, { name, createdAt: new Date() });
+  },
+
+  updateCategory: async (id, name) => {
+    const ref = doc(clientDb, "categories", id);
+    await updateDoc(ref, { name, createdAt: new Date() });
+  },
+
+  deleteCategory: async (id) => {
+    const ref = doc(clientDb, "categories", id);
+    await deleteDoc(ref);
+  },
 }));

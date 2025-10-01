@@ -1,6 +1,6 @@
 // src/app/api/createUser/route.ts
 import { NextResponse } from "next/server";
-import { adminAuth, adminDb } from "../../lib/firebaseAdmin";
+import { adminAuth, adminDb } from "../../../lib/firebaseAdmin";
 
 export async function POST(req: Request) {
   try {

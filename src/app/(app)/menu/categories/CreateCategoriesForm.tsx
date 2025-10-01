@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useCategoriesStore } from "@/app/store/useCategoriesStore";
 
 export default function CreateCategoryForm() {
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const createCategory = useCategoriesStore((state) => state.createCategory);
@@ -28,6 +29,7 @@ export default function CreateCategoryForm() {
     try {
       await createCategory(name.trim()); // ✅ Firestore + API handles update
       setName(""); // clear input
+      setOpen(false);
     } catch (err) {
       console.error("Failed to create category:", err);
     } finally {
@@ -36,7 +38,7 @@ export default function CreateCategoryForm() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Create Category</Button>
       </DialogTrigger>
