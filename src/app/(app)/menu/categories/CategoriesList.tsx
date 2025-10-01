@@ -1,17 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
 import { useCategoriesStore } from "@/app/store/useCategoriesStore";
 import UpdateCategoriesForm from "./UpdateCategoriesForm";
 
 export default function CategoriesList() {
-  const { categories, loading, subscribe, deleteCategory } =
-    useCategoriesStore();
-
-  useEffect(() => {
-    const unsub = subscribe();
-    return () => unsub();
-  }, [subscribe]);
+  const { categories, loading, deleteCategory } = useCategoriesStore();
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this category?")) return;
