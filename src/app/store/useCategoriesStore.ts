@@ -44,7 +44,7 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
 
   updateCategory: async (id, name) => {
     const ref = doc(clientDb, "categories", id);
-    await updateDoc(ref, { name, createdAt: new Date() });
+    await updateDoc(ref, { name });
   },
 
   deleteCategory: async (id) => {

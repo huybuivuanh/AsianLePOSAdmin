@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import CategoriesTab from "./categories/CategoriesTab";
-import ItemsTab from "./ItemsTab";
+import ItemsTab from "./menuItem/ItemsTab";
 import OptionGroupsTab from "./OptionGroupsTab";
 import OptionsTab from "./OptionsTab";
 
