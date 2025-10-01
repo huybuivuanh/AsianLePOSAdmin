@@ -21,6 +21,7 @@ declare global {
     name: string;
     price: number;
     itemOptionGroups?: ItemOptionGroups[];
+    kitchenType: string;
     createdAt: Date;
   };
 
