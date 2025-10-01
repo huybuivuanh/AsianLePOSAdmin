@@ -25,10 +25,12 @@ declare global {
     createdAt: Date;
   };
 
-  type ItemOptionGroups = {
+  type ItemOptionGroup = {
     id?: string;
     name: string;
-    itemOptions: ItemOption[];
+    minSelection: number;
+    maxSelection: number;
+    itemOptions?: ItemOption[];
     createdAt: Date;
   };
 

@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useItemsStore } from "@/app/store/useItemStore";
+import { useItemStore } from "@/app/store/useItemStore";
 import { KitchenType } from "@/app/types/enum";
 
 export default function UpdateItemDialog({ item }: { item: MenuItem }) {
@@ -30,7 +30,7 @@ export default function UpdateItemDialog({ item }: { item: MenuItem }) {
   const [kitchenType, setKitchenType] = useState(item.kitchenType);
   const [loading, setLoading] = useState(false);
 
-  const updateItem = useItemsStore((state) => state.updateItem);
+  const updateItem = useItemStore((state) => state.updateItem);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +55,7 @@ export default function UpdateItemDialog({ item }: { item: MenuItem }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          Edit
+          Update
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
