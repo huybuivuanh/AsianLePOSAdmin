@@ -27,9 +27,8 @@ export default function UpdateCategoriesForm({
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateCategory(category.id!, name);
+      await updateCategory(category.id!, { name: name.trim() });
       setOpen(false);
-      alert("Category updated!");
     } catch (err) {
       console.error(err);
       alert("Failed to update category");

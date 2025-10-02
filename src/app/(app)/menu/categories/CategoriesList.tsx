@@ -33,8 +33,6 @@ export default function CategoriesList() {
 
       // Delete the category itself
       await deleteCategory(category.id!);
-
-      alert("Category deleted!");
     } catch (err) {
       console.error("Failed to delete category:", err);
       alert("Failed to delete category");
@@ -59,8 +57,6 @@ export default function CategoriesList() {
           item.categoryIds?.filter((cid) => cid !== category.id) ?? [];
         await updateItem(itemId, { categoryIds: updatedCategoryIds });
       }
-
-      alert("Item removed from category!");
     } catch (err) {
       console.error("Failed to remove item from category:", err);
       alert("Failed to remove item");

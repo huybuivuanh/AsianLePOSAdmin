@@ -39,7 +39,6 @@ export default function CreateUserForm() {
       setPassword("");
       setRole("cashier");
       setOpen(false);
-      alert("User registered!");
     } catch (err) {
       console.error(err);
       alert("Failed to register user");
