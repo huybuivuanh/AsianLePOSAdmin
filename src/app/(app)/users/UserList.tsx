@@ -14,7 +14,6 @@ export default function UserList() {
     if (!confirm("Are you sure?")) return;
     try {
       await deleteUser(id);
-      alert("User deleted!");
     } catch {
       alert("Failed to delete user");
     }

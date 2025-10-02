@@ -42,7 +42,6 @@ export default function OptionGroupsList() {
 
       // 2. Delete the group
       await deleteOptionGroup(group.id!);
-      alert("Option group deleted!");
     } catch (err) {
       console.error("Failed to delete option group:", err);
       alert("Failed to delete option group");
@@ -68,8 +67,6 @@ export default function OptionGroupsList() {
         updateOptionGroup(group.id!, { optionIds: updatedOptionIds }),
         updateOption(option.id!, { groupIds: updatedGroupIds }),
       ]);
-
-      alert("Option removed!");
     } catch (err) {
       console.error("Failed to remove option:", err);
       alert("Failed to remove option");

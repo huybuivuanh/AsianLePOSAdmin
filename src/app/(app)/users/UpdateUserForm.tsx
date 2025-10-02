@@ -34,7 +34,6 @@ export default function UpdateUserForm({ user }: { user: User }) {
     try {
       await updateUser(user.id!, { name, email, role });
       setOpen(false);
-      alert("User updated!");
     } catch (err) {
       console.error(err);
       alert("Failed to update user");

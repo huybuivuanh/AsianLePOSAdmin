@@ -41,8 +41,6 @@ export default function ItemsList() {
 
       // Step 4: Delete the item itself
       await deleteItem(item.id!);
-
-      alert("Item deleted!");
     } catch (err) {
       console.error("Failed to delete item:", err);
       alert("Failed to delete item");
@@ -64,8 +62,6 @@ export default function ItemsList() {
       const updatedItemIds =
         groupToRemove.itemIds?.filter((i) => i !== item.id) ?? [];
       await updateOptionGroup(groupToRemove.id!, { itemIds: updatedItemIds });
-
-      alert("Option group removed!");
     } catch (err) {
       console.error("Failed to remove option group:", err);
       alert("Failed to remove option group");
