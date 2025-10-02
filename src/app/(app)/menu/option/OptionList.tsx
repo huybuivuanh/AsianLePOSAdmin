@@ -10,6 +10,7 @@ export default function OptionsList() {
   const { options, loading, deleteOption } = useOptionStore();
   const { optionGroups, updateOptionGroup } = useOptionGroupStore();
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleDelete = async (option: ItemOption) => {
     if (!confirm("Are you sure you want to delete this option?")) return;
@@ -38,30 +39,55 @@ export default function OptionsList() {
 
   if (loading) return <p>Loading...</p>;
 
-  return (
-    <ul className="space-y-2">
-      {options.map((opt) => (
-        <li
-          key={opt.id}
-          className="flex justify-between items-center border px-4 py-2 rounded"
-        >
-          <div>
-            <p className="font-medium">{opt.name}</p>
-            <p className="text-sm text-gray-500">${opt.price.toFixed(2)}</p>
-          </div>
+  // Filter options based on search term
+  const filteredOptions = options.filter((opt) =>
+    opt.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-          <div className="flex gap-2">
-            <UpdateOptionForm option={opt} />
-            <Button
-              onClick={() => handleDelete(opt)}
-              disabled={isDeleting === opt.id}
-              className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+  return (
+    <div className="space-y-2">
+      {/* Search bar */}
+      <div>
+        <input
+          type="text"
+          placeholder="Search options..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+        />
+      </div>
+
+      {/* Options list */}
+      <ul className="space-y-2">
+        {filteredOptions.length > 0 ? (
+          filteredOptions.map((opt) => (
+            <li
+              key={opt.id}
+              className="flex justify-between items-center border px-4 py-2 rounded"
             >
-              {isDeleting === opt.id ? "Deleting..." : "Delete"}
-            </Button>
-          </div>
-        </li>
-      ))}
-    </ul>
+              <div>
+                <p className="font-medium">{opt.name}</p>
+                <p className="text-sm text-gray-500">${opt.price.toFixed(2)}</p>
+              </div>
+
+              <div className="flex gap-2">
+                <UpdateOptionForm option={opt} />
+                <Button
+                  onClick={() => handleDelete(opt)}
+                  disabled={isDeleting === opt.id}
+                  className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                >
+                  {isDeleting === opt.id ? "Deleting..." : "Delete"}
+                </Button>
+              </div>
+            </li>
+          ))
+        ) : (
+          <p className="text-sm text-gray-500 italic">
+            No options match your search
+          </p>
+        )}
+      </ul>
+    </div>
   );
 }
