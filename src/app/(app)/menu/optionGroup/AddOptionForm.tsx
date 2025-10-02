@@ -20,7 +20,7 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
   const { updateOptionGroup } = useOptionGroupStore();
 
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<string[]>(group.itemOptionIds ?? []);
+  const [selected, setSelected] = useState<string[]>(group.optionIds ?? []);
   const [loading, setLoading] = useState(false);
 
   const toggleSelect = (id: string) => {
@@ -33,7 +33,7 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
     setLoading(true);
     try {
       // Update the group with selected option IDs
-      await updateOptionGroup(group.id!, { itemOptionIds: selected });
+      await updateOptionGroup(group.id!, { optionIds: selected });
 
       // Prepare an array of promises for updating each option
       const updatePromises = selected.map((optionId) => {

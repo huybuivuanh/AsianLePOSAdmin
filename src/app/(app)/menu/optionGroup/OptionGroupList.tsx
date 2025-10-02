@@ -6,37 +6,66 @@ import { useOptionStore } from "@/app/store/useOptionStore";
 import UpdateOptionGroupForm from "./UpdateOptionGroupForm";
 import AddOptionForm from "./AddOptionForm"; // new dialog component
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { useItemStore } from "@/app/store/useItemStore"; // import your item store
 
 export default function OptionGroupsList() {
   const { optionGroups, loading, deleteOptionGroup, updateOptionGroup } =
     useOptionGroupStore();
-  const { options } = useOptionStore();
+  const { options, updateOption } = useOptionStore();
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
-  const handleDelete = async (id: string) => {
+  const { items, updateItem } = useItemStore(); // import your item store
+
+  const handleDelete = async (group: ItemOptionGroup) => {
     if (!confirm("Are you sure you want to delete this option group?")) return;
     try {
-      await deleteOptionGroup(id);
+      // Step 1: Remove this group from all items that reference it
+      const updatePromises = (items ?? [])
+        .filter((item) => item.optionGroupIds?.includes(group.id!))
+        .map((item) => {
+          const updatedGroupIds = item.optionGroupIds?.filter(
+            (gid) => gid !== group.id
+          );
+          return updateItem(item.id!, {
+            optionGroupIds: updatedGroupIds ?? [],
+          });
+        });
+
+      await Promise.all(updatePromises);
+
+      // Step 2: Delete the option group itself
+      await deleteOptionGroup(group.id!);
+
       alert("Option group deleted!");
-    } catch {
+    } catch (err) {
+      console.error("Failed to delete option group:", err);
       alert("Failed to delete option group");
     }
   };
 
-  const handleDeleteOption = async (
+  const handleRemoveOption = async (
     group: ItemOptionGroup,
-    optionId: string
+    option: ItemOption
   ) => {
-    if (!confirm("Are you sure you want to delete this option?")) return;
+    if (!confirm("Are you sure you want to remove this option?")) return;
     try {
-      const updatedOptionList = group.itemOptionIds?.filter(
-        (option) => option !== optionId
+      const updatedOptionList = group.optionIds?.filter(
+        (optionId) => optionId !== option.id
       );
-      await updateOptionGroup(group.id!, { itemOptionIds: updatedOptionList });
+      await updateOptionGroup(group.id!, {
+        optionIds: updatedOptionList ?? [],
+      });
+      const updatedOptionGroupList = option.groupIds?.filter(
+        (groupId) => groupId !== group.id
+      );
+      await updateOption(option.id!, {
+        groupIds: updatedOptionGroupList ?? [],
+      });
+
       alert("Option removed!");
     } catch {
-      alert("Failed to remmove option");
+      alert("Failed to remove option");
     }
   };
 
@@ -50,7 +79,7 @@ export default function OptionGroupsList() {
     <ul className="space-y-2">
       {optionGroups.map((group) => {
         const groupOptions = options.filter((opt) =>
-          group.itemOptionIds?.includes(opt.id!)
+          group.optionIds?.includes(opt.id!)
         );
 
         return (
@@ -72,7 +101,7 @@ export default function OptionGroupsList() {
               <div className="flex gap-2">
                 <UpdateOptionGroupForm group={group} />
                 <button
-                  onClick={() => handleDelete(group.id!)}
+                  onClick={() => handleDelete(group)}
                   className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
                 >
                   Delete
@@ -97,7 +126,7 @@ export default function OptionGroupsList() {
                         {opt.name} – ${opt.price}
                       </span>
                       <button
-                        onClick={() => handleDeleteOption(group, opt.id!)}
+                        onClick={() => handleRemoveOption(group, opt)}
                         className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
                       >
                         Remove

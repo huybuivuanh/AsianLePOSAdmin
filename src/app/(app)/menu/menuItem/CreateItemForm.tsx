@@ -27,7 +27,7 @@ import { KitchenType } from "@/app/types/enum"; // your enum
 export default function CreateItemForm() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
-  const [price, setPrice] = useState<number | "">("");
+  const [price, setPrice] = useState<number | "">(0);
   const [kitchenType, setKitchenType] = useState<KitchenType>(KitchenType.A);
   const [loading, setLoading] = useState(false);
 
