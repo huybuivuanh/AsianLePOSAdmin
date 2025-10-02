@@ -21,6 +21,7 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(category.itemIds ?? []);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
@@ -31,25 +32,21 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // 1. Update category with the final list of itemIds
+      // 1️⃣ Update category with selected item IDs
       await updateCategory(category.id!, { itemIds: selected });
 
-      // 2. Sync each item so categoryIds[] matches the checkboxes
+      // 2️⃣ Sync each item so categoryIds[] matches the selection
       const updatePromises = items.map((item) => {
         const isSelected = selected.includes(item.id!);
 
         if (isSelected) {
-          // Ensure category is included
           const updatedCategories = item.categoryIds?.includes(category.id!)
             ? item.categoryIds
             : [...(item.categoryIds ?? []), category.id!];
-
           return updateItem(item.id!, { categoryIds: updatedCategories });
         } else {
-          // Ensure category is removed
           const updatedCategories =
             item.categoryIds?.filter((cid) => cid !== category.id) ?? [];
-
           return updateItem(item.id!, { categoryIds: updatedCategories });
         }
       });
@@ -65,6 +62,11 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
     }
   };
 
+  // Filter items based on search term
+  const filteredItems = items.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -73,14 +75,26 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[80vw] !max-w-[90vw] h-[80vh] max-h-[90vh] mx-auto">
         <DialogHeader>
           <DialogTitle>Add Items to {category.name}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-2 max-h-64 overflow-y-auto">
-          {items.length > 0 ? (
-            items.map((item) => (
+        {/* Search bar */}
+        <div className="mb-2">
+          <input
+            type="text"
+            placeholder="Search items..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Scrollable items list */}
+        <div className="space-y-2 overflow-y-auto h-[calc(80vh-220px)]">
+          {filteredItems.length > 0 ? (
+            filteredItems.map((item) => (
               <label
                 key={item.id}
                 className="flex items-center gap-2 border p-2 rounded cursor-pointer"
@@ -96,7 +110,9 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
               </label>
             ))
           ) : (
-            <p className="text-sm text-gray-500 italic">No items available</p>
+            <p className="text-sm text-gray-500 italic">
+              No items match your search
+            </p>
           )}
         </div>
 
