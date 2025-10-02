@@ -104,7 +104,7 @@ export default function UpdateItemDialog({ item }: { item: MenuItem }) {
               <SelectContent>
                 <SelectItem value={KitchenType.A}>A</SelectItem>
                 <SelectItem value={KitchenType.B}>B</SelectItem>
-                <SelectItem value={KitchenType.Other}>Other</SelectItem>
+                <SelectItem value={KitchenType.C}>C</SelectItem>
               </SelectContent>
             </Select>
           </div>
