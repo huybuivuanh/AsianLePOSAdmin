@@ -1,37 +1,38 @@
 "use client";
 
+import { useState } from "react";
 import { useOptionStore } from "@/app/store/useOptionStore";
 import UpdateOptionForm from "./UpdateOptionForm";
 import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
+import { Button } from "@/components/ui/button";
 
 export default function OptionsList() {
   const { options, loading, deleteOption } = useOptionStore();
   const { optionGroups, updateOptionGroup } = useOptionGroupStore();
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const handleDelete = async (option: ItemOption) => {
     if (!confirm("Are you sure you want to delete this option?")) return;
+    setIsDeleting(option.id!);
     try {
-      // Update groups
+      // 1. Remove this option from all groups
       const updatePromises = (option.groupIds ?? []).map((groupId) => {
-        const updatingGroup = optionGroups.find(
-          (group) => group.id === groupId
-        );
-        if (!updatingGroup) return Promise.resolve();
-
-        const updatedOptionIds = updatingGroup.optionIds?.filter(
-          (opt) => opt !== option.id
-        );
-        return updateOptionGroup(groupId, {
-          optionIds: updatedOptionIds ?? [],
-        });
+        const group = optionGroups.find((g) => g.id === groupId);
+        if (!group) return Promise.resolve();
+        const updatedOptionIds =
+          group.optionIds?.filter((id) => id !== option.id) ?? [];
+        return updateOptionGroup(groupId, { optionIds: updatedOptionIds });
       });
 
       await Promise.all(updatePromises);
 
-      // Delete option
+      // 2. Delete the option
       await deleteOption(option.id!);
-    } catch {
+    } catch (err) {
+      console.error("Failed to delete option:", err);
       alert("Failed to delete option");
+    } finally {
+      setIsDeleting(null);
     }
   };
 
@@ -51,12 +52,13 @@ export default function OptionsList() {
 
           <div className="flex gap-2">
             <UpdateOptionForm option={opt} />
-            <button
+            <Button
               onClick={() => handleDelete(opt)}
+              disabled={isDeleting === opt.id}
               className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
             >
-              Delete
-            </button>
+              {isDeleting === opt.id ? "Deleting..." : "Delete"}
+            </Button>
           </div>
         </li>
       ))}

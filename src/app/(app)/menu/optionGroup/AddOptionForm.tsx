@@ -32,29 +32,33 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // Update the group with selected option IDs
+      // 1. Update the group with the final list of optionIds
       await updateOptionGroup(group.id!, { optionIds: selected });
 
-      // Prepare an array of promises for updating each option
-      const updatePromises = selected.map((optionId) => {
-        const option = options.find((opt) => opt.id === optionId);
-        if (!option) return Promise.resolve(); // skip if not found
+      // 2. Sync each option so its groupIds array matches the checkboxes
+      const updatePromises = options.map((option) => {
+        const isSelected = selected.includes(option.id!);
 
-        // Avoid duplicates
-        const updatedGroupIds = option.groupIds?.includes(group.id!)
-          ? option.groupIds
-          : [...(option.groupIds ?? []), group.id!];
-
-        return updateOption(optionId, { groupIds: updatedGroupIds });
+        if (isSelected) {
+          // Ensure group is included
+          const updatedGroups = option.groupIds?.includes(group.id!)
+            ? option.groupIds
+            : [...(option.groupIds ?? []), group.id!];
+          return updateOption(option.id!, { groupIds: updatedGroups });
+        } else {
+          // Ensure group is removed
+          const updatedGroups =
+            option.groupIds?.filter((gid) => gid !== group.id) ?? [];
+          return updateOption(option.id!, { groupIds: updatedGroups });
+        }
       });
 
-      // Run all updates in parallel
       await Promise.all(updatePromises);
 
       setOpen(false);
     } catch (err) {
-      console.error("Failed to update options for group:", err);
-      alert("Failed to update options for group");
+      console.error("Failed to save options for group:", err);
+      alert("Failed to save options for group");
     } finally {
       setLoading(false);
     }

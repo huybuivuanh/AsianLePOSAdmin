@@ -6,10 +6,12 @@ import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
 import UpdateItemForm from "./UpdateItemForm";
 import AddOptionGroupForm from "./AddOptionGroupForm";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { useCategoriesStore } from "@/app/store/useCategoriesStore";
 
 export default function ItemsList() {
   const { items, loading, deleteItem, updateItem } = useItemStore();
   const { optionGroups, updateOptionGroup } = useOptionGroupStore();
+  const { categories, updateCategory } = useCategoriesStore();
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -20,19 +22,24 @@ export default function ItemsList() {
   const handleDeleteItem = async (item: MenuItem) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
     try {
-      // Step 1: Remove this item from all option groups that reference it
-      const updatePromises = (optionGroups ?? [])
-        .filter((group) => group.itemIds?.includes(item.id!))
-        .map((group) => {
-          const updatedItemIds = group.itemIds?.filter((i) => i !== item.id);
-          return updateOptionGroup(group.id!, {
-            itemIds: updatedItemIds ?? [],
-          });
-        });
+      // Step 1: Remove the item from all option groups
+      const updateGroupPromises = optionGroups.map((group) => {
+        if (!group.itemIds?.includes(item.id!)) return Promise.resolve();
+        const updatedItemIds = group.itemIds.filter((i) => i !== item.id);
+        return updateOptionGroup(group.id!, { itemIds: updatedItemIds });
+      });
 
-      await Promise.all(updatePromises);
+      // Step 2: Remove the item from all categories
+      const updateCategoryPromises = categories.map((cat) => {
+        if (!cat.itemIds?.includes(item.id!)) return Promise.resolve();
+        const updatedItemIds = cat.itemIds.filter((i) => i !== item.id);
+        return updateCategory(cat.id!, { itemIds: updatedItemIds });
+      });
 
-      // Step 2: Delete the item itself
+      // Step 3: Run all updates in parallel
+      await Promise.all([...updateGroupPromises, ...updateCategoryPromises]);
+
+      // Step 4: Delete the item itself
       await deleteItem(item.id!);
 
       alert("Item deleted!");
@@ -44,22 +51,23 @@ export default function ItemsList() {
 
   const handleRemoveOptionGroup = async (
     item: MenuItem,
-    group: ItemOptionGroup
+    groupToRemove: ItemOptionGroup
   ) => {
     if (!confirm("Are you sure you want to remove this option group?")) return;
     try {
-      const updatedOptionGroupList = item.optionGroupIds?.filter(
-        (groupId) => groupId !== group.id
-      );
-      await updateItem(item.id!, {
-        optionGroupIds: updatedOptionGroupList ?? [],
-      });
-      const updatedItemList = group.itemIds?.filter(
-        (itemId) => itemId !== item.id
-      );
-      await updateOptionGroup(group.id!, { itemIds: updatedItemList ?? [] });
+      // Step 1: Remove the group from the item's optionGroupIds
+      const updatedOptionGroupIds =
+        item.optionGroupIds?.filter((gid) => gid !== groupToRemove.id) ?? [];
+      await updateItem(item.id!, { optionGroupIds: updatedOptionGroupIds });
+
+      // Step 2: Remove the item from the group's itemIds
+      const updatedItemIds =
+        groupToRemove.itemIds?.filter((i) => i !== item.id) ?? [];
+      await updateOptionGroup(groupToRemove.id!, { itemIds: updatedItemIds });
+
       alert("Option group removed!");
-    } catch {
+    } catch (err) {
+      console.error("Failed to remove option group:", err);
       alert("Failed to remove option group");
     }
   };

@@ -31,27 +31,33 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // Update the item with selected optionGroup IDs
+      // 1️⃣ Update the item with the final selected optionGroup IDs
       await updateItem(item.id!, { optionGroupIds: selected });
 
-      // Update each selected group to include this item ID (reverse reference)
-      const updatePromises = selected.map((groupId) => {
-        const group = optionGroups.find((g) => g.id === groupId);
-        if (!group) return Promise.resolve();
+      // 2️⃣ Sync all option groups to match the selection
+      const updatePromises = optionGroups.map((group) => {
+        const isSelected = selected.includes(group.id!);
 
-        // Avoid duplicates
-        const updatedItemIds = group.itemIds?.includes(item.id!)
-          ? group.itemIds
-          : [...(group.itemIds ?? []), item.id!];
-
-        return updateOptionGroup(groupId, { itemIds: updatedItemIds });
+        if (isSelected) {
+          // Ensure this item is included
+          const updatedItemIds = group.itemIds?.includes(item.id!)
+            ? group.itemIds
+            : [...(group.itemIds ?? []), item.id!];
+          return updateOptionGroup(group.id!, { itemIds: updatedItemIds });
+        } else {
+          // Ensure this item is removed
+          const updatedItemIds =
+            group.itemIds?.filter((id) => id !== item.id!) ?? [];
+          return updateOptionGroup(group.id!, { itemIds: updatedItemIds });
+        }
       });
 
       await Promise.all(updatePromises);
+
       setOpen(false);
     } catch (err) {
-      console.error("Failed to add option groups:", err);
-      alert("Failed to add option groups");
+      console.error("Failed to save option groups:", err);
+      alert("Failed to save option groups");
     } finally {
       setLoading(false);
     }
