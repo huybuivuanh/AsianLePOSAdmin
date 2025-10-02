@@ -2,14 +2,34 @@
 
 import { useOptionStore } from "@/app/store/useOptionStore";
 import UpdateOptionForm from "./UpdateOptionForm";
+import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
 
 export default function OptionsList() {
   const { options, loading, deleteOption } = useOptionStore();
+  const { optionGroups, updateOptionGroup } = useOptionGroupStore();
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (option: ItemOption) => {
     if (!confirm("Are you sure you want to delete this option?")) return;
     try {
-      await deleteOption(id);
+      // Update groups
+      const updatePromises = (option.groupIds ?? []).map((groupId) => {
+        const updatingGroup = optionGroups.find(
+          (group) => group.id === groupId
+        );
+        if (!updatingGroup) return Promise.resolve();
+
+        const updatedOptionIds = updatingGroup.optionIds?.filter(
+          (opt) => opt !== option.id
+        );
+        return updateOptionGroup(groupId, {
+          optionIds: updatedOptionIds ?? [],
+        });
+      });
+
+      await Promise.all(updatePromises);
+
+      // Delete option
+      await deleteOption(option.id!);
     } catch {
       alert("Failed to delete option");
     }
@@ -32,7 +52,7 @@ export default function OptionsList() {
           <div className="flex gap-2">
             <UpdateOptionForm option={opt} />
             <button
-              onClick={() => handleDelete(opt.id!)}
+              onClick={() => handleDelete(opt)}
               className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
             >
               Delete
