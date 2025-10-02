@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
 import { useOptionStore } from "@/app/store/useOptionStore";
 import UpdateOptionGroupForm from "./UpdateOptionGroupForm";
-import AddOptionForm from "./AddOptionForm"; // new dialog component
+import AddOptionForm from "./AddOptionForm";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useItemStore } from "@/app/store/useItemStore"; // import your item store
+import { useItemStore } from "@/app/store/useItemStore";
+import UpdateOptionForm from "../option/UpdateOptionForm";
 
 export default function OptionGroupsList() {
   const { optionGroups, loading, deleteOptionGroup, updateOptionGroup } =
@@ -143,12 +144,15 @@ export default function OptionGroupsList() {
                           <span>
                             {opt.name} – ${opt.price}
                           </span>
-                          <button
-                            onClick={() => handleRemoveOption(group, opt)}
-                            className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
-                          >
-                            Remove
-                          </button>
+                          <div className="flex gap-2">
+                            <UpdateOptionForm option={opt} />
+                            <button
+                              onClick={() => handleRemoveOption(group, opt)}
+                              className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                            >
+                              Remove
+                            </button>
+                          </div>
                         </div>
                       ))
                     ) : (
