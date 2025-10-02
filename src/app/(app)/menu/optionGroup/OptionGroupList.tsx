@@ -14,11 +14,11 @@ export default function OptionGroupsList() {
   const { options, updateOption } = useOptionStore();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const { items, updateItem } = useItemStore();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleDelete = async (group: ItemOptionGroup) => {
     if (!confirm("Are you sure you want to delete this option group?")) return;
     try {
-      // 1. Remove group reference from all items and options
       const updatePromises = [
         // Update items
         ...(items ?? [])
@@ -40,7 +40,7 @@ export default function OptionGroupsList() {
 
       await Promise.all(updatePromises);
 
-      // 2. Delete the group
+      // Delete the group
       await deleteOptionGroup(group.id!);
     } catch (err) {
       console.error("Failed to delete option group:", err);
@@ -54,15 +54,11 @@ export default function OptionGroupsList() {
   ) => {
     if (!confirm("Are you sure you want to remove this option?")) return;
     try {
-      // 1. Update group: remove optionId
       const updatedOptionIds =
         group.optionIds?.filter((id) => id !== option.id) ?? [];
-
-      // 2. Update option: remove groupId
       const updatedGroupIds =
         option.groupIds?.filter((id) => id !== group.id) ?? [];
 
-      // Run both updates in parallel
       await Promise.all([
         updateOptionGroup(group.id!, { optionIds: updatedOptionIds }),
         updateOption(option.id!, { groupIds: updatedGroupIds }),
@@ -79,71 +75,100 @@ export default function OptionGroupsList() {
 
   if (loading) return <p>Loading...</p>;
 
+  // Filter option groups based on search term
+  const filteredGroups = optionGroups.filter((group) =>
+    group.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <ul className="space-y-2">
-      {optionGroups.map((group) => {
-        const groupOptions = options.filter((opt) =>
-          group.optionIds?.includes(opt.id!)
-        );
+    <div className="space-y-2">
+      {/* Search bar */}
+      <div>
+        <input
+          type="text"
+          placeholder="Search option groups..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+        />
+      </div>
 
-        return (
-          <li key={group.id} className="border px-4 py-2 rounded">
-            <div className="flex justify-between items-center">
-              {/* Expand/Collapse Button */}
-              <button
-                onClick={() => toggleExpand(group.id!)}
-                className="flex items-center gap-2 font-medium"
-              >
-                {expanded[group.id!] ? (
-                  <ChevronDown size={18} />
-                ) : (
-                  <ChevronRight size={18} />
-                )}
-                {group.name}
-              </button>
+      <ul className="space-y-2">
+        {filteredGroups.length > 0 ? (
+          filteredGroups.map((group) => {
+            const groupOptions = options.filter((opt) =>
+              group.optionIds?.includes(opt.id!)
+            );
 
-              <div className="flex gap-2">
-                <UpdateOptionGroupForm group={group} />
-                <button
-                  onClick={() => handleDelete(group)}
-                  className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+            return (
+              <li key={group.id} className="border px-4 py-2 rounded">
+                <div className="flex justify-between items-center">
+                  {/* Expand/Collapse Button */}
+                  <button
+                    onClick={() => toggleExpand(group.id!)}
+                    className="flex items-center gap-2 font-medium"
+                  >
+                    {expanded[group.id!] ? (
+                      <ChevronDown size={18} />
+                    ) : (
+                      <ChevronRight size={18} />
+                    )}
+                    {group.name}
+                  </button>
 
-            <p className="text-sm text-gray-600 ml-6">
-              Min: {group.minSelection} • Max: {group.maxSelection}
-            </p>
-
-            {/* Expandable Options List */}
-            {expanded[group.id!] && (
-              <div className="ml-8 mt-2 space-y-1">
-                {groupOptions.length > 0 &&
-                  groupOptions.map((opt) => (
-                    <div
-                      key={opt.id}
-                      className="flex justify-between items-center border px-3 py-1 rounded bg-gray-50"
+                  <div className="flex gap-2">
+                    <UpdateOptionGroupForm group={group} />
+                    <button
+                      onClick={() => handleDelete(group)}
+                      className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
                     >
-                      <span>
-                        {opt.name} – ${opt.price}
-                      </span>
-                      <button
-                        onClick={() => handleRemoveOption(group, opt)}
-                        className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
+                      Delete
+                    </button>
+                  </div>
+                </div>
 
-                <AddOptionForm group={group} />
-              </div>
-            )}
-          </li>
-        );
-      })}
-    </ul>
+                <p className="text-sm text-gray-600 ml-6">
+                  Min: {group.minSelection} • Max: {group.maxSelection}
+                </p>
+
+                {/* Expandable Options List */}
+                {expanded[group.id!] && (
+                  <div className="ml-8 mt-2 space-y-1">
+                    {groupOptions.length > 0 ? (
+                      groupOptions.map((opt) => (
+                        <div
+                          key={opt.id}
+                          className="flex justify-between items-center border px-3 py-1 rounded bg-gray-50"
+                        >
+                          <span>
+                            {opt.name} – ${opt.price}
+                          </span>
+                          <button
+                            onClick={() => handleRemoveOption(group, opt)}
+                            className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500 italic">
+                        No options in this group
+                      </p>
+                    )}
+
+                    <AddOptionForm group={group} />
+                  </div>
+                )}
+              </li>
+            );
+          })
+        ) : (
+          <p className="text-sm text-gray-500 italic">
+            No option groups match your search
+          </p>
+        )}
+      </ul>
+    </div>
   );
 }
