@@ -16,7 +16,10 @@ type CategoriesState = {
   loading: boolean;
   subscribe: () => () => void;
   createCategory: (name: string) => Promise<void>;
-  updateCategory: (id: string, name: string) => Promise<void>;
+  updateCategory: (
+    id: string,
+    category: Partial<FoodCategory>
+  ) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
 };
 
@@ -42,9 +45,9 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
     await addDoc(ref, { name, createdAt: new Date() });
   },
 
-  updateCategory: async (id, name) => {
+  updateCategory: async (id, category) => {
     const ref = doc(clientDb, "categories", id);
-    await updateDoc(ref, { name });
+    await updateDoc(ref, category);
   },
 
   deleteCategory: async (id) => {

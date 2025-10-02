@@ -12,31 +12,36 @@ export default function OptionGroupsList() {
   const { optionGroups, loading, deleteOptionGroup, updateOptionGroup } =
     useOptionGroupStore();
   const { options, updateOption } = useOptionStore();
-
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-
-  const { items, updateItem } = useItemStore(); // import your item store
+  const { items, updateItem } = useItemStore();
 
   const handleDelete = async (group: ItemOptionGroup) => {
     if (!confirm("Are you sure you want to delete this option group?")) return;
     try {
-      // Step 1: Remove this group from all items that reference it
-      const updatePromises = (items ?? [])
-        .filter((item) => item.optionGroupIds?.includes(group.id!))
-        .map((item) => {
-          const updatedGroupIds = item.optionGroupIds?.filter(
-            (gid) => gid !== group.id
-          );
-          return updateItem(item.id!, {
-            optionGroupIds: updatedGroupIds ?? [],
-          });
-        });
+      // 1. Remove group reference from all items and options
+      const updatePromises = [
+        // Update items
+        ...(items ?? [])
+          .filter((item) => item.optionGroupIds?.includes(group.id!))
+          .map((item) => {
+            const updatedGroupIds =
+              item.optionGroupIds?.filter((gid) => gid !== group.id) ?? [];
+            return updateItem(item.id!, { optionGroupIds: updatedGroupIds });
+          }),
+        // Update options
+        ...(options ?? [])
+          .filter((opt) => opt.groupIds?.includes(group.id!))
+          .map((opt) => {
+            const updatedGroupIds =
+              opt.groupIds?.filter((gid) => gid !== group.id) ?? [];
+            return updateOption(opt.id!, { groupIds: updatedGroupIds });
+          }),
+      ];
 
       await Promise.all(updatePromises);
 
-      // Step 2: Delete the option group itself
+      // 2. Delete the group
       await deleteOptionGroup(group.id!);
-
       alert("Option group deleted!");
     } catch (err) {
       console.error("Failed to delete option group:", err);
@@ -50,21 +55,23 @@ export default function OptionGroupsList() {
   ) => {
     if (!confirm("Are you sure you want to remove this option?")) return;
     try {
-      const updatedOptionList = group.optionIds?.filter(
-        (optionId) => optionId !== option.id
-      );
-      await updateOptionGroup(group.id!, {
-        optionIds: updatedOptionList ?? [],
-      });
-      const updatedOptionGroupList = option.groupIds?.filter(
-        (groupId) => groupId !== group.id
-      );
-      await updateOption(option.id!, {
-        groupIds: updatedOptionGroupList ?? [],
-      });
+      // 1. Update group: remove optionId
+      const updatedOptionIds =
+        group.optionIds?.filter((id) => id !== option.id) ?? [];
+
+      // 2. Update option: remove groupId
+      const updatedGroupIds =
+        option.groupIds?.filter((id) => id !== group.id) ?? [];
+
+      // Run both updates in parallel
+      await Promise.all([
+        updateOptionGroup(group.id!, { optionIds: updatedOptionIds }),
+        updateOption(option.id!, { groupIds: updatedGroupIds }),
+      ]);
 
       alert("Option removed!");
-    } catch {
+    } catch (err) {
+      console.error("Failed to remove option:", err);
       alert("Failed to remove option");
     }
   };
