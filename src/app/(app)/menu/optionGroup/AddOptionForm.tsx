@@ -22,6 +22,7 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(group.optionIds ?? []);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
@@ -64,6 +65,11 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
     }
   };
 
+  // Filter options based on search
+  const filteredOptions = options.filter((opt) =>
+    opt.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -71,7 +77,7 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
           + Add Options
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[80vw] !max-w-[90vw] h-[80vh] max-h-[90vh] mx-auto">
         <DialogHeader>
           <DialogTitle>Add Options to Group</DialogTitle>
           <DialogDescription>
@@ -79,9 +85,21 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-2 max-h-64 overflow-y-auto">
-          {options.length > 0 ? (
-            options.map((opt) => (
+        {/* Search bar */}
+        <div className="mb-2">
+          <input
+            type="text"
+            placeholder="Search options..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Scrollable options list */}
+        <div className="space-y-2 overflow-y-auto h-[calc(80vh-220px)]">
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((opt) => (
               <label
                 key={opt.id}
                 className="flex items-center gap-2 border p-2 rounded cursor-pointer"
@@ -97,7 +115,9 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
               </label>
             ))
           ) : (
-            <p className="text-sm text-gray-500 italic">No options available</p>
+            <p className="text-sm text-gray-500 italic">
+              No options match your search
+            </p>
           )}
         </div>
 
