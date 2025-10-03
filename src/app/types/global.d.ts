@@ -13,6 +13,7 @@ declare global {
     id?: string;
     name: string;
     itemIds?: string[];
+    order: number;
     createdAt: Date;
   };
 
