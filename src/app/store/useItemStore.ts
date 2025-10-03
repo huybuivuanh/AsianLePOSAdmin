@@ -12,6 +12,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { clientDb } from "@/app/lib/firebaseConfig";
+import { sortByAlphabet } from "../utils/utils";
 
 type ItemState = {
   items: MenuItem[];
@@ -41,7 +42,8 @@ export const useItemStore = create<ItemState>((set) => ({
             : docData.createdAt,
         } as MenuItem;
       });
-      set({ items: data, loading: false });
+      const sortedData = sortByAlphabet(data);
+      set({ items: sortedData, loading: false });
     });
     return unsub;
   },
