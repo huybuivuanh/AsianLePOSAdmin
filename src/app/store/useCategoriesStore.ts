@@ -37,15 +37,17 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
         ...doc.data(),
       })) as FoodCategory[];
       console.log(data);
-      const sortedData = sortByAlphabet(data);
-      set({ categories: sortedData, loading: false });
+      set({
+        categories: data.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+        loading: false,
+      });
     });
     return unsub;
   },
 
   createCategory: async (name) => {
     const ref = collection(clientDb, "categories");
-    await addDoc(ref, { name, createdAt: new Date() });
+    await addDoc(ref, { name, createdAt: new Date(), order: Date.now() });
   },
 
   updateCategory: async (id, category) => {
