@@ -12,6 +12,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { clientDb } from "@/app/lib/firebaseConfig";
+import { sortByAlphabet } from "../utils/utils";
 
 type OptionGroupState = {
   optionGroups: ItemOptionGroup[];
@@ -43,7 +44,9 @@ export const useOptionGroupStore = create<OptionGroupState>((set) => ({
             : docData.createdAt,
         } as ItemOptionGroup;
       });
-      set({ optionGroups: data, loading: false });
+      const sortedData = sortByAlphabet(data);
+      console.log(sortedData);
+      set({ optionGroups: sortedData, loading: false });
     });
     return unsub;
   },

@@ -12,6 +12,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { clientDb } from "@/app/lib/firebaseConfig";
+import { sortByAlphabet } from "../utils/utils";
 
 interface OptionStore {
   options: ItemOption[];
@@ -36,7 +37,8 @@ export const useOptionStore = create<OptionStore>((set) => ({
         id: d.id,
         ...d.data(),
       })) as ItemOption[];
-      set({ options: opts, loading: false });
+      const sortedData = sortByAlphabet(opts);
+      set({ options: sortedData, loading: false });
     });
     return unsub;
   },

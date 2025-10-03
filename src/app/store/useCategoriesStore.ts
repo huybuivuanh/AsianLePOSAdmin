@@ -10,6 +10,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { clientDb } from "@/app/lib/firebaseConfig";
+import { sortByAlphabet } from "../utils/utils";
 
 type CategoriesState = {
   categories: FoodCategory[];
@@ -35,7 +36,9 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
         id: doc.id,
         ...doc.data(),
       })) as FoodCategory[];
-      set({ categories: data, loading: false });
+      console.log(data);
+      const sortedData = sortByAlphabet(data);
+      set({ categories: sortedData, loading: false });
     });
     return unsub;
   },
