@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
+import { StoreProvider } from "../providers/StoreProvider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -10,7 +11,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!user) {
-      router.push("/login"); // redirect to login if not authenticated
+      router.push("/"); // redirect to login if not authenticated
     }
   }, [user, router]);
 
@@ -18,8 +19,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Navbar />
-      <main>{children}</main>
+      <StoreProvider>
+        <Navbar />
+        <main>{children}</main>
+      </StoreProvider>
     </>
   );
 }

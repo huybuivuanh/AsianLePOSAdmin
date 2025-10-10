@@ -36,7 +36,6 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
         id: doc.id,
         ...doc.data(),
       })) as FoodCategory[];
-      console.log(data);
       set({
         categories: data.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
         loading: false,

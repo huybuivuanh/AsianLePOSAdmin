@@ -45,7 +45,6 @@ export const useOptionGroupStore = create<OptionGroupState>((set) => ({
         } as ItemOptionGroup;
       });
       const sortedData = sortByAlphabet(data);
-      console.log(sortedData);
       set({ optionGroups: sortedData, loading: false });
     });
     return unsub;
