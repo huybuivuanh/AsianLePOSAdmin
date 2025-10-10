@@ -3,11 +3,11 @@
 
 import { useAuth } from "./AuthProvider";
 import { useEffect } from "react";
-import { useCategoriesStore } from "@/app/store/useCategoriesStore";
-import { useOptionStore } from "@/app/store/useOptionStore";
-import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
-import { useItemStore } from "@/app/store/useItemStore";
-import { useUserStore } from "../store/useUserStore";
+import { useCategoriesStore } from "@/app/stores/useCategoriesStore";
+import { useOptionStore } from "@/app/stores/useOptionStore";
+import { useOptionGroupStore } from "@/app/stores/useOptionGroupStore";
+import { useItemStore } from "@/app/stores/useItemStore";
+import { useUserStore } from "../stores/useUserStore";
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();

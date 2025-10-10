@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useItemStore } from "@/app/store/useItemStore";
-import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
-import { useOptionStore } from "@/app/store/useOptionStore";
-import { useCategoriesStore } from "@/app/store/useCategoriesStore";
+import { useItemStore } from "@/app/stores/useItemStore";
+import { useOptionGroupStore } from "@/app/stores/useOptionGroupStore";
+import { useOptionStore } from "@/app/stores/useOptionStore";
+import { useCategoriesStore } from "@/app/stores/useCategoriesStore";
 import UpdateItemForm from "./UpdateItemForm";
 import AddOptionGroupForm from "./AddOptionGroupForm";
 import AddOptionForm from "../optionGroup/AddOptionForm";

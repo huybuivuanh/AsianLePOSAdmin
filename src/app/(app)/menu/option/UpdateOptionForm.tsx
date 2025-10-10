@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useOptionStore } from "@/app/store/useOptionStore";
+import { useOptionStore } from "@/app/stores/useOptionStore";
 
 export default function UpdateOptionForm({ option }: { option: ItemOption }) {
   const [open, setOpen] = useState(false);

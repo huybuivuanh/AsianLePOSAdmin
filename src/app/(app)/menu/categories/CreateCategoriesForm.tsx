@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useCategoriesStore } from "@/app/store/useCategoriesStore";
+import { useCategoriesStore } from "@/app/stores/useCategoriesStore";
 
 export default function CreateCategoryForm() {
   const [open, setOpen] = useState(false);

@@ -11,8 +11,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useItemStore } from "@/app/store/useItemStore";
-import { useCategoriesStore } from "@/app/store/useCategoriesStore";
+import { useItemStore } from "@/app/stores/useItemStore";
+import { useCategoriesStore } from "@/app/stores/useCategoriesStore";
 
 export default function AddItemForm({ category }: { category: FoodCategory }) {
   const { items, updateItem } = useItemStore();

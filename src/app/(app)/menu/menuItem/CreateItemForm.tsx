@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useItemStore } from "@/app/store/useItemStore"; // you'll create this similar to useCategoriesStore
+import { useItemStore } from "@/app/stores/useItemStore"; // you'll create this similar to useCategoriesStore
 import { KitchenType } from "@/app/types/enum"; // your enum
 
 export default function CreateItemForm() {

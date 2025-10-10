@@ -10,7 +10,6 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { clientDb } from "@/app/lib/firebaseConfig";
-import { sortByAlphabet } from "../utils/utils";
 
 type CategoriesState = {
   categories: FoodCategory[];

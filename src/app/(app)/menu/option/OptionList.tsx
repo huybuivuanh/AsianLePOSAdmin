@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useOptionStore } from "@/app/store/useOptionStore";
+import { useOptionStore } from "@/app/stores/useOptionStore";
 import UpdateOptionForm from "./UpdateOptionForm";
-import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
+import { useOptionGroupStore } from "@/app/stores/useOptionGroupStore";
 import { Button } from "@/components/ui/button";
 
 export default function OptionsList() {

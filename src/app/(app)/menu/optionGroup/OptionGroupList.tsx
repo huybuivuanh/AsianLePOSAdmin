@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
-import { useOptionStore } from "@/app/store/useOptionStore";
+import { useOptionGroupStore } from "@/app/stores/useOptionGroupStore";
+import { useOptionStore } from "@/app/stores/useOptionStore";
 import UpdateOptionGroupForm from "./UpdateOptionGroupForm";
 import AddOptionForm from "./AddOptionForm";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useItemStore } from "@/app/store/useItemStore";
+import { useItemStore } from "@/app/stores/useItemStore";
 import UpdateOptionForm from "../option/UpdateOptionForm";
 
 export default function OptionGroupsList() {

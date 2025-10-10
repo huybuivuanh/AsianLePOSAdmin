@@ -11,8 +11,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
-import { useItemStore } from "@/app/store/useItemStore";
+import { useOptionGroupStore } from "@/app/stores/useOptionGroupStore";
+import { useItemStore } from "@/app/stores/useItemStore";
 
 export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
   const { optionGroups, updateOptionGroup } = useOptionGroupStore();

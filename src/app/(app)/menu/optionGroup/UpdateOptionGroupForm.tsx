@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
+import { useOptionGroupStore } from "@/app/stores/useOptionGroupStore";
 import NumberStepper from "./NumberStepper";
 
 export default function UpdateOptionGroupForm({

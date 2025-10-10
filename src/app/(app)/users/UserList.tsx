@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useUserStore } from "@/app/store/useUserStore";
+import { useUserStore } from "@/app/stores/useUserStore";
 import UpdateUserForm from "./UpdateUserForm";
 
 export default function UserList() {

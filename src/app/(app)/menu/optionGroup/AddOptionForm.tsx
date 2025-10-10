@@ -12,8 +12,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useOptionStore } from "@/app/store/useOptionStore";
-import { useOptionGroupStore } from "@/app/store/useOptionGroupStore";
+import { useOptionStore } from "@/app/stores/useOptionStore";
+import { useOptionGroupStore } from "@/app/stores/useOptionGroupStore";
 
 export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
   const { options, updateOption } = useOptionStore();

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useCategoriesStore } from "@/app/store/useCategoriesStore";
-import { useItemStore } from "@/app/store/useItemStore";
+import { useCategoriesStore } from "@/app/stores/useCategoriesStore";
+import { useItemStore } from "@/app/stores/useItemStore";
 import AddItemForm from "./AddItemForm";
 import UpdateCategoriesForm from "./UpdateCategoriesForm"; // optional
 import { ChevronDown, ChevronRight } from "lucide-react";

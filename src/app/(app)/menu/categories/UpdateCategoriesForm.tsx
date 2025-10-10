@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useCategoriesStore } from "@/app/store/useCategoriesStore";
+import { useCategoriesStore } from "@/app/stores/useCategoriesStore";
 import {
   Dialog,
   DialogContent,

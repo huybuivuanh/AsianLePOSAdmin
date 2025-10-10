@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useItemStore } from "@/app/store/useItemStore";
+import { useItemStore } from "@/app/stores/useItemStore";
 import { KitchenType } from "@/app/types/enum";
 
 export default function UpdateItemDialog({ item }: { item: MenuItem }) {

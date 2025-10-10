@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useUserStore } from "@/app/store/useUserStore";
+import { useUserStore } from "@/app/stores/useUserStore";
 import {
   Dialog,
   DialogContent,
