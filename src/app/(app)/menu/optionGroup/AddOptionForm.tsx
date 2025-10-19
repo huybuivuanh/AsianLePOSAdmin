@@ -110,7 +110,7 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
                   disabled={loading}
                 />
                 <span>
-                  {opt.name} – ${opt.price}
+                  {opt.name} – ${opt.price.toFixed(2)}
                 </span>
               </label>
             ))

@@ -106,7 +106,10 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
                   onCheckedChange={() => toggleSelect(group.id!)}
                   disabled={loading}
                 />
-                <span>{group.name}</span>
+                <span>
+                  {group.name} - Min: {group.minSelection} Max:{" "}
+                  {group.maxSelection}
+                </span>
               </label>
             ))
           ) : (

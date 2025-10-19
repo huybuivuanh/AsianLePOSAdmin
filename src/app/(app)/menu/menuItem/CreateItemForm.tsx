@@ -35,7 +35,8 @@ export default function CreateItemForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || price === "" || isNaN(Number(price))) return;
+    if (price === "") setPrice(0);
+    if (!name.trim() || isNaN(Number(price))) return;
 
     setLoading(true);
     try {
@@ -46,7 +47,7 @@ export default function CreateItemForm() {
         createdAt: new Date(),
       });
       setName("");
-      setPrice("");
+      setPrice(0);
       setKitchenType(KitchenType.A);
       setOpen(false);
     } catch (err) {

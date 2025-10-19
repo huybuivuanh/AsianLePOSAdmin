@@ -142,7 +142,7 @@ export default function OptionGroupsList() {
                           className="flex justify-between items-center border px-3 py-1 rounded bg-gray-50"
                         >
                           <span>
-                            {opt.name} – ${opt.price}
+                            {opt.name} – ${opt.price.toFixed(2)}
                           </span>
                           <div className="flex gap-2">
                             <UpdateOptionForm option={opt} />
