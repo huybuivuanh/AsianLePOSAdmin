@@ -144,7 +144,7 @@ export default function ItemsList() {
                 </div>
 
                 <p className="text-sm text-gray-600 ml-6">
-                  ${item.price.toFixed(2)}
+                  ${item.price.toFixed(2)} - Kitchen Type: {item.kitchenType}
                 </p>
 
                 {/* Expandable Option Groups */}
