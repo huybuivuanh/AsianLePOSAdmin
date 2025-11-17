@@ -32,6 +32,7 @@ declare global {
     name: string;
     minSelection: number;
     maxSelection: number;
+    multipleSelection?: boolean;
     optionIds?: string[];
     itemIds?: string[];
     createdAt: Date;

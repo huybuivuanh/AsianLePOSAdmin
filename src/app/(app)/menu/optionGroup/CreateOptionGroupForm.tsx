@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useOptionGroupStore } from "@/app/stores/useOptionGroupStore";
 import NumberStepper from "./NumberStepper";
 
@@ -21,6 +22,7 @@ export default function CreateOptionGroupForm() {
   const [name, setName] = useState("");
   const [minSelection, setMinSelection] = useState(0);
   const [maxSelection, setMaxSelection] = useState(1);
+  const [multipleSelection, setMultipleSelection] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { createOptionGroup } = useOptionGroupStore();
@@ -39,11 +41,13 @@ export default function CreateOptionGroupForm() {
         name: name.trim(),
         minSelection,
         maxSelection,
+        multipleSelection,
         createdAt: new Date(),
       });
       setName("");
       setMinSelection(0);
       setMaxSelection(1);
+      setMultipleSelection(false);
       setOpen(false);
     } catch (err) {
       console.error("Failed to create option group:", err);
@@ -98,6 +102,24 @@ export default function CreateOptionGroupForm() {
               min={1}
               disabled={loading}
             />
+          </div>
+
+          {/* Multiple Selection */}
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="multipleSelection"
+              checked={multipleSelection}
+              onCheckedChange={(checked) =>
+                setMultipleSelection(checked === true)
+              }
+              disabled={loading}
+            />
+            <Label
+              htmlFor="multipleSelection"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            >
+              Multiple Selection
+            </Label>
           </div>
 
           <DialogFooter>
