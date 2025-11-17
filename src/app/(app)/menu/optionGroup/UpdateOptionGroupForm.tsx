@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useOptionGroupStore } from "@/app/stores/useOptionGroupStore";
-import { useOptionStore } from "@/app/stores/useOptionStore";
 import NumberStepper from "./NumberStepper";
 
 export default function UpdateOptionGroupForm({
@@ -30,26 +29,9 @@ export default function UpdateOptionGroupForm({
   const [loading, setLoading] = useState(false);
 
   const { updateOptionGroup } = useOptionGroupStore();
-  const { options } = useOptionStore();
-
-  // Calculate initial multipleSelection value based on options in the group
-  const getInitialMultipleSelection = () => {
-    // First check if the group already has a multipleSelection value
-    if (group.multipleSelection !== undefined) {
-      return group.multipleSelection;
-    }
-    // Otherwise, check if any option in the group has multipleSelection === true
-    if (group.optionIds && group.optionIds.length > 0) {
-      const groupOptions = options.filter((opt) =>
-        group.optionIds!.includes(opt.id!)
-      );
-      return groupOptions.some((opt) => opt.multipleSelction === true);
-    }
-    return false;
-  };
 
   const [multipleSelection, setMultipleSelection] = useState(
-    getInitialMultipleSelection()
+    group.multipleSelection ?? false
   );
 
   // Update form fields when dialog opens or group changes
@@ -58,25 +40,16 @@ export default function UpdateOptionGroupForm({
       setName(group.name);
       setMinSelection(group.minSelection);
       setMaxSelection(group.maxSelection);
-      
-      // Calculate multipleSelection value
-      const initialValue = (() => {
-        // First check if the group already has a multipleSelection value
-        if (group.multipleSelection !== undefined) {
-          return group.multipleSelection;
-        }
-        // Otherwise, check if any option in the group has multipleSelection === true
-        if (group.optionIds && group.optionIds.length > 0) {
-          const groupOptions = options.filter((opt) =>
-            group.optionIds!.includes(opt.id!)
-          );
-          return groupOptions.some((opt) => opt.multipleSelction === true);
-        }
-        return false;
-      })();
-      setMultipleSelection(initialValue);
+      setMultipleSelection(group.multipleSelection ?? false);
     }
-  }, [open, group.id, group.name, group.minSelection, group.maxSelection, group.multipleSelection, group.optionIds, options]);
+  }, [
+    open,
+    group.id,
+    group.name,
+    group.minSelection,
+    group.maxSelection,
+    group.multipleSelection,
+  ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
