@@ -1,12 +1,19 @@
 "use client";
 
 import { create } from "zustand";
-import { doc, onSnapshot, updateDoc, increment } from "firebase/firestore";
+import {
+  doc,
+  onSnapshot,
+  updateDoc,
+  increment,
+  Timestamp,
+} from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
+import { asTimestamp } from "@/lib/firestore-timestamp";
 
 type MenuVersion = {
   version: number;
-  lastUpdated: Date | null;
+  lastUpdated: Timestamp | null;
 };
 
 type MenuVersionState = {
@@ -29,9 +36,10 @@ export const useMenuVersionStore = create<MenuVersionState>((set) => ({
         set({
           version: {
             version: data.version ?? 0,
-            lastUpdated: data.lastUpdated?.toDate
-              ? data.lastUpdated.toDate()
-              : data.lastUpdated ?? null,
+            lastUpdated:
+              data.lastUpdated != null
+                ? asTimestamp(data.lastUpdated)
+                : null,
           },
           loading: false,
         });
@@ -47,7 +55,7 @@ export const useMenuVersionStore = create<MenuVersionState>((set) => ({
     const ref = doc(clientDb, "menuVersion", "versionDoc");
 
     await updateDoc(ref, {
-      lastUpdated: new Date(),
+      lastUpdated: Timestamp.now(),
       version: increment(1),
     });
   },

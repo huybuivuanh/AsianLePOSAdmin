@@ -40,9 +40,7 @@ export default function UserList() {
               <td className="border px-4 py-2">{user.email}</td>
               <td className="border px-4 py-2">{user.role}</td>
               <td className="border px-4 py-2">
-                {user.createdAt
-                  ? new Date(user.createdAt).toLocaleString()
-                  : ""}
+                {user.createdAt.toDate().toLocaleString()}
               </td>
               <td className="border px-4 py-2 space-x-2">
                 <UpdateUserForm user={user} />

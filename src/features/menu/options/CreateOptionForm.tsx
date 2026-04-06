@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Timestamp } from "firebase/firestore";
 import { useOptionStore } from "@/stores/useOptionStore";
 
 export default function CreateOptionForm() {
@@ -32,7 +33,7 @@ export default function CreateOptionForm() {
       await createOption({
         name: name.trim(),
         price,
-        createdAt: new Date(),
+        createdAt: Timestamp.now(),
       });
       setName("");
       setPrice(0);

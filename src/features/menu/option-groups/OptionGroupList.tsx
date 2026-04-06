@@ -17,7 +17,7 @@ export default function OptionGroupsList() {
   const { items, updateItem } = useItemStore();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleDelete = async (group: ItemOptionGroup) => {
+  const handleDelete = async (group: OptionGroup) => {
     if (!confirm("Are you sure you want to delete this option group?")) return;
     try {
       const updatePromises = [
@@ -49,10 +49,7 @@ export default function OptionGroupsList() {
     }
   };
 
-  const handleRemoveOption = async (
-    group: ItemOptionGroup,
-    option: ItemOption
-  ) => {
+  const handleRemoveOption = async (group: OptionGroup, option: ItemOption) => {
     if (!confirm("Are you sure you want to remove this option?")) return;
     try {
       const updatedOptionIds =
@@ -78,7 +75,7 @@ export default function OptionGroupsList() {
 
   // Filter option groups based on search term
   const filteredGroups = optionGroups.filter((group) =>
-    group.name.toLowerCase().includes(searchTerm.toLowerCase())
+    group.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -98,7 +95,7 @@ export default function OptionGroupsList() {
         {filteredGroups.length > 0 ? (
           filteredGroups.map((group) => {
             const groupOptions = options.filter((opt) =>
-              group.optionIds?.includes(opt.id!)
+              group.optionIds?.includes(opt.id!),
             );
 
             return (

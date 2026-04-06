@@ -1,5 +1,6 @@
 // src/app/api/createUser/route.ts
 import { NextResponse } from "next/server";
+import { Timestamp } from "firebase-admin/firestore";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 
 export async function POST(req: Request) {
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
       name,
       email,
       role,
-      createdAt: new Date(),
+      createdAt: Timestamp.now(),
     });
 
     return NextResponse.json({ uid: userRecord.uid });

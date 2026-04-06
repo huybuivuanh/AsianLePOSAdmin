@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
 import { sortByAlphabet } from "@/lib/sort";
+import { asTimestamp } from "@/lib/firestore-timestamp";
 
 type ItemState = {
   items: MenuItem[];
@@ -36,9 +37,7 @@ export const useItemStore = create<ItemState>((set) => ({
         return {
           id: doc.id,
           ...docData,
-          createdAt: docData.createdAt.toDate
-            ? docData.createdAt.toDate()
-            : docData.createdAt,
+          createdAt: asTimestamp(docData.createdAt),
         } as MenuItem;
       });
       const sortedData = sortByAlphabet(data);

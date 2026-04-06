@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
 import { sortByAlphabet } from "@/lib/sort";
+import { asTimestamp } from "@/lib/firestore-timestamp";
 
 interface OptionStore {
   options: ItemOption[];
@@ -33,10 +34,14 @@ export const useOptionStore = create<OptionStore>((set) => ({
       orderBy("createdAt", "desc")
     );
     const unsub = onSnapshot(q, (snapshot) => {
-      const opts: ItemOption[] = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-      })) as ItemOption[];
+      const opts: ItemOption[] = snapshot.docs.map((d) => {
+        const raw = d.data();
+        return {
+          id: d.id,
+          ...raw,
+          createdAt: asTimestamp(raw.createdAt),
+        } as ItemOption;
+      });
       const sortedData = sortByAlphabet(opts);
       set({ options: sortedData, loading: false });
     });

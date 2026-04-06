@@ -7,6 +7,7 @@ import {
   DocumentData,
   Unsubscribe,
 } from "firebase/firestore";
+import { asTimestamp } from "@/lib/firestore-timestamp";
 
 export function listenUsers(
   onUpdate: (users: User[]) => void,
@@ -25,7 +26,7 @@ export function listenUsers(
           name: data.name,
           email: data.email,
           role: data.role,
-          createdAt: data.createdAt?.toDate() ?? new Date(),
+          createdAt: asTimestamp(data.createdAt),
         };
       });
       onUpdate(users);

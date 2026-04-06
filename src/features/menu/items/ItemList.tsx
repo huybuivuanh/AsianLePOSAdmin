@@ -50,7 +50,7 @@ export default function ItemsList() {
 
   const handleRemoveOptionGroup = async (
     item: MenuItem,
-    groupToRemove: ItemOptionGroup,
+    groupToRemove: OptionGroup,
   ) => {
     if (!confirm("Are you sure you want to remove this option group?")) return;
 
@@ -68,10 +68,7 @@ export default function ItemsList() {
     }
   };
 
-  const handleRemoveOption = async (
-    group: ItemOptionGroup,
-    option: ItemOption,
-  ) => {
+  const handleRemoveOption = async (group: OptionGroup, option: ItemOption) => {
     if (!confirm("Are you sure you want to remove this option?")) return;
     try {
       const updatedOptionIds =

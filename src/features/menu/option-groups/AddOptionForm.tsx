@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 
-export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
+export default function AddOptionForm({ group }: { group: OptionGroup }) {
   const { options, updateOption } = useOptionStore();
   const { updateOptionGroup } = useOptionGroupStore();
 
@@ -26,7 +26,7 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
 
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   };
 
@@ -67,7 +67,7 @@ export default function AddOptionForm({ group }: { group: ItemOptionGroup }) {
 
   // Filter options based on search
   const filteredOptions = options.filter((opt) =>
-    opt.name.toLowerCase().includes(searchTerm.toLowerCase())
+    opt.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (

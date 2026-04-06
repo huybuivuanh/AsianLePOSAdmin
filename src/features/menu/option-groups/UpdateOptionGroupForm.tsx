@@ -20,7 +20,7 @@ import NumberStepper from "./NumberStepper";
 export default function UpdateOptionGroupForm({
   group,
 }: {
-  group: ItemOptionGroup;
+  group: OptionGroup;
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(group.name);
@@ -30,17 +30,16 @@ export default function UpdateOptionGroupForm({
 
   const { updateOptionGroup } = useOptionGroupStore();
 
-  const [multipleSelection, setMultipleSelection] = useState(
-    group.multipleSelection ?? false
+  const [multipleOptionQuantity, setMultipleOptionQuantity] = useState(
+    group.multipleOptionQuantity,
   );
 
-  // Update form fields when dialog opens or group changes
   useEffect(() => {
     if (open) {
       setName(group.name);
       setMinSelection(group.minSelection);
       setMaxSelection(group.maxSelection);
-      setMultipleSelection(group.multipleSelection ?? false);
+      setMultipleOptionQuantity(group.multipleOptionQuantity);
     }
   }, [
     open,
@@ -48,7 +47,7 @@ export default function UpdateOptionGroupForm({
     group.name,
     group.minSelection,
     group.maxSelection,
-    group.multipleSelection,
+    group.multipleOptionQuantity,
   ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -65,7 +64,7 @@ export default function UpdateOptionGroupForm({
         name: name.trim(),
         minSelection,
         maxSelection,
-        multipleSelection,
+        multipleOptionQuantity,
       });
       setOpen(false);
     } catch (err) {
@@ -123,22 +122,27 @@ export default function UpdateOptionGroupForm({
             />
           </div>
 
-          {/* Multiple Selection */}
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="multipleSelection"
-              checked={multipleSelection}
+              id="multipleOptionQuantity"
+              checked={multipleOptionQuantity}
               onCheckedChange={(checked) =>
-                setMultipleSelection(checked === true)
+                setMultipleOptionQuantity(checked === true)
               }
               disabled={loading}
             />
-            <Label
-              htmlFor="multipleSelection"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-            >
-              Multiple Selection
-            </Label>
+            <div className="grid gap-1 leading-none">
+              <Label
+                htmlFor="multipleOptionQuantity"
+                className="text-sm font-medium cursor-pointer"
+              >
+                Multiple option quantity
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Allow customers to add more than one of the same option (e.g.
+                quantity).
+              </p>
+            </div>
           </div>
 
           <DialogFooter>

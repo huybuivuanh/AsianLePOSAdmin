@@ -8,8 +8,10 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  Timestamp,
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
+import { asTimestamp } from "@/lib/firestore-timestamp";
 
 type CategoriesState = {
   categories: FoodCategory[];
@@ -30,10 +32,14 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
   subscribe: () => {
     const ref = collection(clientDb, "categories");
     const unsub = onSnapshot(ref, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as FoodCategory[];
+      const data = snapshot.docs.map((doc) => {
+        const raw = doc.data();
+        return {
+          id: doc.id,
+          ...raw,
+          createdAt: asTimestamp(raw.createdAt),
+        } as FoodCategory;
+      });
       set({
         categories: data.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
         loading: false,
@@ -44,7 +50,7 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
 
   createCategory: async (name) => {
     const ref = collection(clientDb, "categories");
-    await addDoc(ref, { name, createdAt: new Date(), order: Date.now() });
+    await addDoc(ref, { name, createdAt: Timestamp.now(), order: Date.now() });
   },
 
   updateCategory: async (id, category) => {

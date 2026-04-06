@@ -13,16 +13,14 @@ import {
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
 import { sortByAlphabet } from "@/lib/sort";
+import { asTimestamp } from "@/lib/firestore-timestamp";
 
 type OptionGroupState = {
-  optionGroups: ItemOptionGroup[];
+  optionGroups: OptionGroup[];
   loading: boolean;
   subscribe: () => () => void;
-  createOptionGroup: (group: ItemOptionGroup) => Promise<void>;
-  updateOptionGroup: (
-    id: string,
-    group: Partial<ItemOptionGroup>
-  ) => Promise<void>;
+  createOptionGroup: (group: OptionGroup) => Promise<void>;
+  updateOptionGroup: (id: string, group: Partial<OptionGroup>) => Promise<void>;
   deleteOptionGroup: (id: string) => Promise<void>;
 };
 
@@ -36,13 +34,16 @@ export const useOptionGroupStore = create<OptionGroupState>((set) => ({
     const unsub = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map((doc) => {
         const docData = doc.data();
+        const multipleOptionQuantity =
+          typeof docData.multipleOptionQuantity === "boolean"
+            ? docData.multipleOptionQuantity
+            : docData.multipleSelection === true;
         return {
           id: doc.id,
           ...docData,
-          createdAt: docData.createdAt.toDate
-            ? docData.createdAt.toDate()
-            : docData.createdAt,
-        } as ItemOptionGroup;
+          multipleOptionQuantity,
+          createdAt: asTimestamp(docData.createdAt),
+        } as OptionGroup;
       });
       const sortedData = sortByAlphabet(data);
       set({ optionGroups: sortedData, loading: false });

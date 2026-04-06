@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Timestamp } from "firebase/firestore";
 import { useItemStore } from "@/stores/useItemStore";
 import { KitchenType } from "@/types/enum";
 
@@ -46,7 +47,7 @@ export default function CreateItemForm() {
         name: name.trim(),
         price: Number(price),
         kitchenType,
-        createdAt: new Date(),
+        createdAt: Timestamp.now(),
       });
       setName("");
       setPrice(0);

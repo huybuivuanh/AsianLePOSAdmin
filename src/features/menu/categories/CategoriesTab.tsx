@@ -41,7 +41,7 @@ export default function CategoriesTab() {
               Last Published:{" "}
               <span className="font-medium text-gray-800">
                 {version.lastUpdated
-                  ? version.lastUpdated.toLocaleString()
+                  ? version.lastUpdated.toDate().toLocaleString()
                   : "— not published yet —"}
               </span>
             </span>

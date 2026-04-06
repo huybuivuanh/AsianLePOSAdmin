@@ -1,3 +1,5 @@
+import type { Timestamp } from "firebase/firestore";
+
 export {};
 
 declare global {
@@ -6,7 +8,7 @@ declare global {
     name: string;
     email: string;
     role: string;
-    createdAt: Date;
+    createdAt: Timestamp;
   };
 
   type FoodCategory = {
@@ -14,7 +16,7 @@ declare global {
     name: string;
     itemIds?: string[];
     order: number;
-    createdAt: Date;
+    createdAt: Timestamp;
   };
 
   type MenuItem = {
@@ -24,18 +26,18 @@ declare global {
     optionGroupIds?: string[];
     categoryIds?: string[];
     kitchenType: string;
-    createdAt: Date;
+    createdAt: Timestamp;
   };
 
-  type ItemOptionGroup = {
+  type OptionGroup = {
     id?: string;
     name: string;
     minSelection: number;
     maxSelection: number;
-    multipleSelection?: boolean;
+    multipleOptionQuantity: boolean;
     optionIds?: string[];
     itemIds?: string[];
-    createdAt: Date;
+    createdAt: Timestamp;
   };
 
   type ItemOption = {
@@ -43,6 +45,6 @@ declare global {
     name: string;
     price: number;
     groupIds?: string[];
-    createdAt: Date;
+    createdAt: Timestamp;
   };
 }
