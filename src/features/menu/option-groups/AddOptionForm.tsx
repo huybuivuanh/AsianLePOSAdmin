@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SearchField } from "@/components/ui/search-field";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { patchClearDefaultIfNotInOptionIds } from "@/lib/option-group-updates";
@@ -91,12 +92,11 @@ export default function AddOptionForm({ group }: { group: OptionGroup }) {
 
         {/* Search bar */}
         <div className="mb-0 shrink-0">
-          <input
-            type="text"
-            placeholder="Search options..."
+          <SearchField
+            placeholder="Search options…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="Search options"
           />
         </div>
 

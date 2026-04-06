@@ -6,6 +6,7 @@ import UpdateOptionForm from "./UpdateOptionForm";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
 import { Button } from "@/components/ui/button";
+import { SearchField } from "@/components/ui/search-field";
 
 export default function OptionsList() {
   const { options, loading, deleteOption } = useOptionStore();
@@ -17,7 +18,6 @@ export default function OptionsList() {
     if (!confirm("Are you sure you want to delete this option?")) return;
     setIsDeleting(option.id!);
     try {
-      // 1. Remove this option from all groups
       const updatePromises = (option.groupIds ?? []).map((groupId) => {
         const group = optionGroups.find((g) => g.id === groupId);
         if (!group) return Promise.resolve();
@@ -31,7 +31,6 @@ export default function OptionsList() {
 
       await Promise.all(updatePromises);
 
-      // 2. Delete the option
       await deleteOption(option.id!);
     } catch (err) {
       console.error("Failed to delete option:", err);
@@ -41,54 +40,56 @@ export default function OptionsList() {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return <p className="text-sm text-muted-foreground">Loading options…</p>;
+  }
 
-  // Filter options based on search term
   const filteredOptions = options.filter((opt) =>
-    opt.name.toLowerCase().includes(searchTerm.toLowerCase())
+    opt.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
-    <div className="space-y-2">
-      {/* Search bar */}
-      <div>
-        <input
-          type="text"
-          placeholder="Search options..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-        />
-      </div>
+    <div className="space-y-4">
+      <SearchField
+        placeholder="Search options…"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        aria-label="Search options"
+      />
 
-      {/* Options list */}
-      <ul className="space-y-2">
+      <ul className="space-y-3">
         {filteredOptions.length > 0 ? (
           filteredOptions.map((opt) => (
             <li
               key={opt.id}
-              className="flex flex-col gap-3 rounded border px-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:px-4"
+              className="flex flex-col gap-3 rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5"
             >
               <div className="min-w-0">
-                <p className="font-medium break-words">{opt.name}</p>
-                <p className="text-sm text-gray-500">${opt.price.toFixed(2)}</p>
+                <p className="font-medium break-words text-foreground">
+                  {opt.name}
+                </p>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  ${opt.price.toFixed(2)}
+                </p>
               </div>
 
-              <div className="flex flex-wrap gap-2 shrink-0">
+              <div className="flex shrink-0 flex-wrap gap-2">
                 <UpdateOptionForm option={opt} />
                 <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
                   onClick={() => handleDelete(opt)}
                   disabled={isDeleting === opt.id}
-                  className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
                 >
-                  {isDeleting === opt.id ? "Deleting..." : "Delete"}
+                  {isDeleting === opt.id ? "Deleting…" : "Delete"}
                 </Button>
               </div>
             </li>
           ))
         ) : (
-          <p className="text-sm text-gray-500 italic">
-            No options match your search
+          <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
+            No options match your search.
           </p>
         )}
       </ul>

@@ -15,7 +15,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, router]);
 
-  if (!user) return <div>Redirecting...</div>;
+  if (!user) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-muted/30">
+        <p className="text-sm text-muted-foreground">Redirecting to sign in…</p>
+      </div>
+    );
+  }
 
   return (
     <StoreProvider>

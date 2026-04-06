@@ -11,6 +11,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SearchField } from "@/components/ui/search-field";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { useItemStore } from "@/stores/useItemStore";
 import {
@@ -99,12 +100,11 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
 
         {/* Search bar */}
         <div className="mb-0 shrink-0">
-          <input
-            type="text"
-            placeholder="Search option groups..."
+          <SearchField
+            placeholder="Search option groups…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="Search option groups"
           />
         </div>
 

@@ -21,6 +21,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { UserPlus } from "lucide-react";
 
 export default function CreateUserForm() {
   const [open, setOpen] = useState(false);
@@ -48,7 +49,10 @@ export default function CreateUserForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default">➕ Add User</Button>
+        <Button type="button" className="gap-2">
+          <UserPlus className="size-4" aria-hidden />
+          Add user
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -103,9 +107,7 @@ export default function CreateUserForm() {
             </Select>
           </div>
           <DialogFooter>
-            <Button type="submit" className="bg-green-500 text-white">
-              Register User
-            </Button>
+            <Button type="submit">Create user</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
+import { Plus } from "lucide-react";
 
 export default function CreateCategoryForm() {
   const [open, setOpen] = useState(false);
@@ -27,7 +28,7 @@ export default function CreateCategoryForm() {
 
     setLoading(true);
     try {
-      await createCategory(name.trim()); // ✅ Firestore + API handles update
+      await createCategory(name.trim());
       setName(""); // clear input
       setOpen(false);
     } catch (err) {
@@ -40,7 +41,10 @@ export default function CreateCategoryForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Create Category</Button>
+        <Button type="button" className="gap-2">
+          <Plus className="size-4" aria-hidden />
+          New category
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

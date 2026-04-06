@@ -16,6 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
+import { GripVertical } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -47,7 +48,7 @@ function SortableRow({ id, name }: { id: string; name: string }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="border p-2 rounded bg-gray-100 cursor-move"
+      className="cursor-grab rounded-lg border border-border bg-muted/50 px-3 py-2.5 text-sm font-medium active:cursor-grabbing"
     >
       {name}
     </li>
@@ -103,8 +104,15 @@ export default function SortOptionGroupsForm({ item }: { item: MenuItem }) {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" disabled={!canSort}>
-          Sort Option Groups
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          disabled={!canSort}
+          className="gap-1.5"
+        >
+          <GripVertical className="size-3.5 opacity-70" aria-hidden />
+          Sort groups
         </Button>
       </DialogTrigger>
       <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
@@ -140,8 +148,8 @@ export default function SortOptionGroupsForm({ item }: { item: MenuItem }) {
         </div>
 
         <DialogFooter>
-          <Button onClick={handleSave} className="bg-blue-500 text-white">
-            Save
+          <Button type="button" onClick={handleSave}>
+            Save order
           </Button>
         </DialogFooter>
       </DialogContent>

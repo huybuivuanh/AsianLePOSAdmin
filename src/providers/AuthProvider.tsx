@@ -36,12 +36,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Loading...</p>
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-muted/30">
+        <div
+          className="size-8 animate-spin rounded-full border-2 border-muted-foreground/20 border-t-primary"
+          aria-hidden
+        />
+        <p className="text-sm text-muted-foreground">Loading session…</p>
       </div>
     );
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading }}>

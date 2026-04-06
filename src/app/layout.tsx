@@ -9,7 +9,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="min-h-dvh bg-gray-100">
+        <div className="min-h-dvh bg-muted/40">
           <AuthProvider>{children}</AuthProvider>
         </div>
       </body>

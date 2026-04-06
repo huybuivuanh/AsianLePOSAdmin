@@ -4,6 +4,10 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase-config";
 import { useRouter } from "next/navigation";
+import { Lock, LogIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -17,7 +21,7 @@ export default function LoginPage() {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
       const user = userCredential.user;
 
@@ -39,36 +43,60 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-gray-100 px-4 py-8">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-lg sm:p-8">
-        <h1 className="text-2xl text-black font-bold mb-6 text-center">
-          Admin Login
-        </h1>
-        {error && <p className="mb-4 text-red-500">{error}</p>}
-        <form onSubmit={handleLogin} className="text-black space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300"
-            required
-          />
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-blue-600 py-2 text-white font-semibold hover:bg-blue-700 transition"
-          >
-            Login
-          </button>
-        </form>
+    <div className="flex min-h-dvh items-center justify-center bg-gradient-to-b from-muted/60 to-muted px-4 py-10">
+      <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
+            <Lock className="size-7" aria-hidden />
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            Sign in
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Admin dashboard — use your staff credentials.
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-lg sm:p-8">
+          {error ? (
+            <p
+              className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              role="alert"
+            >
+              {error}
+            </p>
+          ) : null}
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@restaurant.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full gap-2" size="lg">
+              <LogIn className="size-4" aria-hidden />
+              Continue
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );

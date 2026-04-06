@@ -16,6 +16,8 @@ import {
 import UpdateOptionForm from "@/features/menu/options/UpdateOptionForm";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { SearchField } from "@/components/ui/search-field";
 
 export default function OptionGroupsList() {
   const { optionGroups, loading, deleteOptionGroup, updateOptionGroup } =
@@ -106,7 +108,11 @@ export default function OptionGroupsList() {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <p className="text-sm text-muted-foreground">Loading option groups…</p>
+    );
+  }
 
   // Filter option groups based on search term
   const filteredGroups = optionGroups.filter((group) =>
@@ -114,19 +120,15 @@ export default function OptionGroupsList() {
   );
 
   return (
-    <div className="space-y-2">
-      {/* Search bar */}
-      <div>
-        <input
-          type="text"
-          placeholder="Search option groups..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-        />
-      </div>
+    <div className="space-y-4">
+      <SearchField
+        placeholder="Search option groups…"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        aria-label="Search option groups"
+      />
 
-      <ul className="space-y-2">
+      <ul className="space-y-3">
         {filteredGroups.length > 0 ? (
           filteredGroups.map((group) => {
             const groupOptions = options.filter((opt) =>
@@ -134,39 +136,44 @@ export default function OptionGroupsList() {
             );
 
             return (
-              <li key={group.id} className="rounded border px-3 py-2 sm:px-4">
+              <li
+                key={group.id}
+                className="rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5"
+              >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  {/* Expand/Collapse Button */}
-                  <button
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-auto min-w-0 max-w-full justify-start gap-2 px-2 py-1.5 font-semibold text-foreground hover:bg-muted"
                     onClick={() => toggleExpand(group.id!)}
-                    className="flex min-w-0 max-w-full items-center gap-2 text-left font-medium"
                   >
                     {expanded[group.id!] ? (
-                      <ChevronDown size={18} />
+                      <ChevronDown className="size-4 shrink-0 opacity-70" />
                     ) : (
-                      <ChevronRight size={18} />
+                      <ChevronRight className="size-4 shrink-0 opacity-70" />
                     )}
-                    {group.name}
-                  </button>
+                    <span className="truncate">{group.name}</span>
+                  </Button>
 
                   <div className="flex flex-wrap gap-2 shrink-0">
                     <UpdateOptionGroupForm group={group} />
-                    <button
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
                       onClick={() => handleDelete(group)}
-                      className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
                     >
                       Delete
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
-                <p className="ml-6 text-sm text-gray-600 sm:ml-8">
-                  Min: {group.minSelection} • Max: {group.maxSelection}
+                <p className="mt-2 ml-1 text-sm text-muted-foreground sm:ml-7">
+                  Min {group.minSelection} · Max {group.maxSelection}
                 </p>
 
-                {/* Expandable Options List */}
                 {expanded[group.id!] && (
-                  <div className="mt-2 ml-2 space-y-1 sm:ml-8">
+                  <div className="mt-4 ml-1 space-y-3 border-t border-border/60 pt-4 sm:ml-6">
                     {groupOptions.length > 0 ? (
                       groupOptions.map((opt) => {
                         const isDefault = group.defaultOptionId === opt.id;
@@ -174,11 +181,14 @@ export default function OptionGroupsList() {
                         return (
                           <div
                             key={opt.id}
-                            className="flex flex-wrap justify-between items-center gap-2 border px-3 py-2 rounded bg-gray-50"
+                            className="flex flex-col gap-3 rounded-lg border border-border/60 bg-muted/30 px-3 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
                           >
-                            <div className="flex items-center gap-3 min-w-0">
-                              <span className="truncate">
-                                {opt.name} – ${opt.price.toFixed(2)}
+                            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                              <span className="truncate text-sm text-foreground">
+                                {opt.name}{" "}
+                                <span className="text-muted-foreground">
+                                  · ${opt.price.toFixed(2)}
+                                </span>
                               </span>
                               <div className="flex items-center gap-2 shrink-0">
                                 <Checkbox
@@ -211,21 +221,24 @@ export default function OptionGroupsList() {
                                 </Label>
                               </div>
                             </div>
-                            <div className="flex gap-2 shrink-0">
+                            <div className="flex shrink-0 flex-wrap gap-2">
                               <UpdateOptionForm option={opt} />
-                              <button
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="border-destructive/40 text-destructive hover:bg-destructive/10"
                                 onClick={() => handleRemoveOption(group, opt)}
-                                className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
                               >
                                 Remove
-                              </button>
+                              </Button>
                             </div>
                           </div>
                         );
                       })
                     ) : (
-                      <p className="text-sm text-gray-500 italic">
-                        No options in this group
+                      <p className="text-sm text-muted-foreground">
+                        No options in this group.
                       </p>
                     )}
 
@@ -236,8 +249,8 @@ export default function OptionGroupsList() {
             );
           })
         ) : (
-          <p className="text-sm text-gray-500 italic">
-            No option groups match your search
+          <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
+            No option groups match your search.
           </p>
         )}
       </ul>

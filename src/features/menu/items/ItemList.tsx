@@ -15,6 +15,8 @@ import {
 import AddOptionForm from "@/features/menu/option-groups/AddOptionForm";
 import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SearchField } from "@/components/ui/search-field";
 
 export default function ItemsList() {
   const { items, loading, deleteItem, updateItem } = useItemStore();
@@ -33,7 +35,6 @@ export default function ItemsList() {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      // Remove item from option groups
       const updateGroupPromises = optionGroups.map((group) => {
         if (!group.itemIds?.includes(item.id!)) return Promise.resolve();
         const updatedItemIds = group.itemIds.filter((i) => i !== item.id);
@@ -97,27 +98,24 @@ export default function ItemsList() {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return <p className="text-sm text-muted-foreground">Loading items…</p>;
+  }
 
-  // Filter items based on search term
   const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
-    <div className="space-y-2">
-      {/* Search bar */}
-      <div>
-        <input
-          type="text"
-          placeholder="Search items..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-        />
-      </div>
+    <div className="space-y-4">
+      <SearchField
+        placeholder="Search items…"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        aria-label="Search items"
+      />
 
-      <ul className="space-y-2">
+      <ul className="space-y-3">
         {filteredItems.length > 0 ? (
           filteredItems.map((item) => {
             const itemOptionGroups = getOrderedOptionGroupRefs(item)
@@ -127,39 +125,46 @@ export default function ItemsList() {
               .filter((g): g is OptionGroup => g != null);
 
             return (
-              <li key={item.id} className="rounded border px-3 py-2 sm:px-4">
+              <li
+                key={item.id}
+                className="rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5"
+              >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  {/* Expand/Collapse */}
-                  <button
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-auto min-w-0 max-w-full justify-start gap-2 px-2 py-1.5 font-semibold text-foreground hover:bg-muted"
                     onClick={() => toggleExpand(item.id!)}
-                    className="flex min-w-0 max-w-full items-center gap-2 text-left font-medium"
                   >
                     {expanded[item.id!] ? (
-                      <ChevronDown size={18} />
+                      <ChevronDown className="size-4 shrink-0 opacity-70" />
                     ) : (
-                      <ChevronRight size={18} />
+                      <ChevronRight className="size-4 shrink-0 opacity-70" />
                     )}
-                    {item.name}
-                  </button>
+                    <span className="truncate">{item.name}</span>
+                  </Button>
 
                   <div className="flex flex-wrap gap-2 shrink-0">
                     <UpdateItemForm item={item} />
-                    <button
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
                       onClick={() => handleDeleteItem(item)}
-                      className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
                     >
                       Delete
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
-                <p className="ml-6 text-sm text-gray-600 sm:ml-8">
-                  ${item.price.toFixed(2)} - Kitchen Type: {item.kitchenType}
+                <p className="mt-2 ml-1 text-sm text-muted-foreground sm:ml-7">
+                  ${item.price.toFixed(2)}{" "}
+                  <span className="text-muted-foreground/50">·</span> Kitchen:{" "}
+                  {item.kitchenType}
                 </p>
 
-                {/* Expandable Option Groups */}
                 {expanded[item.id!] && (
-                  <div className="mt-2 ml-2 space-y-2 sm:ml-8">
+                  <div className="mt-4 ml-1 space-y-3 border-t border-border/60 pt-4 sm:ml-6">
                     {itemOptionGroups.length > 0 ? (
                       itemOptionGroups.map((group) => {
                         const groupOptions = options.filter((opt) =>
@@ -169,53 +174,59 @@ export default function ItemsList() {
                         return (
                           <div
                             key={group.id}
-                            className="border px-3 py-2 rounded bg-gray-50 space-y-2"
+                            className="space-y-3 rounded-lg border border-border/60 bg-muted/30 p-4"
                           >
                             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                              <span className="min-w-0 font-medium break-words">
+                              <span className="min-w-0 font-medium break-words text-foreground">
                                 {group.name}
                               </span>
-                              <div className="flex shrink-0 gap-2">
-                                <button
-                                  onClick={() =>
-                                    handleRemoveOptionGroup(item, group)
-                                  }
-                                  className="px-2 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
-                                >
-                                  Remove Group
-                                </button>
-                              </div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="shrink-0 border-destructive/40 text-destructive hover:bg-destructive/10"
+                                onClick={() =>
+                                  handleRemoveOptionGroup(item, group)
+                                }
+                              >
+                                Remove group
+                              </Button>
                             </div>
 
-                            <p className="text-sm text-gray-600">
-                              Min: {group.minSelection} • Max:{" "}
+                            <p className="text-sm text-muted-foreground">
+                              Min {group.minSelection} · Max{" "}
                               {group.maxSelection}
                             </p>
 
-                            {/* Render options */}
-                            <div className="ml-0 space-y-2 sm:ml-4">
+                            <div className="space-y-2 sm:ml-2">
                               {groupOptions.length > 0 ? (
                                 groupOptions.map((opt) => (
                                   <div
                                     key={opt.id}
-                                    className="flex flex-col gap-2 rounded border bg-gray-100 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
+                                    className="flex flex-col gap-2 rounded-lg border border-border/60 bg-background px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
                                   >
-                                    <span className="min-w-0 break-words">
-                                      {opt.name} – ${opt.price.toFixed(2)}
+                                    <span className="min-w-0 text-sm break-words">
+                                      {opt.name}{" "}
+                                      <span className="text-muted-foreground">
+                                        · ${opt.price.toFixed(2)}
+                                      </span>
                                     </span>
-                                    <button
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      className="shrink-0 border-destructive/40 text-destructive hover:bg-destructive/10"
                                       onClick={() =>
                                         handleRemoveOption(group, opt)
                                       }
-                                      className="px-2 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
                                     >
-                                      Remove Option
-                                    </button>
+                                      Remove option
+                                    </Button>
                                   </div>
                                 ))
                               ) : (
-                                <p className="text-sm text-gray-500 italic">
-                                  No options in this group
+                                <p className="text-sm text-muted-foreground">
+                                  No options in this group.
                                 </p>
                               )}
                             </div>
@@ -225,12 +236,12 @@ export default function ItemsList() {
                         );
                       })
                     ) : (
-                      <p className="text-sm text-gray-500 italic">
-                        No option groups assigned
+                      <p className="text-sm text-muted-foreground">
+                        No option groups assigned.
                       </p>
                     )}
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 pt-1">
                       <AddOptionGroupForm item={item} />
                       <SortOptionGroupsForm item={item} />
                     </div>
@@ -240,8 +251,8 @@ export default function ItemsList() {
             );
           })
         ) : (
-          <p className="text-sm text-gray-500 italic">
-            No items match your search
+          <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
+            No items match your search.
           </p>
         )}
       </ul>

@@ -24,6 +24,7 @@ import {
 import { Timestamp } from "firebase/firestore";
 import { useItemStore } from "@/stores/useItemStore";
 import { KitchenType } from "@/types/enum";
+import { Plus } from "lucide-react";
 
 export default function CreateItemForm() {
   const [open, setOpen] = useState(false);
@@ -63,7 +64,10 @@ export default function CreateItemForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Create Item</Button>
+        <Button type="button" className="gap-2">
+          <Plus className="size-4" aria-hidden />
+          New item
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

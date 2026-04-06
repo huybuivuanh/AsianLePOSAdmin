@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { useItemStore } from "@/stores/useItemStore";
 import AddItemForm from "./AddItemForm";
-import UpdateCategoriesForm from "./UpdateCategoriesForm"; // optional
+import UpdateCategoriesForm from "./UpdateCategoriesForm";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SearchField } from "@/components/ui/search-field";
 
 export default function CategoriesList() {
   const { categories, loading, deleteCategory, updateCategory } =
@@ -39,7 +41,7 @@ export default function CategoriesList() {
 
   const handleRemoveItemFromCategory = async (
     category: FoodCategory,
-    itemId: string
+    itemId: string,
   ) => {
     if (!confirm("Remove this item from category?")) return;
     try {
@@ -59,85 +61,95 @@ export default function CategoriesList() {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <p className="text-sm text-muted-foreground">Loading categories…</p>
+    );
+  }
 
-  // Filter categories based on search term
   const filteredCategories = categories.filter((cat) =>
-    cat.name.toLowerCase().includes(searchTerm.toLowerCase())
+    cat.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
-    <div className="space-y-2">
-      {/* Search bar */}
-      <div>
-        <input
-          type="text"
-          placeholder="Search categories..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-        />
-      </div>
+    <div className="space-y-4">
+      <SearchField
+        placeholder="Search categories…"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        aria-label="Search categories"
+      />
 
-      <ul className="space-y-2">
+      <ul className="space-y-3">
         {filteredCategories.length > 0 ? (
           filteredCategories.map((cat) => {
             const catItems = items.filter((item) =>
-              cat.itemIds?.includes(item.id!)
+              cat.itemIds?.includes(item.id!),
             );
 
             return (
-              <li key={cat.id} className="rounded border px-3 py-2 sm:px-4">
+              <li
+                key={cat.id}
+                className="rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5"
+              >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  {/* Expand/Collapse */}
-                  <button
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-auto min-w-0 max-w-full justify-start gap-2 px-2 py-1.5 font-semibold text-foreground hover:bg-muted"
                     onClick={() => toggleExpand(cat.id!)}
-                    className="flex min-w-0 max-w-full items-center gap-2 text-left font-medium"
                   >
                     {expanded[cat.id!] ? (
-                      <ChevronDown size={18} />
+                      <ChevronDown className="size-4 shrink-0 opacity-70" />
                     ) : (
-                      <ChevronRight size={18} />
+                      <ChevronRight className="size-4 shrink-0 opacity-70" />
                     )}
-                    {cat.name}
-                  </button>
+                    <span className="truncate">{cat.name}</span>
+                  </Button>
 
                   <div className="flex flex-wrap gap-2 shrink-0">
-                    <UpdateCategoriesForm category={cat} /> {/* optional */}
-                    <button
+                    <UpdateCategoriesForm category={cat} />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
                       onClick={() => handleDeleteCategory(cat)}
-                      className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
                     >
                       Delete
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
-                {/* Expandable items list */}
                 {expanded[cat.id!] && (
-                  <div className="mt-2 ml-2 space-y-2 sm:ml-8">
+                  <div className="mt-4 ml-1 space-y-3 border-t border-border/60 pt-4 sm:ml-6">
                     {catItems.length > 0 ? (
                       catItems.map((item) => (
                         <div
                           key={item.id}
-                          className="flex flex-col gap-2 rounded border bg-gray-50 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
+                          className="flex flex-col gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
                         >
-                          <span className="min-w-0 break-words">
-                            {item.name} – ${item.price.toFixed(2)}
+                          <span className="min-w-0 text-sm break-words text-foreground">
+                            {item.name}{" "}
+                            <span className="text-muted-foreground">
+                              · ${item.price.toFixed(2)}
+                            </span>
                           </span>
-                          <button
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="shrink-0 border-destructive/40 text-destructive hover:bg-destructive/10"
                             onClick={() =>
                               handleRemoveItemFromCategory(cat, item.id!)
                             }
-                            className="px-2 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
                           >
                             Remove
-                          </button>
+                          </Button>
                         </div>
                       ))
                     ) : (
-                      <p className="text-sm text-gray-500 italic">
-                        No items in this category
+                      <p className="text-sm text-muted-foreground">
+                        No items in this category yet.
                       </p>
                     )}
 
@@ -148,8 +160,8 @@ export default function CategoriesList() {
             );
           })
         ) : (
-          <p className="text-sm text-gray-500 italic">
-            No categories match your search
+          <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
+            No categories match your search.
           </p>
         )}
       </ul>

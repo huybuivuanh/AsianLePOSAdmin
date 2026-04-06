@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { ListOrdered } from "lucide-react";
 
 import {
   DndContext,
@@ -44,7 +45,7 @@ function SortableItem({ id, name }: { id: string; name: string }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="border p-2 rounded bg-gray-100 cursor-move"
+      className="cursor-grab rounded-lg border border-border bg-muted/50 px-3 py-2.5 text-sm font-medium active:cursor-grabbing"
     >
       {name}
     </li>
@@ -95,7 +96,10 @@ export default function SortCategories() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default">Sort Categories</Button>
+        <Button type="button" variant="secondary" className="gap-2">
+          <ListOrdered className="size-4" aria-hidden />
+          Sort categories
+        </Button>
       </DialogTrigger>
       <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
         <DialogHeader>
@@ -128,8 +132,8 @@ export default function SortCategories() {
         </div>
 
         <DialogFooter>
-          <Button onClick={handleSave} className="bg-blue-500 text-white">
-            Save
+          <Button type="button" onClick={handleSave}>
+            Save order
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Timestamp } from "firebase/firestore";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import NumberStepper from "./NumberStepper";
+import { Plus } from "lucide-react";
 
 export default function CreateOptionGroupForm() {
   const [open, setOpen] = useState(false);
@@ -60,7 +61,10 @@ export default function CreateOptionGroupForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Create Option Group</Button>
+        <Button type="button" className="gap-2">
+          <Plus className="size-4" aria-hidden />
+          New option group
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

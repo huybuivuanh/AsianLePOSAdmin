@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { useUserStore } from "@/stores/useUserStore";
 import UpdateUserForm from "./UpdateUserForm";
+import { Button } from "@/components/ui/button";
 
 export default function UserList() {
   const { users, loading, deleteUser, subscribe } = useUserStore();
 
   useEffect(() => {
-    const unsubscribe = subscribe(); // start listening to Firestore
-    return () => unsubscribe(); // cleanup on unmount
+    const unsubscribe = subscribe();
+    return () => unsubscribe();
   }, [subscribe]);
 
   const handleDelete = async (id: string) => {
@@ -19,45 +20,83 @@ export default function UserList() {
     }
   };
 
-  if (loading) return <div>Loading users...</div>;
+  if (loading) {
+    return (
+      <div className="px-4 py-10 text-center text-sm text-muted-foreground">
+        Loading users…
+      </div>
+    );
+  }
 
   return (
-    <div className="-mx-1 overflow-x-auto sm:mx-0">
-      <table className="w-full min-w-[36rem] border-collapse border border-gray-300 text-sm">
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[36rem] border-collapse text-sm">
         <thead>
-          <tr className="bg-gray-50">
-            <th className="border px-2 py-2 text-left sm:px-4">Name</th>
-            <th className="border px-2 py-2 text-left sm:px-4">Email</th>
-            <th className="border px-2 py-2 text-left sm:px-4">Role</th>
-            <th className="border px-2 py-2 text-left sm:px-4">Created</th>
-            <th className="border px-2 py-2 text-left sm:px-4">Actions</th>
+          <tr className="border-b border-border bg-muted/50">
+            <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              Name
+            </th>
+            <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              Email
+            </th>
+            <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              Role
+            </th>
+            <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              Created
+            </th>
+            <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              Actions
+            </th>
           </tr>
         </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td className="border px-2 py-2 sm:px-4">{user.name}</td>
-              <td className="max-w-[12rem] break-words border px-2 py-2 sm:max-w-none sm:px-4">
-                {user.email}
-              </td>
-              <td className="border px-2 py-2 sm:px-4">{user.role}</td>
-              <td className="whitespace-nowrap border px-2 py-2 sm:px-4">
-                {user.createdAt.toDate().toLocaleString()}
-              </td>
-              <td className="border px-2 py-2 sm:px-4">
-                <div className="flex flex-wrap gap-2">
-                  <UpdateUserForm user={user} />
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(user.id!)}
-                    className="rounded bg-red-500 px-2 py-1 text-white sm:px-3"
-                  >
-                    Delete
-                  </button>
-                </div>
+        <tbody className="divide-y divide-border">
+          {users.length === 0 ? (
+            <tr>
+              <td
+                colSpan={5}
+                className="px-4 py-12 text-center text-sm text-muted-foreground"
+              >
+                No users yet. Use &quot;Add user&quot; to create the first
+                account.
               </td>
             </tr>
-          ))}
+          ) : (
+            users.map((user) => (
+              <tr
+                key={user.id}
+                className="transition-colors hover:bg-muted/40"
+              >
+                <td className="px-3 py-3 font-medium text-foreground sm:px-4">
+                  {user.name}
+                </td>
+                <td className="max-w-[12rem] px-3 py-3 break-words text-muted-foreground sm:max-w-none sm:px-4">
+                  {user.email}
+                </td>
+                <td className="px-3 py-3 sm:px-4">
+                  <span className="inline-flex rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
+                    {user.role}
+                  </span>
+                </td>
+                <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
+                  {user.createdAt.toDate().toLocaleString()}
+                </td>
+                <td className="px-3 py-3 sm:px-4">
+                  <div className="flex flex-wrap gap-2">
+                    <UpdateUserForm user={user} />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDelete(user.id!)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

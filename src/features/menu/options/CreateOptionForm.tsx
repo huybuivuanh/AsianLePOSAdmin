@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Timestamp } from "firebase/firestore";
 import { useOptionStore } from "@/stores/useOptionStore";
+import { Plus } from "lucide-react";
 
 export default function CreateOptionForm() {
   const [open, setOpen] = useState(false);
@@ -48,7 +49,10 @@ export default function CreateOptionForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Create Option</Button>
+        <Button type="button" className="gap-2">
+          <Plus className="size-4" aria-hidden />
+          New option
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
