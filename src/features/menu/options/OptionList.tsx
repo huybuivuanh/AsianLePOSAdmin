@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useOptionStore } from "@/stores/useOptionStore";
 import UpdateOptionForm from "./UpdateOptionForm";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
+import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
 import { Button } from "@/components/ui/button";
 
 export default function OptionsList() {
@@ -22,7 +23,10 @@ export default function OptionsList() {
         if (!group) return Promise.resolve();
         const updatedOptionIds =
           group.optionIds?.filter((id) => id !== option.id) ?? [];
-        return updateOptionGroup(groupId, { optionIds: updatedOptionIds });
+        return updateOptionGroup(groupId, {
+          optionIds: updatedOptionIds,
+          ...patchClearDefaultIfOptionRemoved(group, option.id),
+        } as unknown as Partial<OptionGroup>);
       });
 
       await Promise.all(updatePromises);

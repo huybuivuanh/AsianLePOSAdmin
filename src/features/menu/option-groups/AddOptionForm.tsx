@@ -14,6 +14,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
+import { patchClearDefaultIfNotInOptionIds } from "@/lib/option-group-updates";
 
 export default function AddOptionForm({ group }: { group: OptionGroup }) {
   const { options, updateOption } = useOptionStore();
@@ -34,7 +35,10 @@ export default function AddOptionForm({ group }: { group: OptionGroup }) {
     setLoading(true);
     try {
       // 1. Update the group with the final list of optionIds
-      await updateOptionGroup(group.id!, { optionIds: selected });
+      await updateOptionGroup(group.id!, {
+        optionIds: selected,
+        ...patchClearDefaultIfNotInOptionIds(group, selected),
+      } as unknown as Partial<OptionGroup>);
 
       // 2. Sync each option so its groupIds array matches the checkboxes
       const updatePromises = options.map((option) => {

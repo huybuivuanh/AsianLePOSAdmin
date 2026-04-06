@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { deleteField } from "firebase/firestore";
+import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { useOptionStore } from "@/stores/useOptionStore";
 import UpdateOptionGroupForm from "./UpdateOptionGroupForm";
@@ -8,6 +10,8 @@ import AddOptionForm from "./AddOptionForm";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useItemStore } from "@/stores/useItemStore";
 import UpdateOptionForm from "@/features/menu/options/UpdateOptionForm";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 export default function OptionGroupsList() {
   const { optionGroups, loading, deleteOptionGroup, updateOptionGroup } =
@@ -16,6 +20,9 @@ export default function OptionGroupsList() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const { items, updateItem } = useItemStore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [savingDefaultGroupId, setSavingDefaultGroupId] = useState<
+    string | null
+  >(null);
 
   const handleDelete = async (group: OptionGroup) => {
     if (!confirm("Are you sure you want to delete this option group?")) return;
@@ -58,7 +65,10 @@ export default function OptionGroupsList() {
         option.groupIds?.filter((id) => id !== group.id) ?? [];
 
       await Promise.all([
-        updateOptionGroup(group.id!, { optionIds: updatedOptionIds }),
+        updateOptionGroup(group.id!, {
+          optionIds: updatedOptionIds,
+          ...patchClearDefaultIfOptionRemoved(group, option.id),
+        } as unknown as Partial<OptionGroup>),
         updateOption(option.id!, { groupIds: updatedGroupIds }),
       ]);
     } catch (err) {
@@ -69,6 +79,28 @@ export default function OptionGroupsList() {
 
   const toggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleDefaultOptionToggle = async (
+    group: OptionGroup,
+    optionId: string,
+    checked: boolean
+  ) => {
+    setSavingDefaultGroupId(group.id!);
+    try {
+      if (checked) {
+        await updateOptionGroup(group.id!, { defaultOptionId: optionId });
+      } else {
+        await updateOptionGroup(group.id!, {
+          defaultOptionId: deleteField(),
+        } as unknown as Partial<OptionGroup>);
+      }
+    } catch (err) {
+      console.error("Failed to update default option:", err);
+      alert("Failed to update default option");
+    } finally {
+      setSavingDefaultGroupId(null);
+    }
   };
 
   if (loading) return <p>Loading...</p>;
@@ -133,25 +165,61 @@ export default function OptionGroupsList() {
                 {expanded[group.id!] && (
                   <div className="ml-8 mt-2 space-y-1">
                     {groupOptions.length > 0 ? (
-                      groupOptions.map((opt) => (
-                        <div
-                          key={opt.id}
-                          className="flex justify-between items-center border px-3 py-1 rounded bg-gray-50"
-                        >
-                          <span>
-                            {opt.name} – ${opt.price.toFixed(2)}
-                          </span>
-                          <div className="flex gap-2">
-                            <UpdateOptionForm option={opt} />
-                            <button
-                              onClick={() => handleRemoveOption(group, opt)}
-                              className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
-                            >
-                              Remove
-                            </button>
+                      groupOptions.map((opt) => {
+                        const isDefault = group.defaultOptionId === opt.id;
+                        const saving = savingDefaultGroupId === group.id;
+                        return (
+                          <div
+                            key={opt.id}
+                            className="flex flex-wrap justify-between items-center gap-2 border px-3 py-2 rounded bg-gray-50"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <span className="truncate">
+                                {opt.name} – ${opt.price.toFixed(2)}
+                              </span>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <Checkbox
+                                  id={`default-${group.id}-${opt.id}`}
+                                  checked={isDefault}
+                                  disabled={saving}
+                                  onCheckedChange={(value) => {
+                                    const checked = value === true;
+                                    if (checked) {
+                                      if (isDefault) return;
+                                      void handleDefaultOptionToggle(
+                                        group,
+                                        opt.id!,
+                                        true
+                                      );
+                                    } else if (isDefault) {
+                                      void handleDefaultOptionToggle(
+                                        group,
+                                        opt.id!,
+                                        false
+                                      );
+                                    }
+                                  }}
+                                />
+                                <Label
+                                  htmlFor={`default-${group.id}-${opt.id}`}
+                                  className="text-sm font-normal cursor-pointer whitespace-nowrap"
+                                >
+                                  Default option
+                                </Label>
+                              </div>
+                            </div>
+                            <div className="flex gap-2 shrink-0">
+                              <UpdateOptionForm option={opt} />
+                              <button
+                                onClick={() => handleRemoveOption(group, opt)}
+                                className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                              >
+                                Remove
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      ))
+                        );
+                      })
                     ) : (
                       <p className="text-sm text-gray-500 italic">
                         No options in this group

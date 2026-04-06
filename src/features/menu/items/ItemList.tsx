@@ -8,6 +8,7 @@ import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import UpdateItemForm from "./UpdateItemForm";
 import AddOptionGroupForm from "./AddOptionGroupForm";
 import AddOptionForm from "@/features/menu/option-groups/AddOptionForm";
+import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 export default function ItemsList() {
@@ -77,7 +78,10 @@ export default function ItemsList() {
         option.groupIds?.filter((id) => id !== group.id) ?? [];
 
       await Promise.all([
-        updateOptionGroup(group.id!, { optionIds: updatedOptionIds }),
+        updateOptionGroup(group.id!, {
+          optionIds: updatedOptionIds,
+          ...patchClearDefaultIfOptionRemoved(group, option.id),
+        } as unknown as Partial<OptionGroup>),
         updateOption(option.id!, { groupIds: updatedGroupIds }),
       ]);
     } catch (err) {

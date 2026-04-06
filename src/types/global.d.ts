@@ -3,33 +3,33 @@ import type { Timestamp } from "firebase/firestore";
 export {};
 
 declare global {
-  type User = {
+  interface User {
     id?: string;
     name: string;
     email: string;
     role: string;
     createdAt: Timestamp;
-  };
+  }
 
-  type FoodCategory = {
+  interface FoodCategory {
     id?: string;
     name: string;
     itemIds?: string[];
     order: number;
     createdAt: Timestamp;
-  };
+  }
 
-  type MenuItem = {
+  interface MenuItem {
     id?: string;
     name: string;
     price: number;
     optionGroupIds?: string[];
     categoryIds?: string[];
-    kitchenType: string;
+    kitchenType: KitchenType;
     createdAt: Timestamp;
-  };
+  }
 
-  type OptionGroup = {
+  interface OptionGroup {
     id?: string;
     name: string;
     minSelection: number;
@@ -37,14 +37,15 @@ declare global {
     multipleOptionQuantity: boolean;
     optionIds?: string[];
     itemIds?: string[];
+    defaultOptionId?: string;
     createdAt: Timestamp;
-  };
+  }
 
-  type ItemOption = {
+  interface ItemOption {
     id?: string;
     name: string;
     price: number;
     groupIds?: string[];
     createdAt: Timestamp;
-  };
+  }
 }
