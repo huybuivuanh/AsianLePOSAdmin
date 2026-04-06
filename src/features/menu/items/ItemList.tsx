@@ -50,7 +50,7 @@ export default function ItemsList() {
 
   const handleRemoveOptionGroup = async (
     item: MenuItem,
-    groupToRemove: ItemOptionGroup
+    groupToRemove: ItemOptionGroup,
   ) => {
     if (!confirm("Are you sure you want to remove this option group?")) return;
 
@@ -70,7 +70,7 @@ export default function ItemsList() {
 
   const handleRemoveOption = async (
     group: ItemOptionGroup,
-    option: ItemOption
+    option: ItemOption,
   ) => {
     if (!confirm("Are you sure you want to remove this option?")) return;
     try {
@@ -93,7 +93,7 @@ export default function ItemsList() {
 
   // Filter items based on search term
   const filteredItems = items.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -113,7 +113,7 @@ export default function ItemsList() {
         {filteredItems.length > 0 ? (
           filteredItems.map((item) => {
             const itemOptionGroups = optionGroups.filter((group) =>
-              item.optionGroupIds?.includes(group.id!)
+              item.optionGroupIds?.includes(group.id!),
             );
 
             return (
@@ -153,7 +153,7 @@ export default function ItemsList() {
                     {itemOptionGroups.length > 0 ? (
                       itemOptionGroups.map((group) => {
                         const groupOptions = options.filter((opt) =>
-                          group.optionIds?.includes(opt.id!)
+                          group.optionIds?.includes(opt.id!),
                         );
 
                         return (

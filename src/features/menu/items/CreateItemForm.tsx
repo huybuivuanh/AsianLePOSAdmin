@@ -21,14 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useItemStore } from "@/stores/useItemStore"; // you'll create this similar to useCategoriesStore
-import { KitchenType } from "@/types/enum"; // your enum
+import { useItemStore } from "@/stores/useItemStore";
+import { KitchenType } from "@/types/enum";
 
 export default function CreateItemForm() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [price, setPrice] = useState<number | "">(0);
-  const [kitchenType, setKitchenType] = useState<KitchenType>(KitchenType.A);
+  const [kitchenType, setKitchenType] = useState<KitchenType>(
+    KitchenType.DeepFry
+  );
   const [loading, setLoading] = useState(false);
 
   const { createItem } = useItemStore();
@@ -48,7 +50,7 @@ export default function CreateItemForm() {
       });
       setName("");
       setPrice(0);
-      setKitchenType(KitchenType.A);
+      setKitchenType(KitchenType.DeepFry);
       setOpen(false);
     } catch (err) {
       console.error("Failed to create item:", err);
@@ -112,10 +114,11 @@ export default function CreateItemForm() {
                 <SelectValue placeholder="Select kitchen type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={KitchenType.A}>A</SelectItem>
-                <SelectItem value={KitchenType.B}>B</SelectItem>
-                <SelectItem value={KitchenType.C}>C</SelectItem>
-                <SelectItem value={KitchenType.Z}>Z</SelectItem>
+                {(Object.values(KitchenType) as KitchenType[]).map((kt) => (
+                  <SelectItem key={kt} value={kt}>
+                    {kt}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

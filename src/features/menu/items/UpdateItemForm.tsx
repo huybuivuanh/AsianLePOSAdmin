@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,10 +27,19 @@ export default function UpdateItemDialog({ item }: { item: MenuItem }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(item.name);
   const [price, setPrice] = useState(item.price);
-  const [kitchenType, setKitchenType] = useState(item.kitchenType);
+  const [kitchenType, setKitchenType] = useState<KitchenType>(
+    () => item.kitchenType as KitchenType,
+  );
   const [loading, setLoading] = useState(false);
 
   const { updateItem } = useItemStore();
+
+  useEffect(() => {
+    if (!open) return;
+    setName(item.name);
+    setPrice(item.price);
+    setKitchenType(item.kitchenType as KitchenType);
+  }, [open, item]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,10 +111,11 @@ export default function UpdateItemDialog({ item }: { item: MenuItem }) {
                 <SelectValue placeholder="Select kitchen type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={KitchenType.A}>A</SelectItem>
-                <SelectItem value={KitchenType.B}>B</SelectItem>
-                <SelectItem value={KitchenType.C}>C</SelectItem>
-                <SelectItem value={KitchenType.Z}>Z</SelectItem>
+                {(Object.values(KitchenType) as KitchenType[]).map((kt) => (
+                  <SelectItem key={kt} value={kt}>
+                    {kt}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
