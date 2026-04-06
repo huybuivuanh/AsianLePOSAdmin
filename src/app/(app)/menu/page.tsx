@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import CategoriesTab from "./categories/CategoriesTab";
-import ItemsTab from "./menuItem/ItemsTab";
-import OptionGroupsTab from "./optionGroup/OptionGroupsTab";
-import OptionsTab from "./option/OptionsTab";
+import CategoriesTab from "@/features/menu/categories/CategoriesTab";
+import ItemsTab from "@/features/menu/items/ItemsTab";
+import OptionGroupsTab from "@/features/menu/option-groups/OptionGroupsTab";
+import OptionsTab from "@/features/menu/options/OptionsTab";
 
 export default function Menu() {
   const [activeTab, setActiveTab] = useState<
@@ -28,7 +28,6 @@ export default function Menu() {
 
   return (
     <div className="flex h-full">
-      {/* Sidebar */}
       <div className="w-64 bg-gray-100 p-4 border-r">
         <ul className="space-y-2">
           <li>
@@ -74,7 +73,6 @@ export default function Menu() {
         </ul>
       </div>
 
-      {/* Content */}
       <div className="flex-1 p-6">{renderTab()}</div>
     </div>
   );

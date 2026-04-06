@@ -1,12 +1,14 @@
 // src/app/api/createUser/route.ts
 import { NextResponse } from "next/server";
-import { adminAuth, adminDb } from "../../../lib/firebaseAdmin";
+import { getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 
 export async function POST(req: Request) {
   try {
     const { email, password, name, role } = await req.json();
 
-    // 1️⃣ Create Auth account
+    const adminAuth = getAdminAuth();
+    const adminDb = getAdminDb();
+
     const userRecord = await adminAuth.createUser({
       email,
       password,

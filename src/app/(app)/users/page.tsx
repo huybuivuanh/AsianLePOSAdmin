@@ -1,8 +1,7 @@
 "use client";
 
-import CreateUserForm from "./CreateUserForm";
-
-import UserList from "./UserList";
+import CreateUserForm from "@/features/users/CreateUserForm";
+import UserList from "@/features/users/UserList";
 
 export default function Users() {
   return (

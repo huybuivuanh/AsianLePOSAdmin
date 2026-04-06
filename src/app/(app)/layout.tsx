@@ -1,9 +1,9 @@
 "use client";
 import { useEffect } from "react";
-import { useAuth } from "@/app/providers/AuthProvider";
+import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
-import Navbar from "../components/Navbar";
-import { StoreProvider } from "../providers/StoreProvider";
+import Navbar from "@/components/layout/Navbar";
+import { StoreProvider } from "@/providers/StoreProvider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -11,11 +11,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!user) {
-      router.push("/"); // redirect to login if not authenticated
+      router.push("/");
     }
   }, [user, router]);
 
-  if (!user) return <div>Redirecting...</div>; // loading state
+  if (!user) return <div>Redirecting...</div>;
 
   return (
     <>

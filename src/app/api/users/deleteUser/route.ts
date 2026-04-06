@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
-import { adminAuth, adminDb } from "../../../lib/firebaseAdmin";
+import { getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 
 export async function POST(req: Request) {
   try {
     const { uid } = await req.json();
     if (!uid) throw new Error("UID is required");
 
-    // 1️⃣ Delete user from Firebase Auth
+    const adminAuth = getAdminAuth();
+    const adminDb = getAdminDb();
+
     await adminAuth.deleteUser(uid);
 
-    // 2️⃣ Delete Firestore document
     await adminDb.collection("users").doc(uid).delete();
 
     return NextResponse.json({ success: true });
