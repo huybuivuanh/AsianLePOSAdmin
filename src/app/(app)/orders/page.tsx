@@ -2,8 +2,8 @@
 
 export default function OrderHistory() {
   return (
-    <div className="text-black p-8">
-      <h1 className="text-3xl font-bold">Order History</h1>
+    <div className="text-black">
+      <h1 className="text-2xl font-bold sm:text-3xl">Order History</h1>
     </div>
   );
 }

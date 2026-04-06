@@ -18,11 +18,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (!user) return <div>Redirecting...</div>;
 
   return (
-    <>
-      <StoreProvider>
+    <StoreProvider>
+      <div className="flex min-h-dvh flex-col">
         <Navbar />
-        <main>{children}</main>
-      </StoreProvider>
-    </>
+        <main className="min-h-0 w-full flex-1 px-3 py-4 sm:px-4 md:px-6 md:py-6">
+          {children}
+        </main>
+      </div>
+    </StoreProvider>
   );
 }

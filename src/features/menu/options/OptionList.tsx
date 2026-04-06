@@ -67,14 +67,14 @@ export default function OptionsList() {
           filteredOptions.map((opt) => (
             <li
               key={opt.id}
-              className="flex justify-between items-center border px-4 py-2 rounded"
+              className="flex flex-col gap-3 rounded border px-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:px-4"
             >
-              <div>
-                <p className="font-medium">{opt.name}</p>
+              <div className="min-w-0">
+                <p className="font-medium break-words">{opt.name}</p>
                 <p className="text-sm text-gray-500">${opt.price.toFixed(2)}</p>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 shrink-0">
                 <UpdateOptionForm option={opt} />
                 <Button
                   onClick={() => handleDelete(opt)}

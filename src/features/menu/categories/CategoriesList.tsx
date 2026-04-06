@@ -87,12 +87,12 @@ export default function CategoriesList() {
             );
 
             return (
-              <li key={cat.id} className="border px-4 py-2 rounded">
-                <div className="flex justify-between items-center">
+              <li key={cat.id} className="rounded border px-3 py-2 sm:px-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   {/* Expand/Collapse */}
                   <button
                     onClick={() => toggleExpand(cat.id!)}
-                    className="flex items-center gap-2 font-medium"
+                    className="flex min-w-0 max-w-full items-center gap-2 text-left font-medium"
                   >
                     {expanded[cat.id!] ? (
                       <ChevronDown size={18} />
@@ -102,7 +102,7 @@ export default function CategoriesList() {
                     {cat.name}
                   </button>
 
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2 shrink-0">
                     <UpdateCategoriesForm category={cat} /> {/* optional */}
                     <button
                       onClick={() => handleDeleteCategory(cat)}
@@ -115,14 +115,14 @@ export default function CategoriesList() {
 
                 {/* Expandable items list */}
                 {expanded[cat.id!] && (
-                  <div className="ml-8 mt-2 space-y-2">
+                  <div className="mt-2 ml-2 space-y-2 sm:ml-8">
                     {catItems.length > 0 ? (
                       catItems.map((item) => (
                         <div
                           key={item.id}
-                          className="flex justify-between items-center border px-3 py-1 rounded bg-gray-50"
+                          className="flex flex-col gap-2 rounded border bg-gray-50 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
                         >
-                          <span>
+                          <span className="min-w-0 break-words">
                             {item.name} – ${item.price.toFixed(2)}
                           </span>
                           <button

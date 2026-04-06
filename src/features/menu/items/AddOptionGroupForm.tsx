@@ -92,13 +92,13 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="w-[80vw] !max-w-[90vw] h-[80vh] max-h-[90vh] mx-auto">
+      <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
         <DialogHeader>
           <DialogTitle>Add Option Groups to {item.name}</DialogTitle>
         </DialogHeader>
 
         {/* Search bar */}
-        <div className="mb-2">
+        <div className="mb-0 shrink-0">
           <input
             type="text"
             placeholder="Search option groups..."
@@ -109,7 +109,7 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
         </div>
 
         {/* Scrollable list */}
-        <div className="space-y-2 overflow-y-auto h-[calc(80vh-180px)]">
+        <div className="max-h-[min(52dvh,24rem)] space-y-2 overflow-y-auto sm:max-h-[calc(80vh-180px)]">
           {filteredGroups.length > 0 ? (
             filteredGroups.map((group) => (
               <label

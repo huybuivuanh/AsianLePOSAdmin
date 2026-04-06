@@ -134,12 +134,12 @@ export default function OptionGroupsList() {
             );
 
             return (
-              <li key={group.id} className="border px-4 py-2 rounded">
-                <div className="flex justify-between items-center">
+              <li key={group.id} className="rounded border px-3 py-2 sm:px-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   {/* Expand/Collapse Button */}
                   <button
                     onClick={() => toggleExpand(group.id!)}
-                    className="flex items-center gap-2 font-medium"
+                    className="flex min-w-0 max-w-full items-center gap-2 text-left font-medium"
                   >
                     {expanded[group.id!] ? (
                       <ChevronDown size={18} />
@@ -149,7 +149,7 @@ export default function OptionGroupsList() {
                     {group.name}
                   </button>
 
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2 shrink-0">
                     <UpdateOptionGroupForm group={group} />
                     <button
                       onClick={() => handleDelete(group)}
@@ -160,13 +160,13 @@ export default function OptionGroupsList() {
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-600 ml-6">
+                <p className="ml-6 text-sm text-gray-600 sm:ml-8">
                   Min: {group.minSelection} • Max: {group.maxSelection}
                 </p>
 
                 {/* Expandable Options List */}
                 {expanded[group.id!] && (
-                  <div className="ml-8 mt-2 space-y-1">
+                  <div className="mt-2 ml-2 space-y-1 sm:ml-8">
                     {groupOptions.length > 0 ? (
                       groupOptions.map((opt) => {
                         const isDefault = group.defaultOptionId === opt.id;

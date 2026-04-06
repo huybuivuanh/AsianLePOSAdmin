@@ -97,7 +97,7 @@ export default function SortCategories() {
       <DialogTrigger asChild>
         <Button variant="default">Sort Categories</Button>
       </DialogTrigger>
-      <DialogContent className="w-[80vw] !max-w-[90vw] h-[80vh] max-h-[90vh] mx-auto items-start">
+      <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
         <DialogHeader>
           <DialogTitle>Sort Categories</DialogTitle>
           <DialogDescription>
@@ -106,7 +106,7 @@ export default function SortCategories() {
         </DialogHeader>
 
         {/* Scrollable container */}
-        <div className="w-full overflow-y-auto h-[calc(80vh-220px)]">
+        <div className="max-h-[min(58dvh,28rem)] w-full overflow-y-auto sm:max-h-[calc(80vh-220px)]">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}

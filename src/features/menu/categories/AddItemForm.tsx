@@ -75,13 +75,13 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="w-[80vw] !max-w-[90vw] h-[80vh] max-h-[90vh] mx-auto">
+      <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
         <DialogHeader>
           <DialogTitle>Add Items to {category.name}</DialogTitle>
         </DialogHeader>
 
         {/* Search bar */}
-        <div className="mb-2">
+        <div className="mb-0 shrink-0">
           <input
             type="text"
             placeholder="Search items..."
@@ -92,7 +92,7 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
         </div>
 
         {/* Scrollable items list */}
-        <div className="space-y-2 overflow-y-auto h-[calc(80vh-220px)]">
+        <div className="max-h-[min(52dvh,24rem)] space-y-2 overflow-y-auto sm:max-h-[calc(80vh-220px)]">
           {filteredItems.length > 0 ? (
             filteredItems.map((item) => (
               <label

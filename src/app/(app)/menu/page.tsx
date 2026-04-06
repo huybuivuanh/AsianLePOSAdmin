@@ -6,6 +6,13 @@ import ItemsTab from "@/features/menu/items/ItemsTab";
 import OptionGroupsTab from "@/features/menu/option-groups/OptionGroupsTab";
 import OptionsTab from "@/features/menu/options/OptionsTab";
 
+const TABS = [
+  { id: "categories" as const, label: "Categories" },
+  { id: "items" as const, label: "Items" },
+  { id: "optionGroups" as const, label: "Option Groups" },
+  { id: "options" as const, label: "Options" },
+];
+
 export default function Menu() {
   const [activeTab, setActiveTab] = useState<
     "categories" | "items" | "optionGroups" | "options"
@@ -27,53 +34,30 @@ export default function Menu() {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="w-64 bg-gray-100 p-4 border-r">
-        <ul className="space-y-2">
-          <li>
+    <div className="flex min-h-0 flex-col gap-0 md:min-h-[calc(100dvh-5.5rem)] md:flex-row">
+      <aside className="shrink-0 border-b border-gray-200 bg-gray-100 md:w-64 md:border-r md:border-b-0">
+        <nav
+          className="flex flex-row gap-1 overflow-x-auto p-2 [-ms-overflow-style:none] [scrollbar-width:none] md:flex-col md:overflow-visible md:p-4 [&::-webkit-scrollbar]:hidden"
+          aria-label="Menu sections"
+        >
+          {TABS.map((tab) => (
             <button
-              className={`w-full text-left p-2 rounded hover:bg-gray-200 ${
-                activeTab === "categories" ? "bg-gray-200 font-bold" : ""
+              key={tab.id}
+              type="button"
+              className={`shrink-0 rounded-md px-3 py-2.5 text-left text-sm whitespace-nowrap transition hover:bg-gray-200 md:w-full md:px-3 md:py-2 md:text-base ${
+                activeTab === tab.id ? "bg-gray-200 font-bold" : ""
               }`}
-              onClick={() => setActiveTab("categories")}
+              onClick={() => setActiveTab(tab.id)}
             >
-              Categories
+              {tab.label}
             </button>
-          </li>
-          <li>
-            <button
-              className={`w-full text-left p-2 rounded hover:bg-gray-200 ${
-                activeTab === "items" ? "bg-gray-200 font-bold" : ""
-              }`}
-              onClick={() => setActiveTab("items")}
-            >
-              Items
-            </button>
-          </li>
-          <li>
-            <button
-              className={`w-full text-left p-2 rounded hover:bg-gray-200 ${
-                activeTab === "optionGroups" ? "bg-gray-200 font-bold" : ""
-              }`}
-              onClick={() => setActiveTab("optionGroups")}
-            >
-              Option Groups
-            </button>
-          </li>
-          <li>
-            <button
-              className={`w-full text-left p-2 rounded hover:bg-gray-200 ${
-                activeTab === "options" ? "bg-gray-200 font-bold" : ""
-              }`}
-              onClick={() => setActiveTab("options")}
-            >
-              Options
-            </button>
-          </li>
-        </ul>
-      </div>
+          ))}
+        </nav>
+      </aside>
 
-      <div className="flex-1 p-6">{renderTab()}</div>
+      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
+        {renderTab()}
+      </div>
     </div>
   );
 }

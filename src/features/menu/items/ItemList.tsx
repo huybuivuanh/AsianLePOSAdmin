@@ -127,12 +127,12 @@ export default function ItemsList() {
               .filter((g): g is OptionGroup => g != null);
 
             return (
-              <li key={item.id} className="border px-4 py-2 rounded">
-                <div className="flex justify-between items-center">
+              <li key={item.id} className="rounded border px-3 py-2 sm:px-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   {/* Expand/Collapse */}
                   <button
                     onClick={() => toggleExpand(item.id!)}
-                    className="flex items-center gap-2 font-medium"
+                    className="flex min-w-0 max-w-full items-center gap-2 text-left font-medium"
                   >
                     {expanded[item.id!] ? (
                       <ChevronDown size={18} />
@@ -142,7 +142,7 @@ export default function ItemsList() {
                     {item.name}
                   </button>
 
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2 shrink-0">
                     <UpdateItemForm item={item} />
                     <button
                       onClick={() => handleDeleteItem(item)}
@@ -153,13 +153,13 @@ export default function ItemsList() {
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-600 ml-6">
+                <p className="ml-6 text-sm text-gray-600 sm:ml-8">
                   ${item.price.toFixed(2)} - Kitchen Type: {item.kitchenType}
                 </p>
 
                 {/* Expandable Option Groups */}
                 {expanded[item.id!] && (
-                  <div className="ml-8 mt-2 space-y-2">
+                  <div className="mt-2 ml-2 space-y-2 sm:ml-8">
                     {itemOptionGroups.length > 0 ? (
                       itemOptionGroups.map((group) => {
                         const groupOptions = options.filter((opt) =>
@@ -171,9 +171,11 @@ export default function ItemsList() {
                             key={group.id}
                             className="border px-3 py-2 rounded bg-gray-50 space-y-2"
                           >
-                            <div className="flex justify-between items-center">
-                              <span className="font-medium">{group.name}</span>
-                              <div className="flex gap-2">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                              <span className="min-w-0 font-medium break-words">
+                                {group.name}
+                              </span>
+                              <div className="flex shrink-0 gap-2">
                                 <button
                                   onClick={() =>
                                     handleRemoveOptionGroup(item, group)
@@ -191,14 +193,14 @@ export default function ItemsList() {
                             </p>
 
                             {/* Render options */}
-                            <div className="ml-4 space-y-2">
+                            <div className="ml-0 space-y-2 sm:ml-4">
                               {groupOptions.length > 0 ? (
                                 groupOptions.map((opt) => (
                                   <div
                                     key={opt.id}
-                                    className="flex justify-between items-center border px-3 py-1 rounded bg-gray-100"
+                                    className="flex flex-col gap-2 rounded border bg-gray-100 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
                                   >
-                                    <span>
+                                    <span className="min-w-0 break-words">
                                       {opt.name} – ${opt.price.toFixed(2)}
                                     </span>
                                     <button
