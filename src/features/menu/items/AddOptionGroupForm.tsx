@@ -13,13 +13,17 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { useItemStore } from "@/stores/useItemStore";
+import {
+  getOrderedOptionGroupRefs,
+  mergeOptionGroupSelection,
+} from "@/lib/menu-item-option-groups";
 
 export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
   const { optionGroups, updateOptionGroup } = useOptionGroupStore();
   const { updateItem } = useItemStore();
 
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<string[]>(item.optionGroupIds ?? []);
+  const [selected, setSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -33,7 +37,8 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
     setLoading(true);
     try {
       // 1️⃣ Update the item with the final selected optionGroup IDs
-      await updateItem(item.id!, { optionGroupIds: selected });
+      const optionGroupIds = mergeOptionGroupSelection(item, selected);
+      await updateItem(item.id!, { optionGroupIds });
 
       // 2️⃣ Sync all option groups to match the selection
       const updatePromises = optionGroups.map((group) => {
@@ -70,7 +75,17 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) {
+          setSelected(
+            getOrderedOptionGroupRefs(item).map((r) => r.optionGroupId),
+          );
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           + Add Option Groups

@@ -7,6 +7,11 @@ import { useOptionStore } from "@/stores/useOptionStore";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import UpdateItemForm from "./UpdateItemForm";
 import AddOptionGroupForm from "./AddOptionGroupForm";
+import SortOptionGroupsForm from "./SortOptionGroupsForm";
+import {
+  getOrderedOptionGroupRefs,
+  removeOptionGroupRef,
+} from "@/lib/menu-item-option-groups";
 import AddOptionForm from "@/features/menu/option-groups/AddOptionForm";
 import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
 import { ChevronDown, ChevronRight } from "lucide-react";
@@ -56,8 +61,10 @@ export default function ItemsList() {
     if (!confirm("Are you sure you want to remove this option group?")) return;
 
     try {
-      const updatedOptionGroupIds =
-        item.optionGroupIds?.filter((gid) => gid !== groupToRemove.id) ?? [];
+      const updatedOptionGroupIds = removeOptionGroupRef(
+        item,
+        groupToRemove.id!,
+      );
       await updateItem(item.id!, { optionGroupIds: updatedOptionGroupIds });
 
       const updatedItemIds =
@@ -113,9 +120,11 @@ export default function ItemsList() {
       <ul className="space-y-2">
         {filteredItems.length > 0 ? (
           filteredItems.map((item) => {
-            const itemOptionGroups = optionGroups.filter((group) =>
-              item.optionGroupIds?.includes(group.id!),
-            );
+            const itemOptionGroups = getOrderedOptionGroupRefs(item)
+              .map((ref) =>
+                optionGroups.find((g) => g.id === ref.optionGroupId),
+              )
+              .filter((g): g is OptionGroup => g != null);
 
             return (
               <li key={item.id} className="border px-4 py-2 rounded">
@@ -219,8 +228,10 @@ export default function ItemsList() {
                       </p>
                     )}
 
-                    {/* Add Option Group */}
-                    <AddOptionGroupForm item={item} />
+                    <div className="flex flex-wrap gap-2">
+                      <AddOptionGroupForm item={item} />
+                      <SortOptionGroupsForm item={item} />
+                    </div>
                   </div>
                 )}
               </li>

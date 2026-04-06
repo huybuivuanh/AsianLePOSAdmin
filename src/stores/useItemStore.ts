@@ -14,6 +14,7 @@ import {
 import { clientDb } from "@/lib/firebase-config";
 import { sortByAlphabet } from "@/lib/sort";
 import { asTimestamp } from "@/lib/firestore-timestamp";
+import { normalizeMenuItemOptionGroupIds } from "@/lib/menu-item-option-groups";
 
 type ItemState = {
   items: MenuItem[];
@@ -37,6 +38,9 @@ export const useItemStore = create<ItemState>((set) => ({
         return {
           id: doc.id,
           ...docData,
+          optionGroupIds: normalizeMenuItemOptionGroupIds(
+            docData.optionGroupIds,
+          ),
           createdAt: asTimestamp(docData.createdAt),
         } as MenuItem;
       });

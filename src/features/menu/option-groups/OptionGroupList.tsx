@@ -9,6 +9,10 @@ import UpdateOptionGroupForm from "./UpdateOptionGroupForm";
 import AddOptionForm from "./AddOptionForm";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useItemStore } from "@/stores/useItemStore";
+import {
+  itemReferencesOptionGroup,
+  removeOptionGroupRef,
+} from "@/lib/menu-item-option-groups";
 import UpdateOptionForm from "@/features/menu/options/UpdateOptionForm";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -30,10 +34,9 @@ export default function OptionGroupsList() {
       const updatePromises = [
         // Update items
         ...(items ?? [])
-          .filter((item) => item.optionGroupIds?.includes(group.id!))
+          .filter((item) => itemReferencesOptionGroup(item, group.id!))
           .map((item) => {
-            const updatedGroupIds =
-              item.optionGroupIds?.filter((gid) => gid !== group.id) ?? [];
+            const updatedGroupIds = removeOptionGroupRef(item, group.id!);
             return updateItem(item.id!, { optionGroupIds: updatedGroupIds });
           }),
         // Update options
