@@ -53,4 +53,12 @@ declare global {
     groupIds?: string[];
     createdAt: Timestamp;
   }
+
+  interface Table {
+    id?: string;
+    tableNumber: string;
+    status: TableStatus;
+    guests: number;
+    currentOrderId: string | null;
+  }
 }
