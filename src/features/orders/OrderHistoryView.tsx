@@ -284,8 +284,8 @@ export default function OrderHistoryView() {
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader
-        title="Order history"
-        description="Load take-out or dine-in orders for a calendar day. Orders are matched by createdAt falling within that day in your local timezone (same as your POS timestamps)."
+        title="Order History"
+        description="See order history within 30 days."
       />
 
       <div className="mb-6 rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
