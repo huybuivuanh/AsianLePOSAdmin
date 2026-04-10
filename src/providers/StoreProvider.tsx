@@ -8,6 +8,7 @@ import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { useItemStore } from "@/stores/useItemStore";
 import { useUserStore } from "@/stores/useUserStore";
 import { useTableStore } from "@/stores/useTableStore";
+import { useCustomerStore } from "@/stores/useCustomerStore";
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -17,6 +18,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const { subscribe: subscribeOptions } = useOptionStore();
   const { subscribe: subscribeUsers } = useUserStore();
   const { subscribe: subscribeTables } = useTableStore();
+  const { subscribe: subscribeCustomers } = useCustomerStore();
 
   useEffect(() => {
     const unsubCategories = subscribeCategories();
@@ -25,6 +27,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const unsubOptions = subscribeOptions();
     const unsubUsers = subscribeUsers();
     const unsubTables = subscribeTables();
+    const unsubCustomers = subscribeCustomers();
 
     return () => {
       unsubCategories();
@@ -33,6 +36,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       unsubOptions();
       unsubUsers();
       unsubTables();
+      unsubCustomers();
     };
   }, [
     loading,
@@ -43,6 +47,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     subscribeOptions,
     subscribeUsers,
     subscribeTables,
+    subscribeCustomers,
   ]);
 
   return <>{children}</>;

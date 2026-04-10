@@ -26,6 +26,8 @@ export default function Navbar() {
     { href: "/menu-change", label: "Menu Change" },
     { href: "/users", label: "Users" },
     { href: "/orders", label: "Orders" },
+    { href: "/customers", label: "Customers" },
+    { href: "/credits", label: "Credits" },
   ];
 
   return (
