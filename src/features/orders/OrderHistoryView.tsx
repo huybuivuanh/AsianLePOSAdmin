@@ -123,11 +123,13 @@ function OrderCard({
             <div className="min-w-0 space-y-0.5">
               {takeOut ? (
                 <>
-                  <p>
-                    <span className="font-medium">Name:</span>{" "}
-                    {order.customerName ?? "—"}
-                  </p>
-                  {order.phoneNumber != null && order.phoneNumber !== "" ? (
+                  {order.customerName ? (
+                    <p>
+                      <span className="font-medium">Name:</span>{" "}
+                      {order.customerName}
+                    </p>
+                  ) : null}
+                  {order.phoneNumber ? (
                     <p>
                       <span className="font-medium">Phone #:</span>{" "}
                       {order.phoneNumber}
