@@ -1,15 +1,21 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/PageHeader";
+import { CreateCreditForm, CreditList } from "@/features/credits";
 
 export default function CreditsPage() {
   return (
     <div className="mx-auto max-w-6xl">
       <PageHeader
         title="Credits"
-        description="Credits management will be added here."
-      />
-      <p className="text-sm text-muted-foreground">Placeholder — implement this page when ready.</p>
+        description="Manage customer credits synced from Firestore in real time."
+      >
+        <CreateCreditForm />
+      </PageHeader>
+
+      <div className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm">
+        <CreditList />
+      </div>
     </div>
   );
 }

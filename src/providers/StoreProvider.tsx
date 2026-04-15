@@ -10,6 +10,7 @@ import { useUserStore } from "@/stores/useUserStore";
 import { useTableStore } from "@/stores/useTableStore";
 import { useCustomerStore } from "@/stores/useCustomerStore";
 import { useMenuChangeStore } from "@/stores/useMenuChangeStore";
+import { useCreditStore } from "@/stores/useCreditStore";
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -21,6 +22,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const { subscribe: subscribeTables } = useTableStore();
   const { subscribe: subscribeCustomers } = useCustomerStore();
   const { subscribe: subscribeMenuChanges } = useMenuChangeStore();
+  const { subscribe: subscribeCredits } = useCreditStore();
 
   useEffect(() => {
     const unsubCategories = subscribeCategories();
@@ -31,6 +33,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const unsubTables = subscribeTables();
     const unsubCustomers = subscribeCustomers();
     const unsubMenuChanges = subscribeMenuChanges();
+    const unsubCredits = subscribeCredits();
 
     return () => {
       unsubCategories();
@@ -41,6 +44,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       unsubTables();
       unsubCustomers();
       unsubMenuChanges();
+      unsubCredits();
     };
   }, [
     loading,
@@ -53,6 +57,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     subscribeTables,
     subscribeCustomers,
     subscribeMenuChanges,
+    subscribeCredits,
   ]);
 
   return <>{children}</>;

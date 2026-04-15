@@ -1,0 +1,130 @@
+"use client";
+
+import { useState } from "react";
+import { useCreditStore } from "@/stores/useCreditStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+export default function UpdateCreditForm({ credit }: { credit: Credit }) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState(credit.name ?? "");
+  const [phoneNumber, setPhoneNumber] = useState(credit.phoneNumber ?? "");
+  const [description, setDescription] = useState(credit.description ?? "");
+  const [amountText, setAmountText] = useState(
+    typeof credit.amount === "number" && Number.isFinite(credit.amount)
+      ? String(credit.amount)
+      : "",
+  );
+  const { updateCredit } = useCreditStore();
+
+  const parsedAmount = amountText.trim() === "" ? 0 : Number(amountText);
+  const hasNameOrPhone =
+    name.trim().length > 0 || phoneNumber.trim().length > 0;
+  const canSubmit =
+    hasNameOrPhone && Number.isFinite(parsedAmount);
+
+  const handlePhoneNumberChange = (value: string) => {
+    setPhoneNumber(value.replace(/\D/g, ""));
+  };
+
+  const handleAmountChange = (value: string) => {
+    if (value.trim() === "") {
+      setAmountText("");
+      return;
+    }
+    setAmountText(value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canSubmit) return;
+    try {
+      await updateCredit(credit.id!, {
+        name: name.trim(),
+        phoneNumber: phoneNumber.trim(),
+        description: description.trim() ? description.trim() : undefined,
+        amount: parsedAmount,
+      });
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update credit");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          Edit
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>Edit Credit</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Customer name"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phoneNumber">Phone number</Label>
+            <Input
+              id="phoneNumber"
+              value={phoneNumber}
+              onChange={(e) => handlePhoneNumberChange(e.target.value)}
+              placeholder="0123456789"
+              inputMode="numeric"
+              pattern="[0-9]*"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Input
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Reason / notes"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="amount">Amount</Label>
+            <Input
+              id="amount"
+              type="number"
+              inputMode="decimal"
+              value={amountText}
+              onChange={(e) => handleAmountChange(e.target.value)}
+              step="0.01"
+              placeholder="0"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              type="submit"
+              className="bg-blue-500 text-white"
+              disabled={!canSubmit}
+            >
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
