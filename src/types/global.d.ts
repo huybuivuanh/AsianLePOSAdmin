@@ -152,4 +152,9 @@ declare global {
     phone: string;
     createdAt: Timestamp;
   }
+
+  interface MenuChange extends ItemChange {
+    id?: string;
+    createdAt: Timestamp;
+  }
 }

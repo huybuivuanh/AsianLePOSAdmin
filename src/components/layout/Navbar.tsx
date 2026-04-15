@@ -23,7 +23,7 @@ export default function Navbar() {
   const links = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/menu", label: "Menu" },
-    { href: "/menu-change", label: "Menu Change" },
+    { href: "/menu-changes", label: "Menu Changes" },
     { href: "/users", label: "Users" },
     { href: "/orders", label: "Orders" },
     { href: "/customers", label: "Customers" },
@@ -73,7 +73,11 @@ export default function Navbar() {
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             onClick={() => setMobileOpen((o) => !o)}
           >
-            {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+            {mobileOpen ? (
+              <X className="size-5" />
+            ) : (
+              <Menu className="size-5" />
+            )}
           </Button>
           <Button
             type="button"
