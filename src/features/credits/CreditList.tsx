@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useCreditStore } from "@/stores/useCreditStore";
 import { Button } from "@/components/ui/button";
 import UpdateCreditForm from "@/features/credits/UpdateCreditForm";
-import { CheckCircle2, RotateCcw } from "lucide-react";
+import { ArrowDown, ArrowUp, CheckCircle2, RotateCcw } from "lucide-react";
 import { SearchField } from "@/components/ui/search-field";
 
 function matchesSearch(credit: Credit, q: string): boolean {
@@ -32,11 +32,31 @@ export default function CreditList() {
   const { credits, loading, error, deleteCredit, updateCredit } =
     useCreditStore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"created" | "name">("created");
+  const [createdSort, setCreatedSort] = useState<"desc" | "asc">("desc");
+  const [nameSort, setNameSort] = useState<"asc" | "desc">("asc");
 
   const filtered = useMemo(
     () => credits.filter((c) => matchesSearch(c, searchTerm)),
     [credits, searchTerm],
   );
+
+  const visible = useMemo(() => {
+    const rows = [...filtered];
+    rows.sort((a, b) => {
+      if (sortBy === "name") {
+        const av = (a.name ?? "").toLowerCase();
+        const bv = (b.name ?? "").toLowerCase();
+        const cmp = av.localeCompare(bv);
+        return nameSort === "asc" ? cmp : -cmp;
+      }
+
+      const av = a.createdAt?.toMillis?.() ?? 0;
+      const bv = b.createdAt?.toMillis?.() ?? 0;
+      return createdSort === "desc" ? bv - av : av - bv;
+    });
+    return rows;
+  }, [filtered, sortBy, nameSort, createdSort]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this credit?")) return;
@@ -85,7 +105,25 @@ export default function CreditList() {
           <thead>
             <tr className="border-b border-border bg-muted/50">
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
-                Name
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground"
+                  onClick={() => {
+                    setSortBy("name");
+                    setNameSort((s) => (s === "asc" ? "desc" : "asc"));
+                  }}
+                >
+                  Name
+                  {sortBy === "name" ? (
+                    nameSort === "asc" ? (
+                      <ArrowUp className="size-3.5" aria-hidden />
+                    ) : (
+                      <ArrowDown className="size-3.5" aria-hidden />
+                    )
+                  ) : null}
+                </Button>
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
                 Phone number
@@ -100,7 +138,25 @@ export default function CreditList() {
                 Completed
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
-                Created at
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground"
+                  onClick={() => {
+                    setSortBy("created");
+                    setCreatedSort((s) => (s === "desc" ? "asc" : "desc"));
+                  }}
+                >
+                  Created at
+                  {sortBy === "created" ? (
+                    createdSort === "desc" ? (
+                      <ArrowDown className="size-3.5" aria-hidden />
+                    ) : (
+                      <ArrowUp className="size-3.5" aria-hidden />
+                    )
+                  ) : null}
+                </Button>
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
                 Actions
@@ -128,7 +184,7 @@ export default function CreditList() {
                 </td>
               </tr>
             ) : (
-              filtered.map((credit) => (
+              visible.map((credit) => (
                 <tr
                   key={credit.id}
                   className="transition-colors hover:bg-muted/40"
