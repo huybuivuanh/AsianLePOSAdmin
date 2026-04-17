@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useCustomerStore } from "@/stores/useCustomerStore";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 function matchesSearch(customer: Customer, q: string): boolean {
   if (!q.trim()) return true;
@@ -17,11 +18,31 @@ function matchesSearch(customer: Customer, q: string): boolean {
 export default function CustomerList() {
   const { customers, loading, error, deleteCustomer } = useCustomerStore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"created" | "name">("created");
+  const [createdSort, setCreatedSort] = useState<"desc" | "asc">("desc");
+  const [nameSort, setNameSort] = useState<"asc" | "desc">("asc");
 
   const filtered = useMemo(
     () => customers.filter((c) => matchesSearch(c, searchTerm)),
     [customers, searchTerm],
   );
+
+  const visible = useMemo(() => {
+    const rows = [...filtered];
+    rows.sort((a, b) => {
+      if (sortBy === "name") {
+        const av = a.name.toLowerCase();
+        const bv = b.name.toLowerCase();
+        const cmp = av.localeCompare(bv);
+        return nameSort === "asc" ? cmp : -cmp;
+      }
+
+      const av = a.createdAt?.toMillis?.() ?? 0;
+      const bv = b.createdAt?.toMillis?.() ?? 0;
+      return createdSort === "desc" ? bv - av : av - bv;
+    });
+    return rows;
+  }, [filtered, createdSort, nameSort, sortBy]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this customer?")) return;
@@ -62,13 +83,49 @@ export default function CustomerList() {
           <thead>
             <tr className="border-b border-border bg-muted/50">
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
-                Name
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground"
+                  onClick={() => {
+                    setSortBy("name");
+                    setNameSort((s) => (s === "asc" ? "desc" : "asc"));
+                  }}
+                >
+                  Name
+                  {sortBy === "name" ? (
+                    nameSort === "asc" ? (
+                      <ArrowUp className="size-3.5" aria-hidden />
+                    ) : (
+                      <ArrowDown className="size-3.5" aria-hidden />
+                    )
+                  ) : null}
+                </Button>
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
                 Phone
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
-                Created
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground"
+                  onClick={() => {
+                    setSortBy("created");
+                    setCreatedSort((s) => (s === "desc" ? "asc" : "desc"));
+                  }}
+                >
+                  Created
+                  {sortBy === "created" ? (
+                    createdSort === "desc" ? (
+                      <ArrowDown className="size-3.5" aria-hidden />
+                    ) : (
+                      <ArrowUp className="size-3.5" aria-hidden />
+                    )
+                  ) : null}
+                </Button>
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
                 Actions
@@ -95,7 +152,7 @@ export default function CustomerList() {
                 </td>
               </tr>
             ) : (
-              filtered.map((customer) => (
+              visible.map((customer) => (
                 <tr
                   key={customer.id}
                   className="transition-colors hover:bg-muted/40"
