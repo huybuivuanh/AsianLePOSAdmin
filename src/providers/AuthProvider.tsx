@@ -4,7 +4,7 @@ import {
   onAuthStateChanged,
   User,
   setPersistence,
-  browserSessionPersistence,
+  browserLocalPersistence,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase-config";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setPersistence(auth, browserSessionPersistence);
+    setPersistence(auth, browserLocalPersistence);
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
