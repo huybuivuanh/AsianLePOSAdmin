@@ -1,6 +1,9 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore } from "firebase/firestore";
+
+/** Named Firestore database (not `(default)`). Override in .env.local if needed. */
+const FIRESTORE_DATABASE_ID = "asian-le-pos-database";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -15,4 +18,4 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 export const auth = getAuth(app);
-export const clientDb = getFirestore(app);
+export const clientDb = initializeFirestore(app, {}, FIRESTORE_DATABASE_ID);
