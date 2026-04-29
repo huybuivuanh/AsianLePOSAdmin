@@ -22,7 +22,7 @@ function initAdminApp(): App {
   const raw = process.env.ADMIN_SERVICE_ACCOUNT_KEY;
   if (!raw?.trim()) {
     throw new Error(
-      "Missing ADMIN_SERVICE_ACCOUNT_KEY. Set it in .env.local to a JSON string of your Firebase service account (single line, or use a file path pattern if you prefer)."
+      "Missing ADMIN_SERVICE_ACCOUNT_KEY. Set it in .env.local to a JSON string of your Firebase service account (single line, or use a file path pattern if you prefer).",
     );
   }
 
@@ -31,7 +31,7 @@ function initAdminApp(): App {
     serviceAccount = JSON.parse(raw) as ServiceAccount;
   } catch {
     throw new Error(
-      "ADMIN_SERVICE_ACCOUNT_KEY must be valid JSON (your Firebase service account key)."
+      "ADMIN_SERVICE_ACCOUNT_KEY must be valid JSON (your Firebase service account key).",
     );
   }
 
@@ -50,6 +50,5 @@ export function getAdminAuth(): Auth {
 
 /** Call inside API routes; throws a clear error if env is not configured. */
 export function getAdminDb(): Firestore {
-  initAdminApp();
-  return getFirestore();
+  return getFirestore(initAdminApp(), "asian-le-pos-database");
 }
