@@ -50,5 +50,6 @@ export function getAdminAuth(): Auth {
 
 /** Call inside API routes; throws a clear error if env is not configured. */
 export function getAdminDb(): Firestore {
-  return getFirestore(initAdminApp(), "asian-le-pos-database");
+  initAdminApp();
+  return getFirestore();
 }
