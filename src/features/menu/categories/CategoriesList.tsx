@@ -62,9 +62,7 @@ export default function CategoriesList() {
   };
 
   if (loading) {
-    return (
-      <p className="text-sm text-muted-foreground">Loading categories…</p>
-    );
+    return <p className="text-sm text-muted-foreground">Loading categories…</p>;
   }
 
   const filteredCategories = categories.filter((cat) =>
@@ -129,10 +127,7 @@ export default function CategoriesList() {
                           className="flex flex-col gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
                         >
                           <span className="min-w-0 text-sm break-words text-foreground">
-                            {item.name}{" "}
-                            <span className="text-muted-foreground">
-                              · ${item.price.toFixed(2)}
-                            </span>
+                            {item.name} <span>· ${item.price.toFixed(2)}</span>
                           </span>
                           <Button
                             type="button"

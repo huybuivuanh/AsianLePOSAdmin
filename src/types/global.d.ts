@@ -73,6 +73,7 @@ declare global {
     kitchenType: KitchenType;
     instructions?: string;
     paid: boolean;
+    completed: boolean;
   }
 
   interface ItemChange {

@@ -157,9 +157,8 @@ export default function ItemsList() {
                   </div>
                 </div>
 
-                <p className="mt-2 ml-1 text-sm text-muted-foreground sm:ml-7">
-                  ${item.price.toFixed(2)}{" "}
-                  <span className="text-muted-foreground/50">·</span> Kitchen:{" "}
+                <p className="mt-2 ml-1 text-sm sm:ml-7">
+                  ${item.price.toFixed(2)} <span>·</span> Kitchen:{" "}
                   {item.kitchenType}
                 </p>
 
@@ -193,7 +192,7 @@ export default function ItemsList() {
                               </Button>
                             </div>
 
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm">
                               Min {group.minSelection} · Max{" "}
                               {group.maxSelection}
                             </p>

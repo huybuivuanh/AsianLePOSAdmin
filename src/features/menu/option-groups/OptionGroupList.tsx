@@ -89,7 +89,7 @@ export default function OptionGroupsList() {
   const handleDefaultOptionToggle = async (
     group: OptionGroup,
     optionId: string,
-    checked: boolean
+    checked: boolean,
   ) => {
     setSavingDefaultGroupId(group.id!);
     try {
@@ -168,7 +168,7 @@ export default function OptionGroupsList() {
                   </div>
                 </div>
 
-                <p className="mt-2 ml-1 text-sm text-muted-foreground sm:ml-7">
+                <p className="mt-2 ml-1 text-sm sm:ml-7">
                   Min {group.minSelection} · Max {group.maxSelection}
                 </p>
 
@@ -186,9 +186,7 @@ export default function OptionGroupsList() {
                             <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                               <span className="truncate text-sm text-foreground">
                                 {opt.name}{" "}
-                                <span className="text-muted-foreground">
-                                  · ${opt.price.toFixed(2)}
-                                </span>
+                                <span>· ${opt.price.toFixed(2)}</span>
                               </span>
                               <div className="flex items-center gap-2 shrink-0">
                                 <Checkbox
@@ -202,13 +200,13 @@ export default function OptionGroupsList() {
                                       void handleDefaultOptionToggle(
                                         group,
                                         opt.id!,
-                                        true
+                                        true,
                                       );
                                     } else if (isDefault) {
                                       void handleDefaultOptionToggle(
                                         group,
                                         opt.id!,
-                                        false
+                                        false,
                                       );
                                     }
                                   }}

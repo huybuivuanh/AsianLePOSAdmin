@@ -68,9 +68,7 @@ export default function OptionsList() {
                 <p className="font-medium break-words text-foreground">
                   {opt.name}
                 </p>
-                <p className="mt-0.5 text-sm text-muted-foreground">
-                  ${opt.price.toFixed(2)}
-                </p>
+                <p className="mt-0.5 text-sm">${opt.price.toFixed(2)}</p>
               </div>
 
               <div className="flex shrink-0 flex-wrap gap-2">
