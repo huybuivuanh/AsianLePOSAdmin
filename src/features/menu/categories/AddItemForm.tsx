@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { SearchField } from "@/components/ui/search-field";
 import { useItemStore } from "@/stores/useItemStore";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
+import type { FoodCategory } from "@/types";
 
 export default function AddItemForm({ category }: { category: FoodCategory }) {
   const { items, updateItem } = useItemStore();

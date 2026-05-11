@@ -16,6 +16,7 @@ import { SearchField } from "@/components/ui/search-field";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { patchClearDefaultIfNotInOptionIds } from "@/lib/option-group-updates";
+import type { OptionGroup } from "@/types";
 
 export default function AddOptionForm({ group }: { group: OptionGroup }) {
   const { options, updateOption } = useOptionStore();

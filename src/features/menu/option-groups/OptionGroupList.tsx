@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
+import type { ItemOption, OptionGroup } from "@/types";
 
 export default function OptionGroupsList() {
   const { optionGroups, loading, deleteOptionGroup, updateOptionGroup } =

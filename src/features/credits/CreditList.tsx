@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import UpdateCreditForm from "@/features/credits/UpdateCreditForm";
 import { ArrowDown, ArrowUp, CheckCircle2, RotateCcw } from "lucide-react";
 import { SearchField } from "@/components/ui/search-field";
+import type { Credit } from "@/types";
 
 function matchesSearch(credit: Credit, q: string): boolean {
   if (!q.trim()) return true;

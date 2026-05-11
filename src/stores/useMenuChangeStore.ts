@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
 import { asTimestamp } from "@/lib/firestore-timestamp";
+import type { MenuChange } from "@/types";
 
 type MenuChangeState = {
   menuChanges: MenuChange[];

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { useTableStore } from "@/stores/useTableStore";
 import { TableStatus } from "@/types/enum";
+import type { Table } from "@/types";
 import {
   Dialog,
   DialogContent,

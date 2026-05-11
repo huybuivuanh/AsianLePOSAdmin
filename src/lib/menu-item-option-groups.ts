@@ -3,6 +3,8 @@
  * Legacy documents may still use `string[]`; normalize on read.
  */
 
+import type { MenuItem, OptionGroupId } from "@/types";
+
 export function normalizeMenuItemOptionGroupIds(
   raw: unknown,
 ): OptionGroupId[] | undefined {

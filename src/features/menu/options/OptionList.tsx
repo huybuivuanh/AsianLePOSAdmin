@@ -7,6 +7,7 @@ import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
+import type { ItemOption, OptionGroup } from "@/types";
 
 export default function OptionsList() {
   const { options, loading, deleteOption } = useOptionStore();

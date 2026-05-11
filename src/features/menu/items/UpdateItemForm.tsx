@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useItemStore } from "@/stores/useItemStore";
 import { KitchenType } from "@/types/enum";
+import type { MenuItem } from "@/types";
 
 export default function UpdateItemDialog({ item }: { item: MenuItem }) {
   const [open, setOpen] = useState(false);

@@ -5,6 +5,7 @@ import { useCustomerStore } from "@/stores/useCustomerStore";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
 import { ArrowDown, ArrowUp } from "lucide-react";
+import type { Customer } from "@/types";
 
 function matchesSearch(customer: Customer, q: string): boolean {
   if (!q.trim()) return true;

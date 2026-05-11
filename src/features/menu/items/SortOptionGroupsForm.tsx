@@ -32,6 +32,7 @@ import {
   getOrderedOptionGroupRefs,
   reindexOptionGroupOrders,
 } from "@/lib/menu-item-option-groups";
+import type { MenuItem } from "@/types";
 
 function SortableRow({ id, name }: { id: string; name: string }) {
   const { attributes, listeners, setNodeRef, transform, transition } =

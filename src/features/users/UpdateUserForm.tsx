@@ -21,6 +21,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import type { User } from "@/types";
 
 export default function UpdateUserForm({ user }: { user: User }) {
   const [open, setOpen] = useState(false);

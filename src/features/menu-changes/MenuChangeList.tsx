@@ -5,6 +5,7 @@ import { useMenuChangeStore } from "@/stores/useMenuChangeStore";
 import UpdateMenuChangeForm from "@/features/menu-changes/UpdateMenuChangeForm";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
+import type { MenuChange } from "@/types";
 
 function matchesSearch(menuChange: MenuChange, q: string): boolean {
   if (!q.trim()) return true;
@@ -32,7 +33,7 @@ export default function MenuChangeList() {
     useMenuChangeStore();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const rows = menuChanges ?? [];
+  const rows = menuChanges;
   const filtered = useMemo(
     () => rows.filter((r) => matchesSearch(r, searchTerm)),
     [rows, searchTerm],

@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
 import { TableStatus } from "@/types/enum";
+import type { Table } from "@/types";
 
 function parseTableStatus(value: unknown): TableStatus {
   if (value === TableStatus.Occupied) return TableStatus.Occupied;

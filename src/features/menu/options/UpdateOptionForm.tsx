@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useOptionStore } from "@/stores/useOptionStore";
+import type { ItemOption } from "@/types";
 
 export default function UpdateOptionForm({ option }: { option: ItemOption }) {
   const [open, setOpen] = useState(false);

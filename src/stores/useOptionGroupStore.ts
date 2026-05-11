@@ -14,6 +14,7 @@ import {
 import { clientDb } from "@/lib/firebase-config";
 import { sortByAlphabet } from "@/lib/sort";
 import { asTimestamp } from "@/lib/firestore-timestamp";
+import type { OptionGroup } from "@/types";
 
 type OptionGroupState = {
   optionGroups: OptionGroup[];

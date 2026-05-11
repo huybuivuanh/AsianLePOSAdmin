@@ -15,6 +15,7 @@ import { clientDb } from "@/lib/firebase-config";
 import { sortByAlphabet } from "@/lib/sort";
 import { asTimestamp } from "@/lib/firestore-timestamp";
 import { normalizeMenuItemOptionGroupIds } from "@/lib/menu-item-option-groups";
+import type { MenuItem } from "@/types";
 
 type ItemState = {
   items: MenuItem[];

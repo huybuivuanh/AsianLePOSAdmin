@@ -17,6 +17,7 @@ import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
+import type { ItemOption, MenuItem, OptionGroup } from "@/types";
 
 export default function ItemsList() {
   const { items, loading, deleteItem, updateItem } = useItemStore();

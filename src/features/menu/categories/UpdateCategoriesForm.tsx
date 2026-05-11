@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import type { FoodCategory } from "@/types";
 
 export default function UpdateCategoriesForm({
   category,

@@ -12,6 +12,7 @@ import {
 import { clientDb } from "@/lib/firebase-config";
 import { asTimestamp } from "@/lib/firestore-timestamp";
 import { sortByAlphabet } from "@/lib/sort";
+import type { Customer } from "@/types";
 
 type CustomerState = {
   customers: Customer[];

@@ -18,6 +18,7 @@ import {
   getOrderedOptionGroupRefs,
   mergeOptionGroupSelection,
 } from "@/lib/menu-item-option-groups";
+import type { MenuItem } from "@/types";
 
 export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
   const { optionGroups, updateOptionGroup } = useOptionGroupStore();

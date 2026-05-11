@@ -8,6 +8,7 @@ import {
   Unsubscribe,
 } from "firebase/firestore";
 import { asTimestamp } from "@/lib/firestore-timestamp";
+import type { User } from "@/types";
 
 export function listenUsers(
   onUpdate: (users: User[]) => void,

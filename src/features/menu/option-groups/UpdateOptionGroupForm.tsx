@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import NumberStepper from "./NumberStepper";
+import type { OptionGroup } from "@/types";
 
 export default function UpdateOptionGroupForm({
   group,

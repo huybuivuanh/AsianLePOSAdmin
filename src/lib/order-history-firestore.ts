@@ -12,6 +12,12 @@ import {
 import { clientDb } from "@/lib/firebase-config";
 import { asTimestamp } from "@/lib/firestore-timestamp";
 import { OrderType } from "@/types/enum";
+import type {
+  DineInOrder,
+  Order,
+  TakeOutFulfillment,
+  TakeOutOrder,
+} from "@/types";
 
 export const TAKE_OUT_ORDERS_COLLECTION = "takeOutOrders";
 export const DINE_IN_ORDERS_COLLECTION = "dineInOrders";
