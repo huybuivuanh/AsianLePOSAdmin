@@ -134,6 +134,7 @@ export default function OptionGroupsList() {
             const groupOptions = options.filter((opt) =>
               group.optionIds?.includes(opt.id!),
             );
+            const isUnused = (group.itemIds?.length ?? 0) === 0;
 
             return (
               <li
@@ -153,6 +154,11 @@ export default function OptionGroupsList() {
                       <ChevronRight className="size-4 shrink-0 opacity-70" />
                     )}
                     <span className="truncate">{group.name}</span>
+                    {isUnused ? (
+                      <span className="inline-flex shrink-0 items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                        Unused
+                      </span>
+                    ) : null}
                   </Button>
 
                   <div className="flex flex-wrap gap-2 shrink-0">

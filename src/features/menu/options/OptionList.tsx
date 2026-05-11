@@ -59,32 +59,41 @@ export default function OptionsList() {
 
       <ul className="space-y-3">
         {filteredOptions.length > 0 ? (
-          filteredOptions.map((opt) => (
-            <li
-              key={opt.id}
-              className="flex flex-col gap-3 rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5"
-            >
-              <div className="min-w-0">
-                <p className="font-medium break-words text-foreground">
-                  {opt.name}
-                </p>
-                <p className="mt-0.5 text-sm">${opt.price.toFixed(2)}</p>
-              </div>
+          filteredOptions.map((opt) => {
+            const isUnused = (opt.groupIds?.length ?? 0) === 0;
 
-              <div className="flex shrink-0 flex-wrap gap-2">
-                <UpdateOptionForm option={opt} />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(opt)}
-                  disabled={isDeleting === opt.id}
-                >
-                  {isDeleting === opt.id ? "Deleting…" : "Delete"}
-                </Button>
-              </div>
-            </li>
-          ))
+            return (
+              <li
+                key={opt.id}
+                className="flex flex-col gap-3 rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5"
+              >
+                <div className="min-w-0">
+                  <p className="flex flex-wrap items-center gap-2 font-medium break-words text-foreground">
+                    <span>{opt.name}</span>
+                    {isUnused ? (
+                      <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                        Unused
+                      </span>
+                    ) : null}
+                  </p>
+                  <p className="mt-0.5 text-sm">${opt.price.toFixed(2)}</p>
+                </div>
+
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  <UpdateOptionForm option={opt} />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(opt)}
+                    disabled={isDeleting === opt.id}
+                  >
+                    {isDeleting === opt.id ? "Deleting…" : "Delete"}
+                  </Button>
+                </div>
+              </li>
+            );
+          })
         ) : (
           <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
             No options match your search.
