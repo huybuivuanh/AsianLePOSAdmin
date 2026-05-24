@@ -148,6 +148,7 @@ export const submitToPrintQueue = async (order: OrderDraft) => {
   const printQueueRef = doc(collection(clientDb, "printQueue"));
   const forPrint: OrderDraft = {
     ...order,
+    printed: false,
     orderItems: order.orderItems ?? [],
   };
   await setDoc(printQueueRef, forPrint as Record<string, unknown>);
