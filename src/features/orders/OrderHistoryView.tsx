@@ -9,12 +9,12 @@ import {
   type OrderHistoryChannel,
   type OrderHistoryLoadedOrder,
 } from "@/lib/order-history-firestore";
-import { DiscountType } from "@/types/enum";
+import { DiscountType, OrderStatus } from "@/types/enum";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { OrderItem } from "@/types";
+import type { Discount, OrderItem, TakeOutFulfillment } from "@/types";
 import {
   Select,
   SelectContent,
@@ -25,15 +25,88 @@ import {
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-function discountTypeLabel(t: DiscountType): string {
-  if (t === DiscountType.Amount) return "Amount off";
-  if (t === DiscountType.Percent) return "Percent off";
+function formatDiscountLabel(discount: Discount): string {
+  if (discount.discountType === DiscountType.Percent) {
+    return `Discount (${discount.discountValue.toFixed(0)}%)`;
+  }
+  if (discount.discountType === DiscountType.Amount) {
+    return `Discount ($${discount.discountValue.toFixed(2)})`;
+  }
   return "Discount";
+}
+
+function formatDiscountAmount(discount: Discount): string {
+  if (discount.discountType === DiscountType.Percent) {
+    return `-$${discount.discountAmount.toFixed(2)}`;
+  }
+  if (discount.discountType === DiscountType.Amount) {
+    return `$${discount.discountValue.toFixed(2)}`;
+  }
+  return `$${discount.discountAmount.toFixed(2)}`;
+}
+
+function formatOrderedAt(date: Date): string {
+  return date.toLocaleString(undefined, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function formatReadyIn(fulfillment: TakeOutFulfillment): string {
+  if (fulfillment.kind === "scheduled") {
+    return formatOrderedAt(fulfillment.scheduledAt.toDate());
+  }
+  if (
+    fulfillment.readyTimeMinutes != null &&
+    Number.isFinite(fulfillment.readyTimeMinutes)
+  ) {
+    return `${fulfillment.readyTimeMinutes} min`;
+  }
+  return "—";
+}
+
+function orderCardSurface(
+  status: OrderStatus,
+  takeOut: boolean,
+): {
+  card: string;
+  expanded: string;
+} {
+  switch (status) {
+    case OrderStatus.Completed:
+      return {
+        card: "border-emerald-300/80 bg-emerald-50/95",
+        expanded: "border-emerald-200/70 bg-white/70",
+      };
+    case OrderStatus.InProgress:
+      return takeOut
+        ? {
+            card: "border-sky-300/80 bg-sky-50/90",
+            expanded: "border-sky-200/70 bg-white/70",
+          }
+        : {
+            card: "border-amber-200/90 bg-amber-50/95",
+            expanded: "border-amber-200/80 bg-white/50",
+          };
+    case OrderStatus.Cancelled:
+      return {
+        card: "border-rose-300/80 bg-rose-50/95",
+        expanded: "border-rose-200/70 bg-white/75",
+      };
+    default:
+      return {
+        card: "border-border/80 bg-muted/30",
+        expanded: "border-border/60 bg-white/70",
+      };
+  }
 }
 
 function OrderItemBlock({ item }: { item: OrderItem }) {
   return (
-    <li className="rounded-lg border border-border/60 bg-white px-3 py-2 text-sm">
+    <li className="rounded-lg border border-white/80 bg-white px-3 py-2.5 text-sm shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <span className="min-w-0">
           <span className="font-medium">{item.quantity}</span>
@@ -91,22 +164,15 @@ function OrderCard({
   onToggle: () => void;
 }) {
   const takeOut = isTakeOutLoadedOrder(order);
-  const timeLabel = order.createdAt.toDate().toLocaleString(undefined, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  const orderedAtLabel = formatOrderedAt(order.createdAt.toDate());
   const tb = order.taxBreakDown;
+  const surface = orderCardSurface(order.status, takeOut);
 
   return (
     <div
       className={cn(
         "overflow-hidden rounded-xl border-2 shadow-sm transition-shadow",
-        takeOut
-          ? "border-sky-300/80 bg-sky-50/90"
-          : "border-amber-200/90 bg-amber-50/95",
+        surface.card,
       )}
     >
       <button
@@ -114,7 +180,7 @@ function OrderCard({
         onClick={onToggle}
         className="flex w-full items-start gap-3 p-4 text-left transition hover:brightness-[0.98]"
       >
-        <div className="min-w-0 space-y-0.5 text-sm text-foreground">
+        <div className="min-w-0 flex-1 space-y-0.5 text-sm text-foreground">
           <div className="flex items-start gap-2">
             {expanded ? (
               <ChevronDown className="mt-0.5 size-4 shrink-0 opacity-60" />
@@ -124,16 +190,16 @@ function OrderCard({
             <div className="min-w-0 space-y-0.5">
               {takeOut ? (
                 <>
-                  {order.customerName ? (
+                  {order.customerName?.trim() ? (
                     <p>
                       <span className="font-medium">Name:</span>{" "}
-                      {order.customerName}
+                      {order.customerName.trim()}
                     </p>
                   ) : null}
-                  {order.phoneNumber ? (
+                  {order.phoneNumber?.trim() ? (
                     <p>
                       <span className="font-medium">Phone #:</span>{" "}
-                      {order.phoneNumber}
+                      {order.phoneNumber.trim()}
                     </p>
                   ) : null}
                 </>
@@ -151,8 +217,15 @@ function OrderCard({
               <p>
                 <span className="font-medium">Staff:</span> {order.staff}
               </p>
+              {takeOut ? (
+                <p>
+                  <span className="font-medium">Ready In:</span>{" "}
+                  {formatReadyIn(order.fulfillment)}
+                </p>
+              ) : null}
               <p>
-                <span className="font-medium">Time:</span> {timeLabel}
+                <span className="font-medium">Ordered At:</span>{" "}
+                {orderedAtLabel}
               </p>
             </div>
           </div>
@@ -161,12 +234,7 @@ function OrderCard({
 
       {expanded ? (
         <div
-          className={cn(
-            "space-y-4 border-t px-4 pb-4 pt-3",
-            takeOut
-              ? "border-sky-200/80 bg-white/60"
-              : "border-amber-200/80 bg-white/50",
-          )}
+          className={cn("space-y-4 border-t px-4 pb-4 pt-3", surface.expanded)}
         >
           {order.orderItems.length > 0 ? (
             <ul className="space-y-2">
@@ -178,48 +246,53 @@ function OrderCard({
             <p className="text-sm text-muted-foreground">No line items.</p>
           )}
 
-          <div className="space-y-1 text-right text-sm">
-            <p>
-              <span className="text-muted-foreground">Subtotal:</span>{" "}
+          <div className="space-y-1 text-sm">
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="text-muted-foreground">Subtotal:</span>
               <span className="tabular-nums font-medium">
                 ${(tb.subTotal ?? 0).toFixed(2)}
               </span>
-            </p>
+            </div>
             {tb.discount != null &&
             tb.discount.discountType !== DiscountType.None ? (
               <>
-                <p>
+                <div className="flex items-baseline justify-between gap-4">
                   <span className="text-muted-foreground">
-                    {discountTypeLabel(tb.discount.discountType)}:
-                  </span>{" "}
-                  <span className="tabular-nums">
-                    −${tb.discount.discountAmount.toFixed(2)}
+                    {formatDiscountLabel(tb.discount)}
                   </span>
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Taxable subtotal: ${tb.discount.taxableSubtotal.toFixed(2)}
-                </p>
+                  <span className="tabular-nums">
+                    {formatDiscountAmount(tb.discount)}
+                  </span>
+                </div>
+                <div className="flex items-baseline justify-between gap-4">
+                  <span className="text-muted-foreground">
+                    Taxable Subtotal:
+                  </span>
+                  <span className="tabular-nums">
+                    ${tb.discount.taxableSubtotal.toFixed(2)}
+                  </span>
+                </div>
               </>
             ) : null}
-            <p>
-              <span className="text-muted-foreground">PST:</span>{" "}
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="text-muted-foreground">PST:</span>
               <span className="tabular-nums">${(tb.pst ?? 0).toFixed(2)}</span>
-            </p>
-            <p>
-              <span className="text-muted-foreground">GST:</span>{" "}
+            </div>
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="text-muted-foreground">GST:</span>
               <span className="tabular-nums">${(tb.gst ?? 0).toFixed(2)}</span>
-            </p>
-            <p className="pt-1 text-base font-bold">
-              Total:{" "}
+            </div>
+            <div className="flex items-baseline justify-between gap-4 pt-1 text-base font-bold">
+              <span>Total:</span>
               <span className="tabular-nums">
                 ${(tb.total ?? 0).toFixed(2)}
               </span>
-            </p>
+            </div>
           </div>
 
           <Button
             type="button"
-            className="w-full"
+            className="h-11 w-full rounded-lg bg-blue-600 text-base font-semibold text-white hover:bg-blue-700"
             variant="default"
             onClick={async (e) => {
               try {
