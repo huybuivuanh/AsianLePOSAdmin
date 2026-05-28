@@ -72,6 +72,9 @@ export const useCreditStore = create<CreditState>((set) => ({
     if (data.name) {
       data.name = data.name.toUpperCase();
     }
+    if (data.description) {
+      data.description = data.description.toUpperCase();
+    }
     await addDoc(ref, {
       ...data,
       createdAt: Timestamp.now(),
@@ -83,6 +86,9 @@ export const useCreditStore = create<CreditState>((set) => ({
     const ref = doc(clientDb, "credits", id);
     if (data.name) {
       data.name = data.name.toUpperCase();
+    }
+    if (data.description) {
+      data.description = data.description.toUpperCase();
     }
     await updateDoc(ref, { ...data });
   },
