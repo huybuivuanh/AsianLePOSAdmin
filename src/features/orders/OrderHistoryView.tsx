@@ -119,8 +119,10 @@ function OrderItemBlock({ item }: { item: OrderItem }) {
         <ul className="mt-1.5 space-y-0.5 border-t border-border/40 pt-1.5 text-xs text-muted-foreground">
           {item.options.map((o, j) => (
             <li key={j}>
-              {o.quantity}× {o.name}{" "}
-              <span className="tabular-nums">(+${o.price.toFixed(2)})</span>
+              •{o.quantity > 1 ? ` ${o.quantity}×` : ""} {o.name}{" "}
+              <span className="tabular-nums">
+                {o.price > 0 ? ` $${o.price.toFixed(2)}` : ""}
+              </span>
             </li>
           ))}
         </ul>
@@ -129,8 +131,10 @@ function OrderItemBlock({ item }: { item: OrderItem }) {
         <ul className="mt-1 space-y-0.5 text-xs text-muted-foreground">
           {item.changes.map((c, j) => (
             <li key={j}>
-              Change: {c.from} → {c.to}{" "}
-              <span className="tabular-nums">(+${c.price.toFixed(2)})</span>
+              <span className="tabular-nums">•</span> Change: {c.from} → {c.to}{" "}
+              <span className="tabular-nums">
+                {c.price > 0 ? ` $${c.price.toFixed(2)}` : ""}
+              </span>
             </li>
           ))}
         </ul>
@@ -139,15 +143,17 @@ function OrderItemBlock({ item }: { item: OrderItem }) {
         <ul className="mt-1 space-y-0.5 text-xs text-muted-foreground">
           {item.extras.map((ex, j) => (
             <li key={j}>
-              {ex.description}{" "}
-              <span className="tabular-nums">(+${ex.price.toFixed(2)})</span>
+              <span className="tabular-nums">•</span>Add Extra: {ex.description}{" "}
+              <span className="tabular-nums">
+                {ex.price > 0 ? ` $${ex.price.toFixed(2)}` : ""}
+              </span>
             </li>
           ))}
         </ul>
       ) : null}
       {item.instructions != null && item.instructions.trim() !== "" ? (
         <p className="mt-1.5 text-xs italic text-muted-foreground">
-          Note: {item.instructions}
+          <span className="tabular-nums">•</span> Note: {item.instructions}
         </p>
       ) : null}
     </li>
