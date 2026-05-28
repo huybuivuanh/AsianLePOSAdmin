@@ -14,6 +14,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SearchField } from "@/components/ui/search-field";
 import type { Discount, OrderItem, TakeOutFulfillment } from "@/types";
 import {
   Select,
@@ -66,6 +67,27 @@ function formatReadyIn(fulfillment: TakeOutFulfillment): string {
     return `${fulfillment.readyTimeMinutes} min`;
   }
   return "—";
+}
+
+function normalizePhone(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+function matchesOrderSearch(order: OrderHistoryLoadedOrder, q: string): boolean {
+  if (!q.trim()) return true;
+  if (!isTakeOutLoadedOrder(order)) return false;
+
+  const term = q.trim().toLowerCase();
+  const phoneTerm = normalizePhone(q);
+  const name = (order.customerName ?? "").toLowerCase();
+  const phone = normalizePhone(order.phoneNumber ?? "");
+  const phoneDisplay = (order.phoneNumber ?? "").toLowerCase();
+
+  return (
+    name.includes(term) ||
+    phoneDisplay.includes(term) ||
+    (phoneTerm.length > 0 && phone.includes(phoneTerm))
+  );
 }
 
 function orderCardSurface(
@@ -331,13 +353,20 @@ export default function OrderHistoryView() {
     ch: OrderHistoryChannel;
   } | null>(null);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     setOrders([]);
     setLoadedFor(null);
     setExpanded({});
     setError(null);
+    setSearchTerm("");
   }, [dateKey, channel]);
+
+  const filteredOrders = useMemo(
+    () => orders.filter((order) => matchesOrderSearch(order, searchTerm)),
+    [orders, searchTerm],
+  );
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -426,9 +455,30 @@ export default function OrderHistoryView() {
         </p>
       ) : null}
 
-      {orders.length > 0 ? (
+      {loadedFor && !loading && orders.length > 0 && channel === "takeOut" ? (
+        <div className="mb-4">
+          <SearchField
+            placeholder="Search by name or phone number…"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="Search orders"
+          />
+        </div>
+      ) : null}
+
+      {loadedFor &&
+      !loading &&
+      orders.length > 0 &&
+      channel === "takeOut" &&
+      filteredOrders.length === 0 ? (
+        <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+          No orders match your search.
+        </p>
+      ) : null}
+
+      {filteredOrders.length > 0 ? (
         <ul className="space-y-3">
-          {orders.map((order) => (
+          {filteredOrders.map((order) => (
             <li key={order.id}>
               <OrderCard
                 order={order}
