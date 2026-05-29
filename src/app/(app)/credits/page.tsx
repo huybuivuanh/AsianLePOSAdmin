@@ -1,7 +1,8 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CreateCreditForm, CreditList } from "@/features/credits";
+import CreateCreditForm from "@/features/credits/CreateCreditForm";
+import CreditList from "@/features/credits/CreditList";
 
 export default function CreditsPage() {
   return (

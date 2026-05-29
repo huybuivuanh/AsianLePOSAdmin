@@ -2,7 +2,7 @@
 
 import CreateOptionGroupForm from "./CreateOptionGroupForm";
 import OptionGroupList from "./OptionGroupList";
-import { PublishMenuToolbar } from "../PublishMenuToolbar";
+import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 
 export default function OptionGroupsTab() {
   return (

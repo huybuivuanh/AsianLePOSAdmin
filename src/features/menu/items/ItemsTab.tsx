@@ -2,7 +2,7 @@
 
 import CreateItemForm from "./CreateItemForm";
 import ItemList from "./ItemList";
-import { PublishMenuToolbar } from "../PublishMenuToolbar";
+import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 
 export default function ItemsTab() {
   return (

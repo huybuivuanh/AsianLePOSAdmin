@@ -3,7 +3,7 @@
 import CategoriesList from "./CategoriesList";
 import CreateCategoriesForm from "./CreateCategoriesForm";
 import SortCategories from "./SortCategories";
-import { PublishMenuToolbar } from "../PublishMenuToolbar";
+import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 
 export default function CategoriesTab() {
   return (

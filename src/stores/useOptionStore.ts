@@ -12,7 +12,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
-import { sortByAlphabet } from "@/lib/sort";
+import { sortByAlphabet } from "@/lib/list-utils";
 import { asTimestamp } from "@/lib/firestore-timestamp";
 import type { ItemOption } from "@/types";
 

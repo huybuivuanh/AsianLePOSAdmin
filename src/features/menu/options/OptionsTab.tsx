@@ -2,7 +2,7 @@
 
 import CreateOptionForm from "./CreateOptionForm";
 import OptionList from "./OptionList";
-import { PublishMenuToolbar } from "../PublishMenuToolbar";
+import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 
 export default function OptionsTab() {
   return (

@@ -1,6 +1,10 @@
 export type SortDir = "asc" | "desc";
 export type NameCreatedSortBy = "name" | "created";
 
+export function sortByAlphabet<T extends { name: string }>(array: T[]): T[] {
+  return array.slice().sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+}
+
 /** Returns true when all non-empty fields contain the query term. */
 export function matchesQuery(q: string, ...fields: string[]): boolean {
   if (!q.trim()) return true;
