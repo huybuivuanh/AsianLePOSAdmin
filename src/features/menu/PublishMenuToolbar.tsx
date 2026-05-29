@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMenuVersionStore } from "@/stores/useMenuVersionStore";
@@ -12,12 +12,7 @@ type PublishMenuToolbarProps = {
 };
 
 export function PublishMenuToolbar({ children }: PublishMenuToolbarProps) {
-  const { version, loading, subscribe, publishMenu } = useMenuVersionStore();
-
-  useEffect(() => {
-    const unsub = subscribe();
-    return () => unsub();
-  }, [subscribe]);
+  const { version, loading, publishMenu } = useMenuVersionStore();
 
   const handlePublish = async () => {
     if (!confirm("Publish Menu?")) return;
