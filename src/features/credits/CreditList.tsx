@@ -7,6 +7,7 @@ import UpdateCreditForm from "@/features/credits/UpdateCreditForm";
 import { ArrowDown, ArrowUp, CheckCircle2, RotateCcw } from "lucide-react";
 import { SearchField } from "@/components/ui/search-field";
 import type { Credit } from "@/types";
+import { formatTimestamp } from "@/lib/formatters";
 
 function matchesSearch(credit: Credit, q: string): boolean {
   if (!q.trim()) return true;
@@ -15,18 +16,6 @@ function matchesSearch(credit: Credit, q: string): boolean {
     (credit.name ?? "").toLowerCase().includes(n) ||
     (credit.phoneNumber ?? "").toLowerCase().includes(n)
   );
-}
-
-function formatCreatedAt(credit: Credit): string {
-  try {
-    const createdAt = (credit as Credit & { createdAt?: unknown }).createdAt as
-      | { toDate?: () => Date }
-      | undefined;
-    if (!createdAt || typeof createdAt.toDate !== "function") return "—";
-    return createdAt.toDate().toLocaleString();
-  } catch {
-    return "—";
-  }
 }
 
 export default function CreditList() {
@@ -216,7 +205,7 @@ export default function CreditList() {
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
-                    {formatCreatedAt(credit)}
+                    {formatTimestamp(credit.createdAt)}
                   </td>
                   <td className="px-3 py-3 sm:px-4">
                     <div className="flex flex-wrap gap-2">

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import type { Customer } from "@/types";
+import { formatTimestamp } from "@/lib/formatters";
 
 function matchesSearch(customer: Customer, q: string): boolean {
   if (!q.trim()) return true;
@@ -165,7 +166,7 @@ export default function CustomerList() {
                     {customer.phone}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
-                    {customer.createdAt.toDate().toLocaleString()}
+                    {formatTimestamp(customer.createdAt)}
                   </td>
                   <td className="px-3 py-3 sm:px-4">
                     <Button

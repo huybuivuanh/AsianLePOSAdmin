@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SearchField } from "@/components/ui/search-field";
-import type { Discount, OrderItem, TakeOutFulfillment } from "@/types";
+import type { OrderItem } from "@/types";
 import {
   Select,
   SelectContent,
@@ -25,49 +25,12 @@ import {
 } from "@/components/ui/select";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-function formatDiscountLabel(discount: Discount): string {
-  if (discount.discountType === DiscountType.Percent) {
-    return `Discount (${discount.discountValue.toFixed(0)}%)`;
-  }
-  if (discount.discountType === DiscountType.Amount) {
-    return `Discount ($${discount.discountValue.toFixed(2)})`;
-  }
-  return "Discount";
-}
-
-function formatDiscountAmount(discount: Discount): string {
-  if (discount.discountType === DiscountType.Percent) {
-    return `-$${discount.discountAmount.toFixed(2)}`;
-  }
-  if (discount.discountType === DiscountType.Amount) {
-    return `$${discount.discountValue.toFixed(2)}`;
-  }
-  return `$${discount.discountAmount.toFixed(2)}`;
-}
-
-function formatOrderedAt(date: Date): string {
-  return date.toLocaleString(undefined, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-function formatReadyIn(fulfillment: TakeOutFulfillment): string {
-  if (fulfillment.kind === "scheduled") {
-    return formatOrderedAt(fulfillment.scheduledAt.toDate());
-  }
-  if (
-    fulfillment.readyTimeMinutes != null &&
-    Number.isFinite(fulfillment.readyTimeMinutes)
-  ) {
-    return `${fulfillment.readyTimeMinutes} min`;
-  }
-  return "—";
-}
+import {
+  formatDiscountAmount,
+  formatDiscountLabel,
+  formatOrderedAt,
+  formatReadyIn,
+} from "@/lib/formatters";
 
 function normalizePhone(value: string): string {
   return value.replace(/\D/g, "");

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useUserStore } from "@/stores/useUserStore";
 import UpdateUserForm from "./UpdateUserForm";
 import { Button } from "@/components/ui/button";
+import { formatTimestamp } from "@/lib/formatters";
 
 export default function UserList() {
   const { users, loading, deleteUser, subscribe } = useUserStore();
@@ -79,7 +80,7 @@ export default function UserList() {
                   </span>
                 </td>
                 <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
-                  {user.createdAt.toDate().toLocaleString()}
+                  {formatTimestamp(user.createdAt)}
                 </td>
                 <td className="px-3 py-3 sm:px-4">
                   <div className="flex flex-wrap gap-2">

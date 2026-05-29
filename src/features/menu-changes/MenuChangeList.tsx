@@ -6,6 +6,7 @@ import UpdateMenuChangeForm from "@/features/menu-changes/UpdateMenuChangeForm";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
 import type { MenuChange } from "@/types";
+import { formatTimestamp } from "@/lib/formatters";
 
 function matchesSearch(menuChange: MenuChange, q: string): boolean {
   if (!q.trim()) return true;
@@ -14,18 +15,6 @@ function matchesSearch(menuChange: MenuChange, q: string): boolean {
     menuChange.from.toLowerCase().includes(n) ||
     menuChange.to.toLowerCase().includes(n)
   );
-}
-
-function formatCreatedAt(menuChange: MenuChange): string {
-  try {
-    // Some legacy docs may not have createdAt yet.
-    const createdAt = (menuChange as MenuChange & { createdAt?: unknown })
-      .createdAt as { toDate?: () => Date } | undefined;
-    if (!createdAt || typeof createdAt.toDate !== "function") return "—";
-    return createdAt.toDate().toLocaleString();
-  } catch {
-    return "—";
-  }
 }
 
 export default function MenuChangeList() {
@@ -129,7 +118,7 @@ export default function MenuChangeList() {
                       : "0.00"}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
-                    {formatCreatedAt(mc)}
+                    {formatTimestamp(mc.createdAt)}
                   </td>
                   <td className="px-3 py-3 sm:px-4">
                     <div className="flex flex-wrap gap-2">

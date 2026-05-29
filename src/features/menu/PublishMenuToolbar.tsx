@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from "react";
 import { Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMenuVersionStore } from "@/stores/useMenuVersionStore";
+import { formatTimestamp } from "@/lib/formatters";
 
 type PublishMenuToolbarProps = {
   /** Controls shown before the Publish button (e.g. create / sort actions). */
@@ -52,7 +53,7 @@ export function PublishMenuToolbar({ children }: PublishMenuToolbarProps) {
             Last published{" "}
             <span className="font-medium text-foreground">
               {version.lastUpdated
-                ? version.lastUpdated.toDate().toLocaleString()
+                ? formatTimestamp(version.lastUpdated)
                 : "— not yet —"}
             </span>
           </span>
