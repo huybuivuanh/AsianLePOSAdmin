@@ -3,16 +3,13 @@
 import { useMemo, useState } from "react";
 import { useCreditStore } from "@/stores/useCreditStore";
 import { Button } from "@/components/ui/button";
-import UpdateCreditForm from "@/features/credits/UpdateCreditForm";
-import { ArrowDown, ArrowUp, CheckCircle2, RotateCcw } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { SearchField } from "@/components/ui/search-field";
-import type { Credit } from "@/types";
-import { formatTimestamp } from "@/lib/formatters";
 import { matchesQuery, sortByNameAndCreated } from "@/lib/list-utils";
+import { CreditTableRow } from "./CreditTableRow";
 
 export default function CreditList() {
-  const { credits, loading, error, deleteCredit, updateCredit } =
-    useCreditStore();
+  const { credits, loading, error } = useCreditStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"created" | "name">("created");
   const [createdSort, setCreatedSort] = useState<"desc" | "asc">("desc");
@@ -30,23 +27,6 @@ export default function CreditList() {
     () => sortByNameAndCreated(filtered, sortBy, nameSort, createdSort),
     [filtered, sortBy, nameSort, createdSort],
   );
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this credit?")) return;
-    try {
-      await deleteCredit(id);
-    } catch {
-      alert("Failed to delete credit");
-    }
-  };
-
-  const handleToggleCompleted = async (credit: Credit) => {
-    try {
-      await updateCredit(credit.id!, { completed: !credit.completed });
-    } catch {
-      alert("Failed to update credit");
-    }
-  };
 
   if (error) {
     return (
@@ -77,12 +57,12 @@ export default function CreditList() {
         <table className="w-full min-w-[56rem] border-collapse text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50">
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground"
+                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground"
                   onClick={() => {
                     setSortBy("name");
                     setNameSort((s) => (s === "asc" ? "desc" : "asc"));
@@ -98,24 +78,24 @@ export default function CreditList() {
                   ) : null}
                 </Button>
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
                 Phone number
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
                 Description
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
                 Amount
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
                 Completed
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground"
+                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground"
                   onClick={() => {
                     setSortBy("created");
                     setCreatedSort((s) => (s === "desc" ? "asc" : "desc"));
@@ -131,7 +111,7 @@ export default function CreditList() {
                   ) : null}
                 </Button>
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
                 Actions
               </th>
             </tr>
@@ -158,75 +138,7 @@ export default function CreditList() {
               </tr>
             ) : (
               visible.map((credit) => (
-                <tr
-                  key={credit.id}
-                  className="transition-colors hover:bg-muted/40"
-                >
-                  <td className="px-3 py-3 font-medium text-foreground sm:px-4">
-                    {credit.name ?? "—"}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
-                    {credit.phoneNumber ?? "—"}
-                  </td>
-                  <td className="max-w-[18rem] px-3 py-3 break-words text-muted-foreground sm:max-w-none sm:px-4">
-                    {credit.description ?? "—"}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
-                    {typeof credit.amount === "number"
-                      ? credit.amount.toFixed(2)
-                      : "0.00"}
-                  </td>
-                  <td className="px-3 py-3 sm:px-4">
-                    <span
-                      className={
-                        credit.completed
-                          ? "inline-flex rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700"
-                          : "inline-flex rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground"
-                      }
-                    >
-                      {credit.completed ? "Yes" : "No"}
-                    </span>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
-                    {formatTimestamp(credit.createdAt)}
-                  </td>
-                  <td className="px-3 py-3 sm:px-4">
-                    <div className="flex flex-wrap gap-2">
-                      <UpdateCreditForm credit={credit} />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className={
-                          credit.completed
-                            ? "border-amber-500/40 text-amber-700 hover:bg-amber-500/10 hover:text-amber-800"
-                            : "border-emerald-500/40 text-emerald-700 hover:bg-emerald-500/10 hover:text-emerald-800"
-                        }
-                        onClick={() => handleToggleCompleted(credit)}
-                      >
-                        {credit.completed ? (
-                          <>
-                            <RotateCcw className="size-4" aria-hidden />
-                            Mark incomplete
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle2 className="size-4" aria-hidden />
-                            Mark completed
-                          </>
-                        )}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(credit.id!)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
+                <CreditTableRow key={credit.id} credit={credit} />
               ))
             )}
           </tbody>
