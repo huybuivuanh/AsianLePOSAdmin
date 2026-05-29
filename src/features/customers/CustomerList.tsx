@@ -7,15 +7,7 @@ import { SearchField } from "@/components/ui/search-field";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import type { Customer } from "@/types";
 import { formatTimestamp } from "@/lib/formatters";
-
-function matchesSearch(customer: Customer, q: string): boolean {
-  if (!q.trim()) return true;
-  const n = q.trim().toLowerCase();
-  return (
-    customer.name.toLowerCase().includes(n) ||
-    customer.phone.toLowerCase().includes(n)
-  );
-}
+import { matchesQuery, sortByNameAndCreated } from "@/lib/list-utils";
 
 export default function CustomerList() {
   const { customers, loading, error, deleteCustomer } = useCustomerStore();
@@ -25,26 +17,15 @@ export default function CustomerList() {
   const [nameSort, setNameSort] = useState<"asc" | "desc">("asc");
 
   const filtered = useMemo(
-    () => customers.filter((c) => matchesSearch(c, searchTerm)),
+    () =>
+      customers.filter((c) => matchesQuery(searchTerm, c.name, c.phone)),
     [customers, searchTerm],
   );
 
-  const visible = useMemo(() => {
-    const rows = [...filtered];
-    rows.sort((a, b) => {
-      if (sortBy === "name") {
-        const av = a.name.toLowerCase();
-        const bv = b.name.toLowerCase();
-        const cmp = av.localeCompare(bv);
-        return nameSort === "asc" ? cmp : -cmp;
-      }
-
-      const av = a.createdAt?.toMillis?.() ?? 0;
-      const bv = b.createdAt?.toMillis?.() ?? 0;
-      return createdSort === "desc" ? bv - av : av - bv;
-    });
-    return rows;
-  }, [filtered, createdSort, nameSort, sortBy]);
+  const visible = useMemo(
+    () => sortByNameAndCreated(filtered, sortBy, nameSort, createdSort),
+    [filtered, sortBy, nameSort, createdSort],
+  );
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this customer?")) return;

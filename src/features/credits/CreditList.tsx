@@ -8,15 +8,7 @@ import { ArrowDown, ArrowUp, CheckCircle2, RotateCcw } from "lucide-react";
 import { SearchField } from "@/components/ui/search-field";
 import type { Credit } from "@/types";
 import { formatTimestamp } from "@/lib/formatters";
-
-function matchesSearch(credit: Credit, q: string): boolean {
-  if (!q.trim()) return true;
-  const n = q.trim().toLowerCase();
-  return (
-    (credit.name ?? "").toLowerCase().includes(n) ||
-    (credit.phoneNumber ?? "").toLowerCase().includes(n)
-  );
-}
+import { matchesQuery, sortByNameAndCreated } from "@/lib/list-utils";
 
 export default function CreditList() {
   const { credits, loading, error, deleteCredit, updateCredit } =
@@ -27,26 +19,17 @@ export default function CreditList() {
   const [nameSort, setNameSort] = useState<"asc" | "desc">("asc");
 
   const filtered = useMemo(
-    () => credits.filter((c) => matchesSearch(c, searchTerm)),
+    () =>
+      credits.filter((c) =>
+        matchesQuery(searchTerm, c.name ?? "", c.phoneNumber ?? ""),
+      ),
     [credits, searchTerm],
   );
 
-  const visible = useMemo(() => {
-    const rows = [...filtered];
-    rows.sort((a, b) => {
-      if (sortBy === "name") {
-        const av = (a.name ?? "").toLowerCase();
-        const bv = (b.name ?? "").toLowerCase();
-        const cmp = av.localeCompare(bv);
-        return nameSort === "asc" ? cmp : -cmp;
-      }
-
-      const av = a.createdAt?.toMillis?.() ?? 0;
-      const bv = b.createdAt?.toMillis?.() ?? 0;
-      return createdSort === "desc" ? bv - av : av - bv;
-    });
-    return rows;
-  }, [filtered, sortBy, nameSort, createdSort]);
+  const visible = useMemo(
+    () => sortByNameAndCreated(filtered, sortBy, nameSort, createdSort),
+    [filtered, sortBy, nameSort, createdSort],
+  );
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this credit?")) return;
