@@ -130,6 +130,29 @@ export async function fetchOrdersForHistory(
   return snap.docs.map((d) => normalizeDineInOrderDoc(d.id, d.data()));
 }
 
+export async function fetchOrdersForAnalytics(): Promise<
+  OrderHistoryLoadedOrder[]
+> {
+  const [takeOutSnap, dineInSnap] = await Promise.all([
+    getDocs(
+      query(
+        collection(clientDb, TAKE_OUT_ORDERS_COLLECTION),
+        orderBy("createdAt", "desc"),
+      ),
+    ),
+    getDocs(
+      query(
+        collection(clientDb, DINE_IN_ORDERS_COLLECTION),
+        orderBy("createdAt", "desc"),
+      ),
+    ),
+  ]);
+  return [
+    ...takeOutSnap.docs.map((d) => normalizeTakeOutOrderDoc(d.id, d.data())),
+    ...dineInSnap.docs.map((d) => normalizeDineInOrderDoc(d.id, d.data())),
+  ];
+}
+
 export function isTakeOutLoadedOrder(
   o: OrderHistoryLoadedOrder,
 ): o is TakeOutOrder & { id: string } {
@@ -155,7 +178,9 @@ export const submitToPrintQueue = async (order: OrderDraft) => {
   await setDoc(printQueueRef, forPrint as Record<string, unknown>);
 };
 
-export const completeOrder = async (order: OrderDraft): Promise<OrderStatus> => {
+export const completeOrder = async (
+  order: OrderDraft,
+): Promise<OrderStatus> => {
   if (!order.id) throw new Error("Order ID is required to complete.");
   const colName =
     order.orderType === OrderType.TakeOut
