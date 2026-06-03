@@ -75,7 +75,6 @@ export default function CreateUserForm() {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Asian Le"
                 required
               />
             </div>
@@ -86,7 +85,6 @@ export default function CreateUserForm() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="asianle@example.com"
                 required
               />
             </div>
@@ -97,7 +95,6 @@ export default function CreateUserForm() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
               />
             </div>
             <div className="space-y-2">
@@ -114,7 +111,9 @@ export default function CreateUserForm() {
               </Select>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={saving}>Create user</Button>
+              <Button type="submit" disabled={saving}>
+                Create user
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

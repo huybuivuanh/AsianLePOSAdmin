@@ -32,8 +32,7 @@ export default function UpdateCreditForm({ credit }: { credit: Credit }) {
   const parsedAmount = amountText.trim() === "" ? 0 : Number(amountText);
   const hasNameOrPhone =
     name.trim().length > 0 || phoneNumber.trim().length > 0;
-  const canSubmit =
-    hasNameOrPhone && Number.isFinite(parsedAmount);
+  const canSubmit = hasNameOrPhone && Number.isFinite(parsedAmount);
 
   const handlePhoneNumberChange = (value: string) => {
     setPhoneNumber(value.replace(/\D/g, ""));
@@ -87,7 +86,6 @@ export default function UpdateCreditForm({ credit }: { credit: Credit }) {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Customer name"
               />
             </div>
             <div className="space-y-2">
@@ -96,7 +94,6 @@ export default function UpdateCreditForm({ credit }: { credit: Credit }) {
                 id="phoneNumber"
                 value={phoneNumber}
                 onChange={(e) => handlePhoneNumberChange(e.target.value)}
-                placeholder="0123456789"
                 inputMode="numeric"
                 pattern="[0-9]*"
               />
@@ -107,7 +104,6 @@ export default function UpdateCreditForm({ credit }: { credit: Credit }) {
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Reason / notes"
               />
             </div>
             <div className="space-y-2">
