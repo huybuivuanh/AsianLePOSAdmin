@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useOptionStore } from "@/stores/useOptionStore";
 import type { ItemOption } from "@/types";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function UpdateOptionForm({ option }: { option: ItemOption }) {
   const [open, setOpen] = useState(false);
@@ -38,47 +39,50 @@ export default function UpdateOptionForm({ option }: { option: ItemOption }) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          Update
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Update Option</DialogTitle>
-          <DialogDescription>
-            Update the option details below.
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <LoadingOverlay visible={loading} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            Update
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Option</DialogTitle>
+            <DialogDescription>
+              Update the option details below.
+            </DialogDescription>
+          </DialogHeader>
 
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Name</Label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={loading}
-            />
-          </div>
+          <form onSubmit={handleUpdate} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Name</Label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={loading}
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label>Price</Label>
-            <Input
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              disabled={loading}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label>Price</Label>
+              <Input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                disabled={loading}
+              />
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Saving..." : "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

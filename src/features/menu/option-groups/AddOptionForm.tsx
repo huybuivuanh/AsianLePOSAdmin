@@ -17,6 +17,7 @@ import { useOptionStore } from "@/stores/useOptionStore";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { patchClearDefaultIfNotInOptionIds } from "@/lib/option-group-updates";
 import type { OptionGroup } from "@/types";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function AddOptionForm({ group }: { group: OptionGroup }) {
   const { options, updateOption } = useOptionStore();
@@ -77,61 +78,64 @@ export default function AddOptionForm({ group }: { group: OptionGroup }) {
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          + Add Options
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
-        <DialogHeader>
-          <DialogTitle>Add Options to Group</DialogTitle>
-          <DialogDescription>
-            Select the options you want to include in <b>{group.name}</b>.
-          </DialogDescription>
-        </DialogHeader>
-
-        {/* Search bar */}
-        <div className="mb-0 shrink-0">
-          <SearchField
-            placeholder="Search options…"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            aria-label="Search options"
-          />
-        </div>
-
-        {/* Scrollable options list */}
-        <div className="max-h-[min(52dvh,24rem)] space-y-2 overflow-y-auto sm:max-h-[calc(80vh-220px)]">
-          {filteredOptions.length > 0 ? (
-            filteredOptions.map((opt) => (
-              <label
-                key={opt.id}
-                className="flex items-center gap-2 border p-2 rounded cursor-pointer"
-              >
-                <Checkbox
-                  checked={selected.includes(opt.id!)}
-                  onCheckedChange={() => toggleSelect(opt.id!)}
-                  disabled={loading}
-                />
-                <span>
-                  {opt.name} – ${opt.price.toFixed(2)}
-                </span>
-              </label>
-            ))
-          ) : (
-            <p className="text-sm text-gray-500 italic">
-              No options match your search
-            </p>
-          )}
-        </div>
-
-        <DialogFooter>
-          <Button onClick={handleSave} disabled={loading}>
-            {loading ? "Saving..." : "Save Selection"}
+    <>
+      <LoadingOverlay visible={loading} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            + Add Options
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DialogTrigger>
+        <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
+          <DialogHeader>
+            <DialogTitle>Add Options to Group</DialogTitle>
+            <DialogDescription>
+              Select the options you want to include in <b>{group.name}</b>.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Search bar */}
+          <div className="mb-0 shrink-0">
+            <SearchField
+              placeholder="Search options…"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Search options"
+            />
+          </div>
+
+          {/* Scrollable options list */}
+          <div className="max-h-[min(52dvh,24rem)] space-y-2 overflow-y-auto sm:max-h-[calc(80vh-220px)]">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((opt) => (
+                <label
+                  key={opt.id}
+                  className="flex items-center gap-2 border p-2 rounded cursor-pointer"
+                >
+                  <Checkbox
+                    checked={selected.includes(opt.id!)}
+                    onCheckedChange={() => toggleSelect(opt.id!)}
+                    disabled={loading}
+                  />
+                  <span>
+                    {opt.name} – ${opt.price.toFixed(2)}
+                  </span>
+                </label>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500 italic">
+                No options match your search
+              </p>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button onClick={handleSave} disabled={loading}>
+              {loading ? "Saving..." : "Save Selection"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

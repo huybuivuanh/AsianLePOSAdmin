@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Credit } from "@/types";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function UpdateCreditForm({ credit }: { credit: Credit }) {
   const [open, setOpen] = useState(false);
@@ -25,6 +26,7 @@ export default function UpdateCreditForm({ credit }: { credit: Credit }) {
       ? String(credit.amount)
       : "",
   );
+  const [saving, setSaving] = useState(false);
   const { updateCredit } = useCreditStore();
 
   const parsedAmount = amountText.trim() === "" ? 0 : Number(amountText);
@@ -48,6 +50,7 @@ export default function UpdateCreditForm({ credit }: { credit: Credit }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
+    setSaving(true);
     try {
       await updateCredit(credit.id!, {
         name: name.trim(),
@@ -59,73 +62,78 @@ export default function UpdateCreditForm({ credit }: { credit: Credit }) {
     } catch (err) {
       console.error(err);
       alert("Failed to update credit");
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          Edit
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle>Edit Credit</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Customer name"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phoneNumber">Phone number</Label>
-            <Input
-              id="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => handlePhoneNumberChange(e.target.value)}
-              placeholder="0123456789"
-              inputMode="numeric"
-              pattern="[0-9]*"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Reason / notes"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="amount">Amount</Label>
-            <Input
-              id="amount"
-              type="number"
-              inputMode="decimal"
-              value={amountText}
-              onChange={(e) => handleAmountChange(e.target.value)}
-              step="0.01"
-              placeholder="0"
-            />
-          </div>
-          <DialogFooter>
-            <Button
-              type="submit"
-              className="bg-blue-500 text-white"
-              disabled={!canSubmit}
-            >
-              Save Changes
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <>
+      <LoadingOverlay visible={saving} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            Edit
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Edit Credit</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Customer name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">Phone number</Label>
+              <Input
+                id="phoneNumber"
+                value={phoneNumber}
+                onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                placeholder="0123456789"
+                inputMode="numeric"
+                pattern="[0-9]*"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Input
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Reason / notes"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="amount">Amount</Label>
+              <Input
+                id="amount"
+                type="number"
+                inputMode="decimal"
+                value={amountText}
+                onChange={(e) => handleAmountChange(e.target.value)}
+                step="0.01"
+                placeholder="0"
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                type="submit"
+                className="bg-blue-500 text-white"
+                disabled={!canSubmit || saving}
+              >
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

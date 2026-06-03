@@ -19,6 +19,7 @@ import {
   mergeOptionGroupSelection,
 } from "@/lib/menu-item-option-groups";
 import type { MenuItem } from "@/types";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
   const { optionGroups, updateOptionGroup } = useOptionGroupStore();
@@ -77,17 +78,19 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
   );
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next);
-        if (next) {
-          setSelected(
-            getOrderedOptionGroupRefs(item).map((r) => r.optionGroupId),
-          );
-        }
-      }}
-    >
+    <>
+      <LoadingOverlay visible={loading} />
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (next) {
+            setSelected(
+              getOrderedOptionGroupRefs(item).map((r) => r.optionGroupId),
+            );
+          }
+        }}
+      >
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           + Add Option Groups
@@ -142,5 +145,6 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

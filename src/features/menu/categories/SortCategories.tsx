@@ -29,6 +29,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect } from "react";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 function SortableItem({ id, name }: { id: string; name: string }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -56,6 +57,7 @@ export default function SortCategories() {
   const [open, setOpen] = useState(false);
   const { categories, updateCategory } = useCategoriesStore();
   const [orderedIds, setOrderedIds] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (categories.length > 0) {
@@ -82,6 +84,7 @@ export default function SortCategories() {
   };
 
   const handleSave = async () => {
+    setSaving(true);
     try {
       await Promise.all(
         orderedIds.map((id, index) => updateCategory(id, { order: index }))
@@ -90,53 +93,58 @@ export default function SortCategories() {
     } catch (err) {
       console.error("Failed to save category order:", err);
       alert("Failed to save");
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button type="button" variant="secondary" className="gap-2">
-          <ListOrdered className="size-4" aria-hidden />
-          Sort categories
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
-        <DialogHeader>
-          <DialogTitle>Sort Categories</DialogTitle>
-          <DialogDescription>
-            Drag and drop categories to reorder them.
-          </DialogDescription>
-        </DialogHeader>
-
-        {/* Scrollable container */}
-        <div className="max-h-[min(58dvh,28rem)] w-full overflow-y-auto sm:max-h-[calc(80vh-220px)]">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={orderedIds}
-              strategy={verticalListSortingStrategy}
-            >
-              <ul className="space-y-2">
-                {orderedIds.map((id) => {
-                  const cat = categories.find((c) => c.id === id);
-                  if (!cat) return null;
-                  return <SortableItem key={id} id={id} name={cat.name} />;
-                })}
-              </ul>
-            </SortableContext>
-          </DndContext>
-        </div>
-
-        <DialogFooter>
-          <Button type="button" onClick={handleSave}>
-            Save order
+    <>
+      <LoadingOverlay visible={saving} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button type="button" variant="secondary" className="gap-2">
+            <ListOrdered className="size-4" aria-hidden />
+            Sort categories
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DialogTrigger>
+        <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
+          <DialogHeader>
+            <DialogTitle>Sort Categories</DialogTitle>
+            <DialogDescription>
+              Drag and drop categories to reorder them.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Scrollable container */}
+          <div className="max-h-[min(58dvh,28rem)] w-full overflow-y-auto sm:max-h-[calc(80vh-220px)]">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={orderedIds}
+                strategy={verticalListSortingStrategy}
+              >
+                <ul className="space-y-2">
+                  {orderedIds.map((id) => {
+                    const cat = categories.find((c) => c.id === id);
+                    if (!cat) return null;
+                    return <SortableItem key={id} id={id} name={cat.name} />;
+                  })}
+                </ul>
+              </SortableContext>
+            </DndContext>
+          </div>
+
+          <DialogFooter>
+            <Button type="button" onClick={handleSave} disabled={saving}>
+              Save order
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

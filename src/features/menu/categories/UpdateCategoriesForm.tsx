@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import type { FoodCategory } from "@/types";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function UpdateCategoriesForm({
   category,
@@ -23,49 +24,56 @@ export default function UpdateCategoriesForm({
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(category.name);
+  const [saving, setSaving] = useState(false);
   const { updateCategory } = useCategoriesStore();
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
     try {
       await updateCategory(category.id!, { name: name.trim() });
       setOpen(false);
     } catch (err) {
       console.error(err);
       alert("Failed to update category");
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          Update
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Update Category</DialogTitle>
-          <DialogDescription>Update the category name below.</DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleUpdate} className="flex flex-col gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
+    <>
+      <LoadingOverlay visible={saving} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            Update
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Update Category</DialogTitle>
+            <DialogDescription>Update the category name below.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleUpdate} className="flex flex-col gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" className="bg-blue-500 text-white">
-              Save Changes
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter>
+              <Button type="submit" disabled={saving} className="bg-blue-500 text-white">
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

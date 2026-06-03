@@ -33,6 +33,7 @@ import {
   reindexOptionGroupOrders,
 } from "@/lib/menu-item-option-groups";
 import type { MenuItem } from "@/types";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 function SortableRow({ id, name }: { id: string; name: string }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -59,6 +60,7 @@ function SortableRow({ id, name }: { id: string; name: string }) {
 export default function SortOptionGroupsForm({ item }: { item: MenuItem }) {
   const [open, setOpen] = useState(false);
   const [orderedIds, setOrderedIds] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
   const { updateItem } = useItemStore();
   const { optionGroups } = useOptionGroupStore();
 
@@ -80,6 +82,7 @@ export default function SortOptionGroupsForm({ item }: { item: MenuItem }) {
   };
 
   const handleSave = async () => {
+    setSaving(true);
     try {
       const optionGroupIds = reindexOptionGroupOrders(
         orderedIds.map((optionGroupId) => ({ optionGroupId, order: 0 })),
@@ -89,71 +92,76 @@ export default function SortOptionGroupsForm({ item }: { item: MenuItem }) {
     } catch (err) {
       console.error("Failed to save option group order:", err);
       alert("Failed to save");
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next);
-        if (next) {
-          setOrderedIds(
-            getOrderedOptionGroupRefs(item).map((r) => r.optionGroupId),
-          );
-        }
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          disabled={!canSort}
-          className="gap-1.5"
-        >
-          <GripVertical className="size-3.5 opacity-70" aria-hidden />
-          Sort groups
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
-        <DialogHeader>
-          <DialogTitle>Sort option groups — {item.name}</DialogTitle>
-          <DialogDescription>
-            Drag to set the order shown on the POS and in order line details.
-            New selections follow this order, not the tap order.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="max-h-[min(58dvh,28rem)] w-full overflow-y-auto sm:max-h-[calc(80vh-220px)]">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
+    <>
+      <LoadingOverlay visible={saving} />
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (next) {
+            setOrderedIds(
+              getOrderedOptionGroupRefs(item).map((r) => r.optionGroupId),
+            );
+          }
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={!canSort}
+            className="gap-1.5"
           >
-            <SortableContext
-              items={orderedIds}
-              strategy={verticalListSortingStrategy}
-            >
-              <ul className="space-y-2">
-                {orderedIds.map((id) => {
-                  const group = optionGroups.find((g) => g.id === id);
-                  if (!group) return null;
-                  return (
-                    <SortableRow key={id} id={id} name={group.name} />
-                  );
-                })}
-              </ul>
-            </SortableContext>
-          </DndContext>
-        </div>
-
-        <DialogFooter>
-          <Button type="button" onClick={handleSave}>
-            Save order
+            <GripVertical className="size-3.5 opacity-70" aria-hidden />
+            Sort groups
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DialogTrigger>
+        <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">
+          <DialogHeader>
+            <DialogTitle>Sort option groups — {item.name}</DialogTitle>
+            <DialogDescription>
+              Drag to set the order shown on the POS and in order line details.
+              New selections follow this order, not the tap order.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="max-h-[min(58dvh,28rem)] w-full overflow-y-auto sm:max-h-[calc(80vh-220px)]">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={orderedIds}
+                strategy={verticalListSortingStrategy}
+              >
+                <ul className="space-y-2">
+                  {orderedIds.map((id) => {
+                    const group = optionGroups.find((g) => g.id === id);
+                    if (!group) return null;
+                    return (
+                      <SortableRow key={id} id={id} name={group.name} />
+                    );
+                  })}
+                </ul>
+              </SortableContext>
+            </DndContext>
+          </div>
+
+          <DialogFooter>
+            <Button type="button" onClick={handleSave} disabled={saving}>
+              Save order
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

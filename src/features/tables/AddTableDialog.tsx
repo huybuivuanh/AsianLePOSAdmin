@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 type Props = {
   open: boolean;
@@ -54,7 +55,9 @@ export function AddTableDialog({ open, onOpenChange, nextTableNumber }: Props) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      <LoadingOverlay visible={creating} />
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add table</DialogTitle>
@@ -88,5 +91,6 @@ export function AddTableDialog({ open, onOpenChange, nextTableNumber }: Props) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

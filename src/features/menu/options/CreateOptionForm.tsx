@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Timestamp } from "firebase/firestore";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { Plus } from "lucide-react";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function CreateOptionForm() {
   const [open, setOpen] = useState(false);
@@ -47,47 +48,50 @@ export default function CreateOptionForm() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button type="button" className="gap-2">
-          <Plus className="size-4" aria-hidden />
-          New option
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create New Option</DialogTitle>
-          <DialogDescription>Enter the option details below.</DialogDescription>
-        </DialogHeader>
+    <>
+      <LoadingOverlay visible={loading} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button type="button" className="gap-2">
+            <Plus className="size-4" aria-hidden />
+            New option
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Option</DialogTitle>
+            <DialogDescription>Enter the option details below.</DialogDescription>
+          </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Name</Label>
-            <Input
-              placeholder="Option name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={loading}
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Name</Label>
+              <Input
+                placeholder="Option name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={loading}
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label>Price</Label>
-            <Input
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              disabled={loading}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label>Price</Label>
+              <Input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                disabled={loading}
+              />
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Creating..." : "Create"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

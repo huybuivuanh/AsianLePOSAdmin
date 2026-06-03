@@ -23,6 +23,7 @@ import {
 import { useItemStore } from "@/stores/useItemStore";
 import { KitchenType } from "@/types/enum";
 import type { MenuItem } from "@/types";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function UpdateItemDialog({ item }: { item: MenuItem }) {
   const [open, setOpen] = useState(false);
@@ -62,72 +63,75 @@ export default function UpdateItemDialog({ item }: { item: MenuItem }) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          Update
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit Menu Item</DialogTitle>
-          <DialogDescription>Update the item details below.</DialogDescription>
-        </DialogHeader>
+    <>
+      <LoadingOverlay visible={loading} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            Update
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Menu Item</DialogTitle>
+            <DialogDescription>Update the item details below.</DialogDescription>
+          </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
-          <div className="space-y-2">
-            <Label htmlFor="item-name">Name</Label>
-            <Input
-              id="item-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Name */}
+            <div className="space-y-2">
+              <Label htmlFor="item-name">Name</Label>
+              <Input
+                id="item-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
 
-          {/* Price */}
-          <div className="space-y-2">
-            <Label htmlFor="item-price">Price</Label>
-            <Input
-              id="item-price"
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              required
-              disabled={loading}
-            />
-          </div>
+            {/* Price */}
+            <div className="space-y-2">
+              <Label htmlFor="item-price">Price</Label>
+              <Input
+                id="item-price"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                required
+                disabled={loading}
+              />
+            </div>
 
-          {/* Kitchen Type */}
-          <div className="space-y-2">
-            <Label>Kitchen Type</Label>
-            <Select
-              value={kitchenType}
-              onValueChange={(val) => setKitchenType(val as KitchenType)}
-              disabled={loading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select kitchen type" />
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.values(KitchenType) as KitchenType[]).map((kt) => (
-                  <SelectItem key={kt} value={kt}>
-                    {kt}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Kitchen Type */}
+            <div className="space-y-2">
+              <Label>Kitchen Type</Label>
+              <Select
+                value={kitchenType}
+                onValueChange={(val) => setKitchenType(val as KitchenType)}
+                disabled={loading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select kitchen type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.values(KitchenType) as KitchenType[]).map((kt) => (
+                    <SelectItem key={kt} value={kt}>
+                      {kt}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Saving..." : "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

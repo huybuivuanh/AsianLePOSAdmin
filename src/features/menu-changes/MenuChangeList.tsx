@@ -8,6 +8,7 @@ import { SearchField } from "@/components/ui/search-field";
 import type { MenuChange } from "@/types";
 import { formatTimestamp } from "@/lib/formatters";
 
+
 function matchesSearch(menuChange: MenuChange, q: string): boolean {
   if (!q.trim()) return true;
   const n = q.trim().toLowerCase();

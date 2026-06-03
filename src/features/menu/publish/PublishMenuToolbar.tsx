@@ -5,6 +5,7 @@ import { Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMenuVersionStore } from "@/stores/useMenuVersionStore";
 import { formatTimestamp } from "@/lib/formatters";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 type PublishMenuToolbarProps = {
   /** Controls shown before the Publish button (e.g. create / sort actions). */
@@ -24,7 +25,9 @@ export function PublishMenuToolbar({ children }: PublishMenuToolbarProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+    <>
+      <LoadingOverlay visible={loading} />
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         {children}
       </div>
@@ -55,5 +58,6 @@ export function PublishMenuToolbar({ children }: PublishMenuToolbarProps) {
         </div>
       ) : null}
     </div>
+    </>
   );
 }

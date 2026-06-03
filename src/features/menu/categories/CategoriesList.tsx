@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
 import type { FoodCategory } from "@/types";
 
+
 export default function CategoriesList() {
   const { categories, loading, deleteCategory, updateCategory } =
     useCategoriesStore();

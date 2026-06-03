@@ -3,7 +3,6 @@ import { useUserStore } from "@/stores/useUserStore";
 import UpdateUserForm from "./UpdateUserForm";
 import { Button } from "@/components/ui/button";
 import { formatTimestamp } from "@/lib/formatters";
-
 export default function UserList() {
   const { users, loading, deleteUser, subscribe } = useUserStore();
 

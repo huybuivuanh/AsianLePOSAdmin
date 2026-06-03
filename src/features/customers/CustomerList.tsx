@@ -9,6 +9,7 @@ import type { Customer } from "@/types";
 import { formatTimestamp } from "@/lib/formatters";
 import { matchesQuery, sortByNameAndCreated } from "@/lib/list-utils";
 
+
 export default function CustomerList() {
   const { customers, loading, error, deleteCustomer } = useCustomerStore();
   const [searchTerm, setSearchTerm] = useState("");

@@ -15,6 +15,7 @@ import { SearchField } from "@/components/ui/search-field";
 import { useItemStore } from "@/stores/useItemStore";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import type { FoodCategory } from "@/types";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function AddItemForm({ category }: { category: FoodCategory }) {
   const { items, updateItem } = useItemStore();
@@ -70,7 +71,9 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <>
+      <LoadingOverlay visible={loading} />
+      <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           + Add Items
@@ -124,5 +127,6 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

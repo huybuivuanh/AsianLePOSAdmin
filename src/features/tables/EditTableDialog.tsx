@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 type Props = {
   table: Table | null;
@@ -66,7 +67,9 @@ export function EditTableDialog({ table, onClose }: Props) {
   };
 
   return (
-    <Dialog open={table !== null} onOpenChange={(open) => { if (!open) onClose(); }}>
+    <>
+      <LoadingOverlay visible={saving || deleting} />
+      <Dialog open={table !== null} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Edit table</DialogTitle>
@@ -114,5 +117,6 @@ export function EditTableDialog({ table, onClose }: Props) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

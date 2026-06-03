@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { Plus } from "lucide-react";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function CreateCategoryForm() {
   const [open, setOpen] = useState(false);
@@ -39,35 +40,38 @@ export default function CreateCategoryForm() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button type="button" className="gap-2">
-          <Plus className="size-4" aria-hidden />
-          New category
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create New Category</DialogTitle>
-          <DialogDescription>Enter the name of the category.</DialogDescription>
-        </DialogHeader>
+    <>
+      <LoadingOverlay visible={loading} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button type="button" className="gap-2">
+            <Plus className="size-4" aria-hidden />
+            New category
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Category</DialogTitle>
+            <DialogDescription>Enter the name of the category.</DialogDescription>
+          </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            placeholder="Category name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            disabled={loading}
-          />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              placeholder="Category name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              disabled={loading}
+            />
 
-          <DialogFooter>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Creating..." : "Create"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
