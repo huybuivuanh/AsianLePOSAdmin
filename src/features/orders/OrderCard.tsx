@@ -216,7 +216,6 @@ export function OrderCard({
                   e.stopPropagation();
                   const status = await completeOrder(order);
                   onStatusChange?.(order.id, status);
-                  alert("Order completed successfully.");
                 } catch (error) {
                   console.error(error);
                   alert("Failed to complete order.");

@@ -22,6 +22,7 @@ export default function Navbar() {
 
   const links = [
     { href: "/dashboard", label: "Dashboard" },
+    { href: "/tables", label: "Tables" },
     { href: "/menu", label: "Menu" },
     { href: "/menu-changes", label: "Menu Changes" },
     { href: "/users", label: "Users" },
