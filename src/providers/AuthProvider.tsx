@@ -29,6 +29,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setPersistence(auth, browserLocalPersistence);
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        localStorage.setItem("wasLoggedIn", "true");
+      } else {
+        localStorage.removeItem("wasLoggedIn");
+      }
       setUser(firebaseUser);
       setLoading(false);
     });
@@ -36,7 +41,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  if (loading) {
+  // Returning users: skip the spinner and render children optimistically.
+  // AppLayout suppresses the redirect while loading is still true.
+  const wasLoggedIn =
+    typeof window !== "undefined" &&
+    localStorage.getItem("wasLoggedIn") === "true";
+
+  if (loading && !wasLoggedIn) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-muted/30">
         <div

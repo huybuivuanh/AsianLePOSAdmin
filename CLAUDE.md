@@ -35,7 +35,7 @@ src/
 │   ├── tables/             # DashboardTablesSection, EditTableDialog, AddTableDialog
 │   └── users/              # UserList, Create/UpdateUserForm
 ├── stores/                 # Zustand stores, one per domain
-├── providers/              # AuthProvider, StoreProvider
+├── providers/              # AuthProvider
 ├── services/               # userService (calls Next.js API routes)
 ├── lib/                    # Shared utilities
 │   ├── firebase-config.ts  # Firebase client SDK init
@@ -70,7 +70,7 @@ Two data-access patterns co-exist:
 
 ### Store subscriptions
 
-All stores are subscribed centrally in `StoreProvider`. Every Zustand store exposes a `subscribe(): () => void` method. `StoreProvider` calls them all in a single `useEffect` and cleans up on unmount. **Do not subscribe to stores manually in components** — add new stores to the `subscribeFns` array in `StoreProvider` instead.
+Stores are subscribed per-route in layout files under `src/app/(app)/`. Each route layout subscribes only to the stores it needs via a `useEffect` keyed on `[loading, user]`. Every Zustand store exposes a `subscribe(): () => void` method that returns its `onSnapshot` unsubscribe. When adding a new store, expose `subscribe` on it, then add it to the relevant route layout(s). Do not subscribe to stores inside feature components.
 
 ### Auth
 
