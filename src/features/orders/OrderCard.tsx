@@ -4,6 +4,7 @@ import { DiscountType, OrderStatus } from "@/types/enum";
 import {
   isTakeOutLoadedOrder,
   submitToPrintQueue,
+  completeOrder,
   type OrderHistoryLoadedOrder,
 } from "@/lib/order-history-firestore";
 import {
@@ -54,10 +55,12 @@ export function OrderCard({
   order,
   expanded,
   onToggle,
+  onStatusChange,
 }: {
   order: OrderHistoryLoadedOrder;
   expanded: boolean;
   onToggle: () => void;
+  onStatusChange?: (orderId: string, status: OrderStatus) => void;
 }) {
   const takeOut = isTakeOutLoadedOrder(order);
   const orderedAtLabel = formatOrderedAt(order.createdAt.toDate());
@@ -186,23 +189,43 @@ export function OrderCard({
             </div>
           </div>
 
-          <Button
-            type="button"
-            className="h-11 w-full rounded-lg bg-blue-600 text-base font-semibold text-white hover:bg-blue-700"
-            variant="default"
-            onClick={async (e) => {
-              try {
-                e.stopPropagation();
-                await submitToPrintQueue(order);
-                alert("Order added to print queue successfully.");
-              } catch (error) {
-                console.error(error);
-                alert("Failed to print order.");
-              }
-            }}
-          >
-            Print
-          </Button>
+          <div className="flex flex-col gap-2 md:flex-row">
+            <Button
+              type="button"
+              className="h-11 w-full flex-1 rounded-lg bg-blue-600 text-base font-semibold text-white hover:bg-blue-700"
+              variant="default"
+              onClick={async (e) => {
+                try {
+                  e.stopPropagation();
+                  await submitToPrintQueue(order);
+                  alert("Order added to print queue successfully.");
+                } catch (error) {
+                  console.error(error);
+                  alert("Failed to print order.");
+                }
+              }}
+            >
+              Print
+            </Button>
+            <Button
+              type="button"
+              className="h-11 w-full flex-1 rounded-lg bg-green-600 text-base font-semibold text-white hover:bg-green-700"
+              variant="default"
+              onClick={async (e) => {
+                try {
+                  e.stopPropagation();
+                  const status = await completeOrder(order);
+                  onStatusChange?.(order.id, status);
+                  alert("Order completed successfully.");
+                } catch (error) {
+                  console.error(error);
+                  alert("Failed to complete order.");
+                }
+              }}
+            >
+              Complete
+            </Button>
+          </div>
         </div>
       ) : null}
     </div>

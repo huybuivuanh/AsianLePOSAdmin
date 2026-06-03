@@ -6,12 +6,13 @@ import {
   orderBy,
   query,
   setDoc,
+  updateDoc,
   where,
   type DocumentData,
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
 import { asTimestamp } from "@/lib/firestore-timestamp";
-import { OrderType } from "@/types/enum";
+import { OrderStatus, OrderType } from "@/types/enum";
 import type {
   DineInOrder,
   Order,
@@ -152,4 +153,21 @@ export const submitToPrintQueue = async (order: OrderDraft) => {
     orderItems: order.orderItems ?? [],
   };
   await setDoc(printQueueRef, forPrint as Record<string, unknown>);
+};
+
+export const completeOrder = async (order: OrderDraft): Promise<OrderStatus> => {
+  if (!order.id) throw new Error("Order ID is required to complete.");
+  const colName =
+    order.orderType === OrderType.TakeOut
+      ? TAKE_OUT_ORDERS_COLLECTION
+      : DINE_IN_ORDERS_COLLECTION;
+  const status =
+    order.status === OrderStatus.Completed
+      ? OrderStatus.InProgress
+      : OrderStatus.Completed;
+  const orderRef = doc(collection(clientDb, colName), order.id);
+  await updateDoc(orderRef, {
+    status: status,
+  });
+  return status;
 };

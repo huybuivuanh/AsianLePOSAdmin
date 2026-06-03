@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { OrderStatus } from "@/types/enum";
 import {
   dateToLocalKey,
   fetchOrdersForHistory,
@@ -73,6 +74,17 @@ export default function OrderHistoryView() {
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   }, []);
+
+  const handleStatusChange = useCallback(
+    (orderId: string, status: OrderStatus) => {
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId ? { ...order, status } : order,
+        ),
+      );
+    },
+    [],
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -186,6 +198,7 @@ export default function OrderHistoryView() {
                 order={order}
                 expanded={Boolean(expanded[order.id])}
                 onToggle={() => toggle(order.id)}
+                onStatusChange={handleStatusChange}
               />
             </li>
           ))}
