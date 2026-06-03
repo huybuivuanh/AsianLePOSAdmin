@@ -5,10 +5,8 @@ import { useCustomerStore } from "@/stores/useCustomerStore";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
 import { ArrowDown, ArrowUp } from "lucide-react";
-import type { Customer } from "@/types";
 import { formatTimestamp } from "@/lib/formatters";
 import { matchesQuery, sortByNameAndCreated } from "@/lib/list-utils";
-
 
 export default function CustomerList() {
   const { customers, loading, error, deleteCustomer } = useCustomerStore();
@@ -18,8 +16,7 @@ export default function CustomerList() {
   const [nameSort, setNameSort] = useState<"asc" | "desc">("asc");
 
   const filtered = useMemo(
-    () =>
-      customers.filter((c) => matchesQuery(searchTerm, c.name, c.phone)),
+    () => customers.filter((c) => matchesQuery(searchTerm, c.name, c.phone)),
     [customers, searchTerm],
   );
 
@@ -55,6 +52,11 @@ export default function CustomerList() {
 
   return (
     <div className="space-y-4 p-4 sm:p-5">
+      <div>
+        <p className="ml-1 text-md font-medium tracking-tight text-muted-foreground">
+          Customers Saved : {customers.length}
+        </p>
+      </div>
       <SearchField
         placeholder="Search by name or phone…"
         value={searchTerm}

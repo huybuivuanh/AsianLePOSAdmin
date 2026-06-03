@@ -24,8 +24,10 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     setPersistence(auth, browserLocalPersistence);
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -43,9 +45,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Returning users: skip the spinner and render children optimistically.
   // AppLayout suppresses the redirect while loading is still true.
+  // Read localStorage only after mount so server and client initial HTML match.
   const wasLoggedIn =
-    typeof window !== "undefined" &&
-    localStorage.getItem("wasLoggedIn") === "true";
+    mounted && localStorage.getItem("wasLoggedIn") === "true";
 
   if (loading && !wasLoggedIn) {
     return (
