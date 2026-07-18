@@ -15,4 +15,14 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 export const auth = getAuth(app);
-export const clientDb = getFirestore(app);
+
+const productionDb = getFirestore(app);
+const demoDb = getFirestore(app, "demo");
+
+// Mutable — every store/service reads this at call time (not at import time),
+// so switching it here redirects all Firestore access app-wide.
+export let clientDb = productionDb;
+
+export function setActiveDatabase(isDemo: boolean) {
+  clientDb = isDemo ? demoDb : productionDb;
+}

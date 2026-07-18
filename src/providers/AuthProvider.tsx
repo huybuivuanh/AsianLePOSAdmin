@@ -6,7 +6,8 @@ import {
   setPersistence,
   browserLocalPersistence,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase-config";
+import { auth, setActiveDatabase } from "@/lib/firebase-config";
+import { DEMO_EMAIL, TEST_EMAIL } from "@/lib/demo";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type AuthContextType = {
@@ -36,6 +37,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         localStorage.removeItem("wasLoggedIn");
       }
+      setActiveDatabase(
+        firebaseUser?.email === DEMO_EMAIL ||
+          firebaseUser?.email === TEST_EMAIL,
+      );
       setUser(firebaseUser);
       setLoading(false);
     });
