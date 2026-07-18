@@ -86,6 +86,20 @@ export default function OrderHistoryView() {
     [],
   );
 
+  const handleOrderItemsChange = useCallback(
+    (
+      orderId: string,
+      orderItems: OrderHistoryLoadedOrder["orderItems"],
+    ) => {
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId ? { ...order, orderItems } : order,
+        ),
+      );
+    },
+    [],
+  );
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -199,6 +213,7 @@ export default function OrderHistoryView() {
                 expanded={Boolean(expanded[order.id])}
                 onToggle={() => toggle(order.id)}
                 onStatusChange={handleStatusChange}
+                onOrderItemsChange={handleOrderItemsChange}
               />
             </li>
           ))}

@@ -1,4 +1,4 @@
-import type { Discount, TakeOutFulfillment } from "@/types";
+import type { Discount } from "@/types";
 import { DiscountType } from "@/types/enum";
 
 export function formatCurrency(amount: number): string {
@@ -20,14 +20,24 @@ export function formatOrderedAt(date: Date): string {
     day: "2-digit",
     month: "short",
     year: "numeric",
-    hour: "numeric",
+    hour: "2-digit",
     minute: "2-digit",
   });
 }
 
+export function formatPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length > 7) {
+    return (
+      digits.slice(0, -7) + " " + digits.slice(-7, -4) + "-" + digits.slice(-4)
+    );
+  }
+  return digits.slice(0, -4) + "-" + digits.slice(-4);
+}
+
 export function formatDiscountLabel(discount: Discount): string {
   if (discount.discountType === DiscountType.Percent) {
-    return `Discount (${discount.discountValue.toFixed(0)}%)`;
+    return `Discount (${discount.discountValue}%)`;
   }
   if (discount.discountType === DiscountType.Amount) {
     return `Discount ($${discount.discountValue.toFixed(2)})`;
@@ -36,24 +46,5 @@ export function formatDiscountLabel(discount: Discount): string {
 }
 
 export function formatDiscountAmount(discount: Discount): string {
-  if (discount.discountType === DiscountType.Percent) {
-    return `-$${discount.discountAmount.toFixed(2)}`;
-  }
-  if (discount.discountType === DiscountType.Amount) {
-    return `$${discount.discountValue.toFixed(2)}`;
-  }
-  return `$${discount.discountAmount.toFixed(2)}`;
-}
-
-export function formatReadyIn(fulfillment: TakeOutFulfillment): string {
-  if (fulfillment.kind === "scheduled") {
-    return formatOrderedAt(fulfillment.scheduledAt.toDate());
-  }
-  if (
-    fulfillment.readyTimeMinutes != null &&
-    Number.isFinite(fulfillment.readyTimeMinutes)
-  ) {
-    return `${fulfillment.readyTimeMinutes} min`;
-  }
-  return "—";
+  return `-$${discount.discountAmount.toFixed(2)}`;
 }

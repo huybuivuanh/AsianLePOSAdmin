@@ -159,6 +159,11 @@ export function isTakeOutLoadedOrder(
   return o.orderType === OrderType.TakeOut;
 }
 
+export function isOrderPaid(order: OrderHistoryLoadedOrder): boolean {
+  const items = order.orderItems ?? [];
+  return items.length > 0 && items.every((item) => item.paid === true);
+}
+
 type OrderDraft = Partial<Order> & {
   customerName?: string;
   phoneNumber?: string;
@@ -195,4 +200,36 @@ export const completeOrder = async (
     status: status,
   });
   return status;
+};
+
+export const cancelOrder = async (order: OrderDraft): Promise<void> => {
+  if (!order.id) throw new Error("Order ID is required to cancel.");
+  const colName =
+    order.orderType === OrderType.TakeOut
+      ? TAKE_OUT_ORDERS_COLLECTION
+      : DINE_IN_ORDERS_COLLECTION;
+  const orderRef = doc(collection(clientDb, colName), order.id);
+  await updateDoc(orderRef, {
+    status: OrderStatus.Cancelled,
+  });
+};
+
+export const markOrderPaid = async (
+  order: OrderHistoryLoadedOrder,
+  paid: boolean,
+): Promise<OrderHistoryLoadedOrder["orderItems"]> => {
+  if (!order.id) throw new Error("Order ID is required to mark as paid.");
+  const colName =
+    order.orderType === OrderType.TakeOut
+      ? TAKE_OUT_ORDERS_COLLECTION
+      : DINE_IN_ORDERS_COLLECTION;
+  const nextItems = (order.orderItems ?? []).map((item) => ({
+    ...item,
+    paid,
+  }));
+  const orderRef = doc(collection(clientDb, colName), order.id);
+  await updateDoc(orderRef, {
+    orderItems: nextItems,
+  });
+  return nextItems;
 };

@@ -2,55 +2,65 @@ import type { OrderItem } from "@/types";
 
 export function OrderItemBlock({ item }: { item: OrderItem }) {
   return (
-    <li className="rounded-lg border border-white/80 bg-white px-3 py-2.5 text-sm shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <span className="min-w-0">
-          <span className="font-medium">{item.quantity}</span>
-          {" × "}
+    <li className="mb-2.5 rounded-2xl border border-stone-200/90 bg-white px-3 py-3.5 shadow-sm shadow-stone-200/40">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="flex-1 text-lg font-semibold text-stone-900">
+          <span className="font-bold text-stone-600">{item.quantity}</span>
+          <span className="text-stone-400"> × </span>
           {item.name}
         </span>
-        <span className="shrink-0 tabular-nums">${item.price.toFixed(2)}</span>
+        <span className="text-lg font-bold text-stone-900">
+          ${(item.price * item.quantity).toFixed(2)}
+        </span>
       </div>
+
       {item.options != null && item.options.length > 0 ? (
-        <ul className="mt-1.5 space-y-0.5 border-t border-border/40 pt-1.5 text-xs text-muted-foreground">
+        <div className="mt-2 border-t border-stone-100 pt-2">
           {item.options.map((o, j) => (
-            <li key={j}>
-              •{o.quantity > 1 ? ` ${o.quantity}×` : ""} {o.name}{" "}
-              <span className="tabular-nums">
-                {o.price > 0 ? ` $${o.price.toFixed(2)}` : ""}
-              </span>
-            </li>
+            <p key={j} className="text-[15px] leading-5 text-stone-600">
+              <span className="text-stone-400">· </span>
+              {o.quantity > 1 ? `${o.quantity}× ` : ""}
+              {o.name}
+              {o.price > 0 ? `  ·  $${(o.price * o.quantity).toFixed(2)}` : ""}
+            </p>
           ))}
-        </ul>
+        </div>
       ) : null}
-      {item.changes != null && item.changes.length > 0 ? (
-        <ul className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-          {item.changes.map((c, j) => (
-            <li key={j}>
-              <span className="tabular-nums">•</span> Change: {c.from} → {c.to}{" "}
-              <span className="tabular-nums">
-                {c.price > 0 ? ` $${c.price.toFixed(2)}` : ""}
-              </span>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+
       {item.extras != null && item.extras.length > 0 ? (
-        <ul className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+        <div className="mt-1.5">
           {item.extras.map((ex, j) => (
-            <li key={j}>
-              <span className="tabular-nums">•</span>Add Extra: {ex.description}{" "}
-              <span className="tabular-nums">
-                {ex.price > 0 ? ` $${ex.price.toFixed(2)}` : ""}
+            <p key={j} className="text-[15px] leading-5 text-stone-600">
+              <span className="text-stone-400">· </span>
+              Add: {ex.description}
+              <span className="text-stone-500">
+                {ex.price > 0 ? ` · $${ex.price.toFixed(2)}` : ""}
               </span>
-            </li>
+            </p>
           ))}
-        </ul>
+        </div>
       ) : null}
+
+      {item.changes != null && item.changes.length > 0 ? (
+        <div className="mt-1.5">
+          {item.changes.map((c, j) => (
+            <p key={j} className="text-[15px] leading-5 text-stone-600">
+              <span className="text-stone-400">· </span>
+              {c.from} → {c.to}
+              <span className="text-stone-500">
+                {c.price > 0 ? ` · $${c.price.toFixed(2)}` : ""}
+              </span>
+            </p>
+          ))}
+        </div>
+      ) : null}
+
       {item.instructions != null && item.instructions.trim() !== "" ? (
-        <p className="mt-1.5 text-xs italic text-muted-foreground">
-          <span className="tabular-nums">•</span> Note: {item.instructions}
-        </p>
+        <div className="mt-2.5 rounded-lg border border-stone-100 bg-stone-50 px-3 py-2">
+          <p className="text-[15px] italic leading-5 text-stone-600">
+            &ldquo;{item.instructions}&rdquo;
+          </p>
+        </div>
       ) : null}
     </li>
   );
