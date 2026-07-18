@@ -130,6 +130,18 @@ export async function fetchOrdersForHistory(
   return snap.docs.map((d) => normalizeDineInOrderDoc(d.id, d.data()));
 }
 
+export async function fetchAllTakeOutOrders(): Promise<
+  (TakeOutOrder & { id: string })[]
+> {
+  const snap = await getDocs(
+    query(
+      collection(clientDb, TAKE_OUT_ORDERS_COLLECTION),
+      orderBy("createdAt", "desc"),
+    ),
+  );
+  return snap.docs.map((d) => normalizeTakeOutOrderDoc(d.id, d.data()));
+}
+
 export async function fetchOrdersForAnalytics(): Promise<
   OrderHistoryLoadedOrder[]
 > {

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { OrderStatus } from "@/types/enum";
 import {
   dateToLocalKey,
+  fetchAllTakeOutOrders,
   fetchOrdersForHistory,
   isTakeOutLoadedOrder,
   type OrderHistoryChannel,
@@ -58,6 +59,15 @@ export default function OrderHistoryView() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [globalQuery, setGlobalQuery] = useState("");
+  const [globalResults, setGlobalResults] = useState<
+    OrderHistoryLoadedOrder[] | null
+  >(null);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+
+  const searchMode = globalResults !== null;
+
   useEffect(() => {
     setOrders([]);
     setLoadedFor(null);
@@ -82,6 +92,13 @@ export default function OrderHistoryView() {
           order.id === orderId ? { ...order, status } : order,
         ),
       );
+      setGlobalResults((prev) =>
+        prev
+          ? prev.map((order) =>
+              order.id === orderId ? { ...order, status } : order,
+            )
+          : prev,
+      );
     },
     [],
   );
@@ -95,6 +112,13 @@ export default function OrderHistoryView() {
         prev.map((order) =>
           order.id === orderId ? { ...order, orderItems } : order,
         ),
+      );
+      setGlobalResults((prev) =>
+        prev
+          ? prev.map((order) =>
+              order.id === orderId ? { ...order, orderItems } : order,
+            )
+          : prev,
       );
     },
     [],
@@ -119,6 +143,33 @@ export default function OrderHistoryView() {
       setLoading(false);
     }
   }, [channel, dateKey]);
+
+  const runGlobalSearch = useCallback(async () => {
+    const q = globalQuery.trim();
+    if (!q) return;
+    setSearching(true);
+    setSearchError(null);
+    try {
+      const all = await fetchAllTakeOutOrders();
+      setGlobalResults(all.filter((order) => matchesOrderSearch(order, q)));
+      setExpanded({});
+    } catch (e) {
+      console.error(e);
+      setSearchError(
+        e instanceof Error ? e.message : "Failed to search orders.",
+      );
+      setGlobalResults(null);
+    } finally {
+      setSearching(false);
+    }
+  }, [globalQuery]);
+
+  const clearGlobalSearch = useCallback(() => {
+    setGlobalQuery("");
+    setGlobalResults(null);
+    setSearchError(null);
+    setExpanded({});
+  }, []);
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -164,61 +215,129 @@ export default function OrderHistoryView() {
         </div>
       </div>
 
-      {error ? (
-        <p className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      ) : null}
-
-      {!loadedFor && !loading ? (
-        <p className="text-center text-sm text-muted-foreground">
-          Choose a date and type, then press <strong>Load</strong>.
-        </p>
-      ) : null}
-
-      {loadedFor && !loading && orders.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
-          No orders for {loadedFor.key} (
-          {loadedFor.ch === "takeOut" ? "Take Out" : "Dine In"}).
-        </p>
-      ) : null}
-
-      {loadedFor && !loading && orders.length > 0 && channel === "takeOut" ? (
-        <div className="mb-4">
-          <SearchField
-            placeholder="Search by name or phone number…"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            aria-label="Search orders"
-          />
+      <div className="mb-6 rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+          <div className="flex-1 space-y-2">
+            <Label htmlFor="order-history-global-search">
+              Search all take-out orders
+            </Label>
+            <SearchField
+              id="order-history-global-search"
+              placeholder="Search by name or phone number…"
+              value={globalQuery}
+              onChange={(e) => setGlobalQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  runGlobalSearch();
+                }
+              }}
+            />
+          </div>
+          <Button
+            type="button"
+            onClick={runGlobalSearch}
+            disabled={searching || !globalQuery.trim()}
+          >
+            {searching ? "Searching…" : "Search"}
+          </Button>
+          {searchMode ? (
+            <Button type="button" variant="outline" onClick={clearGlobalSearch}>
+              Clear
+            </Button>
+          ) : null}
         </div>
-      ) : null}
+      </div>
 
-      {loadedFor &&
-      !loading &&
-      orders.length > 0 &&
-      channel === "takeOut" &&
-      filteredOrders.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
-          No orders match your search.
+      {searchError ? (
+        <p className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {searchError}
         </p>
       ) : null}
 
-      {filteredOrders.length > 0 ? (
-        <ul className="space-y-3">
-          {filteredOrders.map((order) => (
-            <li key={order.id}>
-              <OrderCard
-                order={order}
-                expanded={Boolean(expanded[order.id])}
-                onToggle={() => toggle(order.id)}
-                onStatusChange={handleStatusChange}
-                onOrderItemsChange={handleOrderItemsChange}
+      {searchMode ? (
+        <>
+          {!searching && globalResults!.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+              No take-out orders match &ldquo;{globalQuery}&rdquo;.
+            </p>
+          ) : null}
+
+          {globalResults!.length > 0 ? (
+            <ul className="space-y-3">
+              {globalResults!.map((order) => (
+                <li key={order.id}>
+                  <OrderCard
+                    order={order}
+                    expanded={Boolean(expanded[order.id])}
+                    onToggle={() => toggle(order.id)}
+                    onStatusChange={handleStatusChange}
+                    onOrderItemsChange={handleOrderItemsChange}
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </>
+      ) : (
+        <>
+          {error ? (
+            <p className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {error}
+            </p>
+          ) : null}
+
+          {!loadedFor && !loading ? (
+            <p className="text-center text-sm text-muted-foreground">
+              Choose a date and type, then press <strong>Load</strong>.
+            </p>
+          ) : null}
+
+          {loadedFor && !loading && orders.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+              No orders for {loadedFor.key} (
+              {loadedFor.ch === "takeOut" ? "Take Out" : "Dine In"}).
+            </p>
+          ) : null}
+
+          {loadedFor && !loading && orders.length > 0 && channel === "takeOut" ? (
+            <div className="mb-4">
+              <SearchField
+                placeholder="Filter loaded orders by name or phone number…"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="Filter loaded orders"
               />
-            </li>
-          ))}
-        </ul>
-      ) : null}
+            </div>
+          ) : null}
+
+          {loadedFor &&
+          !loading &&
+          orders.length > 0 &&
+          channel === "takeOut" &&
+          filteredOrders.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+              No orders match your search.
+            </p>
+          ) : null}
+
+          {filteredOrders.length > 0 ? (
+            <ul className="space-y-3">
+              {filteredOrders.map((order) => (
+                <li key={order.id}>
+                  <OrderCard
+                    order={order}
+                    expanded={Boolean(expanded[order.id])}
+                    onToggle={() => toggle(order.id)}
+                    onStatusChange={handleStatusChange}
+                    onOrderItemsChange={handleOrderItemsChange}
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
