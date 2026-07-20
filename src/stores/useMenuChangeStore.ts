@@ -14,21 +14,43 @@ import {
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
 import { asTimestamp } from "@/lib/firestore-timestamp";
-import type { MenuChange } from "@/types";
+import type { ItemChange, MenuChange } from "@/types";
 
 type MenuChangeState = {
   menuChanges: MenuChange[];
   loading: boolean;
   error: string | null;
   subscribe: () => () => void;
-  createMenuChange: (
-    data: Omit<MenuChange, "id" | "createdAt">,
-  ) => Promise<void>;
-  updateMenuChange: (id: string, data: Partial<MenuChange>) => Promise<void>;
+  createMenuChange: (name: string) => Promise<void>;
+  renameMenuChange: (id: string, name: string) => Promise<void>;
   deleteMenuChange: (id: string) => Promise<void>;
+  addItemChange: (id: string, change: ItemChange) => Promise<void>;
+  updateItemChange: (
+    id: string,
+    index: number,
+    change: ItemChange,
+  ) => Promise<void>;
+  removeItemChange: (id: string, index: number) => Promise<void>;
 };
 
-export const useMenuChangeStore = create<MenuChangeState>((set) => ({
+function normalizeName(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) {
+    throw new Error("Name cannot be empty.");
+  }
+  return trimmed;
+}
+
+function normalizeItemChange(change: ItemChange): ItemChange {
+  const from = change.from.trim().toUpperCase();
+  const to = change.to.trim().toUpperCase();
+  if (!from || !to) {
+    throw new Error('"From" and "To" cannot be empty.');
+  }
+  return { from, to, price: change.price };
+}
+
+export const useMenuChangeStore = create<MenuChangeState>((set, get) => ({
   menuChanges: [],
   loading: true,
   error: null,
@@ -41,11 +63,15 @@ export const useMenuChangeStore = create<MenuChangeState>((set) => ({
       (snapshot) => {
         const menuChanges: MenuChange[] = snapshot.docs.map((d) => {
           const raw = d.data();
+          const rawChanges = Array.isArray(raw.changes) ? raw.changes : [];
           return {
             id: d.id,
-            from: String(raw.from ?? ""),
-            to: String(raw.to ?? ""),
-            price: typeof raw.price === "number" ? raw.price : 0,
+            name: String(raw.name ?? ""),
+            changes: rawChanges.map((c) => ({
+              from: String(c?.from ?? ""),
+              to: String(c?.to ?? ""),
+              price: typeof c?.price === "number" ? c.price : 0,
+            })),
             createdAt:
               raw.createdAt === undefined
                 ? undefined
@@ -59,22 +85,53 @@ export const useMenuChangeStore = create<MenuChangeState>((set) => ({
     return unsub;
   },
 
-  createMenuChange: async (data) => {
+  createMenuChange: async (name) => {
     const ref = collection(clientDb, "menuChanges");
-    data.from = data.from.toUpperCase();
-    data.to = data.to.toUpperCase();
-    await addDoc(ref, { ...data, createdAt: Timestamp.now() });
+    await addDoc(ref, {
+      name: normalizeName(name),
+      changes: [],
+      createdAt: Timestamp.now(),
+    });
   },
 
-  updateMenuChange: async (id, data) => {
+  renameMenuChange: async (id, name) => {
     const ref = doc(clientDb, "menuChanges", id);
-    data.from = data.from?.toUpperCase();
-    data.to = data.to?.toUpperCase();
-    await updateDoc(ref, { ...data });
+    await updateDoc(ref, { name: normalizeName(name) });
   },
 
   deleteMenuChange: async (id) => {
     const ref = doc(clientDb, "menuChanges", id);
     await deleteDoc(ref);
+  },
+
+  addItemChange: async (id, change) => {
+    const current = get().menuChanges.find((mc) => mc.id === id);
+    if (!current) throw new Error("Menu change not found.");
+    const ref = doc(clientDb, "menuChanges", id);
+    await updateDoc(ref, {
+      changes: [...current.changes, normalizeItemChange(change)],
+    });
+  },
+
+  updateItemChange: async (id, index, change) => {
+    const current = get().menuChanges.find((mc) => mc.id === id);
+    if (!current) throw new Error("Menu change not found.");
+    if (index < 0 || index >= current.changes.length) {
+      throw new Error("Item change not found.");
+    }
+    const next = normalizeItemChange(change);
+    const ref = doc(clientDb, "menuChanges", id);
+    await updateDoc(ref, {
+      changes: current.changes.map((c, i) => (i === index ? next : c)),
+    });
+  },
+
+  removeItemChange: async (id, index) => {
+    const current = get().menuChanges.find((mc) => mc.id === id);
+    if (!current) throw new Error("Menu change not found.");
+    const ref = doc(clientDb, "menuChanges", id);
+    await updateDoc(ref, {
+      changes: current.changes.filter((_, i) => i !== index),
+    });
   },
 }));

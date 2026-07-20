@@ -45,7 +45,9 @@ export interface ItemOption {
   createdAt: Timestamp;
 }
 
-export interface MenuChange extends ItemChange {
+export interface MenuChange {
   id?: string;
+  name: string;
+  changes: ItemChange[];
   createdAt: Timestamp;
 }

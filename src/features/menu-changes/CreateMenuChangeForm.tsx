@@ -5,6 +5,7 @@ import { useMenuChangeStore } from "@/stores/useMenuChangeStore";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -18,27 +19,25 @@ import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function CreateMenuChangeForm() {
   const [open, setOpen] = useState(false);
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [price, setPrice] = useState<number>(0);
+  const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
   const { createMenuChange } = useMenuChangeStore();
 
-  const canSubmit = from.trim().length > 0 && to.trim().length > 0;
+  const canSubmit = name.trim().length > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
     setSaving(true);
     try {
-      await createMenuChange({ from, to, price });
-      setFrom("");
-      setTo("");
-      setPrice(0);
+      await createMenuChange(name);
+      setName("");
       setOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to add menu change");
+      const message =
+        err instanceof Error ? err.message : "Failed to create menu change";
+      alert(message);
     } finally {
       setSaving(false);
     }
@@ -51,47 +50,32 @@ export default function CreateMenuChangeForm() {
         <DialogTrigger asChild>
           <Button type="button" className="gap-2">
             <Plus className="size-4" aria-hidden />
-            Add change
+            Add Menu Change
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-xl">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add Menu Change</DialogTitle>
+            <DialogDescription>
+              Give it a name, like &quot;Dinner for 5&quot;. You can add item
+              changes to it afterward.
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="space-y-2">
-              <Label htmlFor="from">From</Label>
+              <Label htmlFor="menu-change-name">Name</Label>
               <Input
-                id="from"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
+                id="menu-change-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Dinner for 5"
+                autoComplete="off"
                 required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="to">To</Label>
-              <Input
-                id="to"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="price">Price</Label>
-              <Input
-                id="price"
-                type="number"
-                inputMode="decimal"
-                value={Number.isFinite(price) ? String(price) : "0"}
-                onChange={(e) => setPrice(Number(e.target.value))}
-                step="0.01"
-                min="0"
               />
             </div>
             <DialogFooter>
               <Button type="submit" disabled={!canSubmit || saving}>
-                Create change
+                Create
               </Button>
             </DialogFooter>
           </form>

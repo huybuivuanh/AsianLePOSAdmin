@@ -9,14 +9,12 @@ export default function MenuChangesPage() {
     <div className="mx-auto max-w-6xl">
       <PageHeader
         title="Menu Changes"
-        description="Track menu item changes synced from Firestore in real time."
+        description="Named substitution templates (e.g. &quot;Dinner for 5&quot;), each holding a list of item changes."
       >
         <CreateMenuChangeForm />
       </PageHeader>
 
-      <div className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm">
-        <MenuChangeList />
-      </div>
+      <MenuChangeList />
     </div>
   );
 }
