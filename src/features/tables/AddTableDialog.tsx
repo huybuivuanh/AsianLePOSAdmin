@@ -48,7 +48,8 @@ export function AddTableDialog({ open, onOpenChange, nextTableNumber }: Props) {
       onOpenChange(false);
     } catch (e) {
       console.error(e);
-      alert("Failed to create table.");
+      const message = e instanceof Error ? e.message : "Failed to create table.";
+      alert(message);
     } finally {
       setCreating(false);
     }

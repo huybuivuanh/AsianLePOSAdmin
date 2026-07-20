@@ -22,7 +22,7 @@ type Props = {
 };
 
 export function EditTableDialog({ table, onClose }: Props) {
-  const { updateTable, deleteTable } = useTableStore();
+  const { renameTable, deleteTable } = useTableStore();
   const [tableNumber, setTableNumber] = useState("");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -38,13 +38,20 @@ export function EditTableDialog({ table, onClose }: Props) {
       alert("Table number cannot be empty.");
       return;
     }
+    if (next !== table.tableNumber && table.currentOrderId) {
+      const proceed = confirm(
+        `Table "${table.tableNumber}" has an order in progress. Renaming it changes its ID, which the POS app relies on — the live order may lose its link to this table mid-service. Continue?`,
+      );
+      if (!proceed) return;
+    }
     setSaving(true);
     try {
-      await updateTable(table.id, { tableNumber: next });
+      await renameTable(table.id, next);
       onClose();
     } catch (e) {
       console.error(e);
-      alert("Failed to update table.");
+      const message = e instanceof Error ? e.message : "Failed to update table.";
+      alert(message);
     } finally {
       setSaving(false);
     }
@@ -52,8 +59,6 @@ export function EditTableDialog({ table, onClose }: Props) {
 
   const handleDelete = async () => {
     if (!table?.id) return;
-    if (!confirm(`Delete table "${table.tableNumber}"? This cannot be undone.`))
-      return;
     setDeleting(true);
     try {
       await deleteTable(table.id);
