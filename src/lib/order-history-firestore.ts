@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
 import { asTimestamp } from "@/lib/firestore-timestamp";
-import { OrderStatus, OrderType } from "@/types/enum";
+import { OrderStatus, OrderType, TableStatus } from "@/types/enum";
 import type {
   DineInOrder,
   Order,
@@ -195,6 +195,27 @@ export const submitToPrintQueue = async (order: OrderDraft) => {
   await setDoc(printQueueRef, forPrint as Record<string, unknown>);
 };
 
+async function resetTableForFinishedOrder(
+  tableNumber: string,
+  orderId: string,
+): Promise<void> {
+  const q = query(
+    collection(clientDb, "tables"),
+    where("tableNumber", "==", tableNumber),
+    where("currentOrderId", "==", orderId),
+  );
+  const snap = await getDocs(q);
+  await Promise.all(
+    snap.docs.map((d) =>
+      updateDoc(d.ref, {
+        currentOrderId: null,
+        status: TableStatus.Open,
+        guests: 0,
+      }),
+    ),
+  );
+}
+
 export const completeOrder = async (
   order: OrderDraft,
 ): Promise<OrderStatus> => {
@@ -211,19 +232,42 @@ export const completeOrder = async (
   await updateDoc(orderRef, {
     status: status,
   });
+
+  if (
+    order.orderType === OrderType.DineIn &&
+    status === OrderStatus.Completed &&
+    order.tableNumber
+  ) {
+    await resetTableForFinishedOrder(order.tableNumber, order.id);
+  }
+
   return status;
 };
 
-export const cancelOrder = async (order: OrderDraft): Promise<void> => {
+export const cancelOrder = async (order: OrderDraft): Promise<OrderStatus> => {
   if (!order.id) throw new Error("Order ID is required to cancel.");
   const colName =
     order.orderType === OrderType.TakeOut
       ? TAKE_OUT_ORDERS_COLLECTION
       : DINE_IN_ORDERS_COLLECTION;
+  const status =
+    order.status === OrderStatus.Cancelled
+      ? OrderStatus.InProgress
+      : OrderStatus.Cancelled;
   const orderRef = doc(collection(clientDb, colName), order.id);
   await updateDoc(orderRef, {
-    status: OrderStatus.Cancelled,
+    status: status,
   });
+
+  if (
+    order.orderType === OrderType.DineIn &&
+    status === OrderStatus.Cancelled &&
+    order.tableNumber
+  ) {
+    await resetTableForFinishedOrder(order.tableNumber, order.id);
+  }
+
+  return status;
 };
 
 export const markOrderPaid = async (

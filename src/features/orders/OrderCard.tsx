@@ -266,26 +266,23 @@ export function OrderCard({
           </div>
 
           <div className="mt-3 flex justify-between gap-2">
-            {order.status !== OrderStatus.Cancelled ? (
-              <Button
-                type="button"
-                className="flex-1 rounded-md bg-red-500 py-3 text-sm font-semibold text-white hover:bg-red-600"
-                variant="default"
-                onClick={async (e) => {
-                  try {
-                    e.stopPropagation();
-                    if (!confirm("Cancel this order?")) return;
-                    await cancelOrder(order);
-                    onStatusChange?.(order.id, OrderStatus.Cancelled);
-                  } catch (error) {
-                    console.error(error);
-                    alert("Failed to cancel order.");
-                  }
-                }}
-              >
-                Cancel
-              </Button>
-            ) : null}
+            <Button
+              type="button"
+              className="flex-1 rounded-md bg-red-500 py-3 text-sm font-semibold text-white hover:bg-red-600"
+              variant="default"
+              onClick={async (e) => {
+                try {
+                  e.stopPropagation();
+                  const status = await cancelOrder(order);
+                  onStatusChange?.(order.id, status);
+                } catch (error) {
+                  console.error(error);
+                  alert("Failed to cancel order.");
+                }
+              }}
+            >
+              Cancel
+            </Button>
             <Button
               type="button"
               className="flex-1 rounded-md bg-green-500 py-3 text-sm font-semibold text-white hover:bg-green-600"
