@@ -8,10 +8,12 @@ import { auth } from "@/lib/firebase-config";
 import { LayoutDashboard, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -43,7 +45,7 @@ export default function Navbar() {
             <LayoutDashboard className="size-5" aria-hidden />
           </span>
           <span className="truncate font-semibold tracking-tight">
-            Admin Panel
+            {user?.displayName}
           </span>
         </Link>
 
