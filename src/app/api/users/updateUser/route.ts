@@ -14,6 +14,8 @@ export async function POST(req: Request) {
       displayName: name,
     });
 
+    await adminAuth.setCustomUserClaims(uid, { role });
+
     // 2️⃣ Update Firestore
     await adminDb.collection("users").doc(uid).update({
       name,
