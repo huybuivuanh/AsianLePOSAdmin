@@ -18,6 +18,11 @@ export interface AddExtra {
   price: number;
 }
 
+export interface ExtraCatalogItem extends AddExtra {
+  id?: string;
+  createdAt: Timestamp;
+}
+
 export interface OrderItem {
   id?: string;
   name: string;

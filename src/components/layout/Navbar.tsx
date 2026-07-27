@@ -27,6 +27,7 @@ export default function Navbar() {
     { href: "/tables", label: "Tables" },
     { href: "/menu", label: "Menu" },
     { href: "/menu-changes", label: "Menu Changes" },
+    { href: "/add-extras", label: "Add Extras" },
     { href: "/users", label: "Users" },
     { href: "/orders", label: "Orders" },
     { href: "/customers", label: "Customers" },

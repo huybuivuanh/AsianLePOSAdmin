@@ -11,6 +11,7 @@ export type {
   OrderItemOption,
   ItemChange,
   AddExtra,
+  ExtraCatalogItem,
   OrderItem,
   Discount,
   TaxBreakDown,
