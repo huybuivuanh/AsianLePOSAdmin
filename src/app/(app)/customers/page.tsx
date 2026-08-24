@@ -1,6 +1,7 @@
 "use client";
 
 import CustomerList from "@/features/customers/CustomerList";
+import CreateCustomerForm from "@/features/customers/CreateCustomerForm";
 import { PageHeader } from "@/components/layout/PageHeader";
 
 export default function CustomersPage() {
@@ -9,7 +10,9 @@ export default function CustomersPage() {
       <PageHeader
         title="Customers"
         description="Customers synced from Firestore in real time."
-      />
+      >
+        <CreateCustomerForm />
+      </PageHeader>
 
       <div className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm">
         <CustomerList />

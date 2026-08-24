@@ -5,4 +5,5 @@ export interface Customer {
   name: string;
   phone: string;
   createdAt: Timestamp;
+  isBlocked: boolean;
 }

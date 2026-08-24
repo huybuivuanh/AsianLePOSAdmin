@@ -2,12 +2,15 @@
 
 import { create } from "zustand";
 import {
+  Timestamp,
+  addDoc,
   collection,
   deleteDoc,
   doc,
   onSnapshot,
   orderBy,
   query,
+  updateDoc,
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
 import { asTimestamp } from "@/lib/firestore-timestamp";
@@ -19,7 +22,11 @@ type CustomerState = {
   loading: boolean;
   error: string | null;
   subscribe: () => () => void;
+  createCustomer: (
+    data: Omit<Customer, "id" | "createdAt" | "isBlocked">,
+  ) => Promise<void>;
   deleteCustomer: (id: string) => Promise<void>;
+  updateCustomer: (id: string, data: Partial<Customer>) => Promise<void>;
 };
 
 export const useCustomerStore = create<CustomerState>((set) => ({
@@ -40,6 +47,7 @@ export const useCustomerStore = create<CustomerState>((set) => ({
             name: String(raw.name ?? ""),
             phone: String(raw.phone ?? ""),
             createdAt: asTimestamp(raw.createdAt),
+            isBlocked: Boolean(raw.isBlocked),
           };
         });
         const sortedCustomers = sortByAlphabet(customers);
@@ -52,8 +60,22 @@ export const useCustomerStore = create<CustomerState>((set) => ({
     return unsub;
   },
 
+  createCustomer: async (data) => {
+    const ref = collection(clientDb, "customers");
+    await addDoc(ref, {
+      ...data,
+      createdAt: Timestamp.now(),
+      isBlocked: false,
+    });
+  },
+
   deleteCustomer: async (id) => {
     const ref = doc(clientDb, "customers", id);
     await deleteDoc(ref);
+  },
+
+  updateCustomer: async (id, data) => {
+    const ref = doc(clientDb, "customers", id);
+    await updateDoc(ref, { ...data });
   },
 }));

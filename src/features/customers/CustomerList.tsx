@@ -1,38 +1,47 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCustomerStore } from "@/stores/useCustomerStore";
+import { CustomerTableRow } from "./CustomerTableRow";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
-import { ArrowDown, ArrowUp } from "lucide-react";
-import { formatTimestamp } from "@/lib/formatters";
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { matchesQuery, sortByNameAndCreated } from "@/lib/list-utils";
 
+const PAGE_SIZE = 100;
+
 export default function CustomerList() {
-  const { customers, loading, error, deleteCustomer } = useCustomerStore();
+  const { customers, loading, error } = useCustomerStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"created" | "name">("created");
   const [createdSort, setCreatedSort] = useState<"desc" | "asc">("desc");
   const [nameSort, setNameSort] = useState<"asc" | "desc">("asc");
+  const [page, setPage] = useState(1);
 
   const filtered = useMemo(
     () => customers.filter((c) => matchesQuery(searchTerm, c.name, c.phone)),
     [customers, searchTerm],
   );
 
-  const visible = useMemo(
+  const sorted = useMemo(
     () => sortByNameAndCreated(filtered, sortBy, nameSort, createdSort),
     [filtered, sortBy, nameSort, createdSort],
   );
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this customer?")) return;
-    try {
-      await deleteCustomer(id);
-    } catch {
-      alert("Failed to delete customer");
-    }
-  };
+  const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, sortBy, nameSort, createdSort]);
+
+  useEffect(() => {
+    if (page > pageCount) setPage(pageCount);
+  }, [page, pageCount]);
+
+  const visible = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return sorted.slice(start, start + PAGE_SIZE);
+  }, [sorted, page]);
 
   if (error) {
     return (
@@ -114,6 +123,9 @@ export default function CustomerList() {
                 </Button>
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+                Status
+              </th>
+              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
                 Actions
               </th>
             </tr>
@@ -122,7 +134,7 @@ export default function CustomerList() {
             {customers.length === 0 ? (
               <tr>
                 <td
-                  colSpan={4}
+                  colSpan={5}
                   className="px-4 py-12 text-center text-sm text-muted-foreground"
                 >
                   No customers in Firestore yet.
@@ -131,7 +143,7 @@ export default function CustomerList() {
             ) : filtered.length === 0 ? (
               <tr>
                 <td
-                  colSpan={4}
+                  colSpan={5}
                   className="px-4 py-12 text-center text-sm text-muted-foreground"
                 >
                   No customers match your search.
@@ -139,35 +151,46 @@ export default function CustomerList() {
               </tr>
             ) : (
               visible.map((customer) => (
-                <tr
-                  key={customer.id}
-                  className="transition-colors hover:bg-muted/40"
-                >
-                  <td className="px-3 py-3 font-medium text-foreground sm:px-4">
-                    {customer.name}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
-                    {customer.phone}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
-                    {formatTimestamp(customer.createdAt)}
-                  </td>
-                  <td className="px-3 py-3 sm:px-4">
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDelete(customer.id!)}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
+                <CustomerTableRow key={customer.id} customer={customer} />
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {filtered.length > 0 ? (
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-xs text-muted-foreground">
+            Showing {(page - 1) * PAGE_SIZE + 1}–
+            {Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              <ChevronLeft className="size-4" aria-hidden />
+              Previous
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              Page {page} of {pageCount}
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={page >= pageCount}
+              onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+            >
+              Next
+              <ChevronRight className="size-4" aria-hidden />
+            </Button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
