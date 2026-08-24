@@ -10,12 +10,25 @@ import {
   onSnapshot,
   orderBy,
   query,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
 import { asTimestamp } from "@/lib/firestore-timestamp";
 import { sortByAlphabet } from "@/lib/list-utils";
 import type { Customer } from "@/types";
+
+const CUSTOMERS_VERSION_COLLECTION = "customersVersion";
+const CUSTOMERS_VERSION_DOC = "versionDoc";
+
+// POS clients subscribe to this doc and refetch customers when it advances.
+async function bumpCustomersVersion(): Promise<void> {
+  await setDoc(
+    doc(clientDb, CUSTOMERS_VERSION_COLLECTION, CUSTOMERS_VERSION_DOC),
+    { version: Date.now() },
+    { merge: true },
+  );
+}
 
 type CustomerState = {
   customers: Customer[];
@@ -67,6 +80,7 @@ export const useCustomerStore = create<CustomerState>((set) => ({
       createdAt: Timestamp.now(),
       isBlocked: false,
     });
+    await bumpCustomersVersion();
   },
 
   deleteCustomer: async (id) => {
@@ -76,6 +90,7 @@ export const useCustomerStore = create<CustomerState>((set) => ({
 
   updateCustomer: async (id, data) => {
     const ref = doc(clientDb, "customers", id);
-    await updateDoc(ref, { ...data });
+    await updateDoc(ref, { ...data, createdAt: Timestamp.now() });
+    await bumpCustomersVersion();
   },
 }));
