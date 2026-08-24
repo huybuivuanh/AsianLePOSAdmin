@@ -13,9 +13,12 @@ const PAGE_SIZE = 100;
 export default function CustomerList() {
   const { customers, loading, error } = useCustomerStore();
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<"created" | "name">("created");
+  const [sortBy, setSortBy] = useState<"created" | "name" | "status">(
+    "created",
+  );
   const [createdSort, setCreatedSort] = useState<"desc" | "asc">("desc");
   const [nameSort, setNameSort] = useState<"asc" | "desc">("asc");
+  const [statusSort, setStatusSort] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(
@@ -24,15 +27,22 @@ export default function CustomerList() {
   );
 
   const sorted = useMemo(
-    () => sortByNameAndCreated(filtered, sortBy, nameSort, createdSort),
-    [filtered, sortBy, nameSort, createdSort],
+    () =>
+      sortByNameAndCreated(
+        filtered,
+        sortBy,
+        nameSort,
+        createdSort,
+        statusSort,
+      ),
+    [filtered, sortBy, nameSort, createdSort, statusSort],
   );
 
   const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, sortBy, nameSort, createdSort]);
+  }, [searchTerm, sortBy, nameSort, createdSort, statusSort]);
 
   useEffect(() => {
     if (page > pageCount) setPage(pageCount);
@@ -123,7 +133,25 @@ export default function CustomerList() {
                 </Button>
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
-                Status
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground"
+                  onClick={() => {
+                    setSortBy("status");
+                    setStatusSort((s) => (s === "asc" ? "desc" : "asc"));
+                  }}
+                >
+                  Status
+                  {sortBy === "status" ? (
+                    statusSort === "asc" ? (
+                      <ArrowUp className="size-3.5" aria-hidden />
+                    ) : (
+                      <ArrowDown className="size-3.5" aria-hidden />
+                    )
+                  ) : null}
+                </Button>
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
                 Actions
