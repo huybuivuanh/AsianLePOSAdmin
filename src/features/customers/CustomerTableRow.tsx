@@ -3,6 +3,7 @@
 import { useCustomerStore } from "@/stores/useCustomerStore";
 import { Button } from "@/components/ui/button";
 import UpdateCustomerForm from "./UpdateCustomerForm";
+import CustomerNoteButton from "./CustomerNoteButton";
 import { formatTimestamp } from "@/lib/formatters";
 import type { Customer } from "@/types";
 
@@ -31,7 +32,10 @@ export function CustomerTableRow({ customer }: Props) {
   return (
     <tr className="transition-colors hover:bg-muted/40">
       <td className="px-3 py-3 font-medium text-foreground sm:px-4">
-        {customer.name}
+        <span className="inline-flex items-center gap-1.5">
+          {customer.name}
+          <CustomerNoteButton name={customer.name} note={customer.note} />
+        </span>
       </td>
       <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
         {customer.phone}

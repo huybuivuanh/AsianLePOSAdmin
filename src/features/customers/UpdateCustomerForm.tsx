@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import type { Customer } from "@/types";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
@@ -24,6 +25,7 @@ export default function UpdateCustomerForm({
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(customer.name);
   const [phone, setPhone] = useState(customer.phone);
+  const [note, setNote] = useState(customer.note ?? "");
   const [saving, setSaving] = useState(false);
   const { updateCustomer } = useCustomerStore();
 
@@ -41,6 +43,7 @@ export default function UpdateCustomerForm({
       await updateCustomer(customer.id!, {
         name: name.trim(),
         phone: phone.trim(),
+        note: note.trim(),
       });
       setOpen(false);
     } catch (err) {
@@ -81,6 +84,15 @@ export default function UpdateCustomerForm({
                 onChange={(e) => handlePhoneChange(e.target.value)}
                 inputMode="numeric"
                 pattern="[0-9]*"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="note">Note (optional)</Label>
+              <Textarea
+                id="note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                rows={3}
               />
             </div>
             <DialogFooter>

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
@@ -20,6 +21,7 @@ export default function CreateCustomerForm() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const { createCustomer } = useCustomerStore();
 
@@ -34,12 +36,15 @@ export default function CreateCustomerForm() {
     if (!canSubmit) return;
     setSaving(true);
     try {
+      const trimmedNote = note.trim();
       await createCustomer({
         name: name.trim(),
         phone: phone.trim(),
+        ...(trimmedNote ? { note: trimmedNote } : {}),
       });
       setName("");
       setPhone("");
+      setNote("");
       setOpen(false);
     } catch (err) {
       console.error(err);
@@ -80,6 +85,15 @@ export default function CreateCustomerForm() {
                 onChange={(e) => handlePhoneChange(e.target.value)}
                 inputMode="numeric"
                 pattern="[0-9]*"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="note">Note (optional)</Label>
+              <Textarea
+                id="note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                rows={3}
               />
             </div>
             <DialogFooter>

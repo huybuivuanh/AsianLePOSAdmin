@@ -61,6 +61,7 @@ export const useCustomerStore = create<CustomerState>((set) => ({
             phone: String(raw.phone ?? ""),
             createdAt: asTimestamp(raw.createdAt),
             isBlocked: Boolean(raw.isBlocked),
+            note: typeof raw.note === "string" ? raw.note : undefined,
           };
         });
         const sortedCustomers = sortByAlphabet(customers);

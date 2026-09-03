@@ -6,4 +6,5 @@ export interface Customer {
   phone: string;
   createdAt: Timestamp;
   isBlocked: boolean;
+  note?: string;
 }
