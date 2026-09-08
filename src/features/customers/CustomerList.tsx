@@ -20,6 +20,16 @@ export default function CustomerList() {
   const [nameSort, setNameSort] = useState<"asc" | "desc">("asc");
   const [statusSort, setStatusSort] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(1);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const filtered = useMemo(
     () => customers.filter((c) => matchesQuery(searchTerm, c.name, c.phone)),
@@ -42,6 +52,7 @@ export default function CustomerList() {
 
   useEffect(() => {
     setPage(1);
+    setExpandedIds(new Set());
   }, [searchTerm, sortBy, nameSort, createdSort, statusSort]);
 
   useEffect(() => {
@@ -87,6 +98,7 @@ export default function CustomerList() {
         <table className="w-full min-w-[32rem] border-collapse text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50">
+              <th className="w-8 px-2 py-3" aria-hidden />
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
                 <Button
                   type="button"
@@ -158,11 +170,11 @@ export default function CustomerList() {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody>
             {customers.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="px-4 py-12 text-center text-sm text-muted-foreground"
                 >
                   No customers in Firestore yet.
@@ -171,7 +183,7 @@ export default function CustomerList() {
             ) : filtered.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="px-4 py-12 text-center text-sm text-muted-foreground"
                 >
                   No customers match your search.
@@ -179,7 +191,12 @@ export default function CustomerList() {
               </tr>
             ) : (
               visible.map((customer) => (
-                <CustomerTableRow key={customer.id} customer={customer} />
+                <CustomerTableRow
+                  key={customer.id}
+                  customer={customer}
+                  expanded={!!customer.id && expandedIds.has(customer.id)}
+                  onToggle={() => customer.id && toggleExpanded(customer.id)}
+                />
               ))
             )}
           </tbody>

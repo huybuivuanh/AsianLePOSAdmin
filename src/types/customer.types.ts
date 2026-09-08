@@ -7,4 +7,6 @@ export interface Customer {
   createdAt: Timestamp;
   isBlocked: boolean;
   note?: string;
+  numberOfOrders: number;
+  totalSpent: number;
 }

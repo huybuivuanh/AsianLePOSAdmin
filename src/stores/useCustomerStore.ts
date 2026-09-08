@@ -36,7 +36,10 @@ type CustomerState = {
   error: string | null;
   subscribe: () => () => void;
   createCustomer: (
-    data: Omit<Customer, "id" | "createdAt" | "isBlocked">,
+    data: Omit<
+      Customer,
+      "id" | "createdAt" | "isBlocked" | "numberOfOrders" | "totalSpent"
+    >,
   ) => Promise<void>;
   deleteCustomer: (id: string) => Promise<void>;
   updateCustomer: (id: string, data: Partial<Customer>) => Promise<void>;
@@ -62,6 +65,8 @@ export const useCustomerStore = create<CustomerState>((set) => ({
             createdAt: asTimestamp(raw.createdAt),
             isBlocked: Boolean(raw.isBlocked),
             note: typeof raw.note === "string" ? raw.note : undefined,
+            numberOfOrders: Number(raw.numberOfOrders ?? 0),
+            totalSpent: Number(raw.totalSpent ?? 0),
           };
         });
         const sortedCustomers = sortByAlphabet(customers);
@@ -80,6 +85,8 @@ export const useCustomerStore = create<CustomerState>((set) => ({
       ...data,
       createdAt: Timestamp.now(),
       isBlocked: false,
+      numberOfOrders: 0,
+      totalSpent: 0,
     });
     await bumpCustomersVersion();
   },
