@@ -5,20 +5,32 @@ import { useCustomerStore } from "@/stores/useCustomerStore";
 import { CustomerTableRow } from "./CustomerTableRow";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
-import { matchesQuery, sortByNameAndCreated } from "@/lib/list-utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { matchesQuery, sortCustomers, type CustomerSort } from "@/lib/list-utils";
 
 const PAGE_SIZE = 100;
+
+const SORT_OPTIONS: { value: CustomerSort; label: string }[] = [
+  { value: "created_desc", label: "Newest first" },
+  { value: "created_asc", label: "Oldest first" },
+  { value: "name_asc", label: "Name A–Z" },
+  { value: "name_desc", label: "Name Z–A" },
+  { value: "orders_desc", label: "Most orders" },
+  { value: "spent_desc", label: "Most spent" },
+  { value: "status_asc", label: "Status (Active first)" },
+];
 
 export default function CustomerList() {
   const { customers, loading, error } = useCustomerStore();
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<"created" | "name" | "status">(
-    "created",
-  );
-  const [createdSort, setCreatedSort] = useState<"desc" | "asc">("desc");
-  const [nameSort, setNameSort] = useState<"asc" | "desc">("asc");
-  const [statusSort, setStatusSort] = useState<"asc" | "desc">("asc");
+  const [sort, setSort] = useState<CustomerSort>("created_desc");
   const [page, setPage] = useState(1);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
@@ -37,15 +49,8 @@ export default function CustomerList() {
   );
 
   const sorted = useMemo(
-    () =>
-      sortByNameAndCreated(
-        filtered,
-        sortBy,
-        nameSort,
-        createdSort,
-        statusSort,
-      ),
-    [filtered, sortBy, nameSort, createdSort, statusSort],
+    () => sortCustomers(filtered, sort),
+    [filtered, sort],
   );
 
   const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
@@ -53,7 +58,7 @@ export default function CustomerList() {
   useEffect(() => {
     setPage(1);
     setExpandedIds(new Set());
-  }, [searchTerm, sortBy, nameSort, createdSort, statusSort]);
+  }, [searchTerm, sort]);
 
   useEffect(() => {
     if (page > pageCount) setPage(pageCount);
@@ -82,10 +87,33 @@ export default function CustomerList() {
 
   return (
     <div className="space-y-4 p-4 sm:p-5">
-      <div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="ml-1 text-md font-medium tracking-tight text-muted-foreground">
           Customers Saved : {customers.length}
         </p>
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="customer-sort"
+            className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+          >
+            Sort by
+          </label>
+          <Select
+            value={sort}
+            onValueChange={(v) => setSort(v as CustomerSort)}
+          >
+            <SelectTrigger id="customer-sort" size="sm" className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SORT_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <SearchField
         placeholder="Search by name or phone…"
@@ -100,70 +128,16 @@ export default function CustomerList() {
             <tr className="border-b border-border bg-muted/50">
               <th className="w-8 px-2 py-3" aria-hidden />
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground"
-                  onClick={() => {
-                    setSortBy("name");
-                    setNameSort((s) => (s === "asc" ? "desc" : "asc"));
-                  }}
-                >
-                  Name
-                  {sortBy === "name" ? (
-                    nameSort === "asc" ? (
-                      <ArrowUp className="size-3.5" aria-hidden />
-                    ) : (
-                      <ArrowDown className="size-3.5" aria-hidden />
-                    )
-                  ) : null}
-                </Button>
+                Name
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
                 Phone
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground"
-                  onClick={() => {
-                    setSortBy("created");
-                    setCreatedSort((s) => (s === "desc" ? "asc" : "desc"));
-                  }}
-                >
-                  Created
-                  {sortBy === "created" ? (
-                    createdSort === "desc" ? (
-                      <ArrowDown className="size-3.5" aria-hidden />
-                    ) : (
-                      <ArrowUp className="size-3.5" aria-hidden />
-                    )
-                  ) : null}
-                </Button>
+                Created
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground"
-                  onClick={() => {
-                    setSortBy("status");
-                    setStatusSort((s) => (s === "asc" ? "desc" : "asc"));
-                  }}
-                >
-                  Status
-                  {sortBy === "status" ? (
-                    statusSort === "asc" ? (
-                      <ArrowUp className="size-3.5" aria-hidden />
-                    ) : (
-                      <ArrowDown className="size-3.5" aria-hidden />
-                    )
-                  ) : null}
-                </Button>
+                Status
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
                 Actions

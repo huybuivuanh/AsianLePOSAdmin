@@ -51,3 +51,59 @@ export function sortByNameAndCreated<
   });
   return sorted;
 }
+
+export type CustomerSort =
+  | "created_desc"
+  | "created_asc"
+  | "name_asc"
+  | "name_desc"
+  | "orders_desc"
+  | "spent_desc"
+  | "status_asc";
+
+/**
+ * Single-key sort for the customers list. Value-based sorts
+ * (`orders_desc`, `spent_desc`, `status_asc`) fall back to name order
+ * for ties so the list stays stable.
+ */
+export function sortCustomers<
+  T extends {
+    name?: string;
+    createdAt?: { toMillis?: () => number };
+    isBlocked?: boolean;
+    numberOfOrders?: number;
+    totalSpent?: number;
+  },
+>(rows: T[], sort: CustomerSort): T[] {
+  const byName = (a: T, b: T) =>
+    (a.name ?? "").toLowerCase().localeCompare((b.name ?? "").toLowerCase());
+  const byCreated = (a: T, b: T) =>
+    (a.createdAt?.toMillis?.() ?? 0) - (b.createdAt?.toMillis?.() ?? 0);
+
+  const out = [...rows];
+  out.sort((a, b) => {
+    switch (sort) {
+      case "name_asc":
+        return byName(a, b);
+      case "name_desc":
+        return -byName(a, b);
+      case "created_asc":
+        return byCreated(a, b);
+      case "created_desc":
+        return -byCreated(a, b);
+      case "orders_desc":
+        return (
+          (b.numberOfOrders ?? 0) - (a.numberOfOrders ?? 0) || byName(a, b)
+        );
+      case "spent_desc":
+        return (b.totalSpent ?? 0) - (a.totalSpent ?? 0) || byName(a, b);
+      case "status_asc":
+        return (
+          (a.isBlocked ? 1 : 0) - (b.isBlocked ? 1 : 0) || byName(a, b)
+        );
+      default:
+        return 0;
+    }
+  });
+  return out;
+}
