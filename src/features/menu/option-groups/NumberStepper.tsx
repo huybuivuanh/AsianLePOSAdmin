@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
-export default function NumberStepper({
+export function NumberStepper({
   value,
   setValue,
   min = 0,

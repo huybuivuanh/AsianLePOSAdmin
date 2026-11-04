@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { alertDialog } from "@/stores/useModalStore";
 
-export default function UpdateCustomerForm({
+export function UpdateCustomerForm({
   customer,
 }: {
   customer: Customer;

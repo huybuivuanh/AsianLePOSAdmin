@@ -45,7 +45,7 @@ function matchesOrderSearch(order: OrderHistoryLoadedOrder, q: string): boolean 
   );
 }
 
-export default function OrderHistoryView() {
+export function OrderHistoryView() {
   const todayKey = useMemo(() => dateToLocalKey(new Date()), []);
   const [dateKey, setDateKey] = useState(todayKey);
   const [channel, setChannel] = useState<OrderHistoryChannel>("takeOut");

@@ -13,9 +13,9 @@ import {
 } from "@/components/layout/RowParts";
 import { formatCurrency } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
-import UpdateOptionForm from "./UpdateOptionForm";
+import { UpdateOptionForm } from "./UpdateOptionForm";
 
-export default function OptionsList() {
+export function OptionList() {
   const { options, loading } = useOptionStore();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");

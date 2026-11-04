@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/layout/Navbar";
+import { Navbar } from "@/components/layout/Navbar";
 import { AppModal } from "@/components/layout/AppModal";
 import { useRewardsAuthStore } from "@/stores/useRewardsAuthStore";
 

@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/layout/RowParts";
 import { matchesQuery } from "@/lib/list-utils";
 import { ItemCard } from "./ItemCard";
 
-export default function ItemsList() {
+export function ItemList() {
   const { items, loading } = useItemStore();
   const [searchTerm, setSearchTerm] = useState("");
 

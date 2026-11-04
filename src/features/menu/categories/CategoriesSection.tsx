@@ -3,11 +3,11 @@
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
-import CreateCategoriesForm from "./CreateCategoriesForm";
-import SortCategories from "./SortCategories";
-import CategoriesList from "./CategoriesList";
+import { CreateCategoryForm } from "./CreateCategoryForm";
+import { SortCategoriesForm } from "./SortCategoriesForm";
+import { CategoryList } from "./CategoryList";
 
-export default function CategoriesTab() {
+export function CategoriesSection() {
   const categories = useCategoriesStore((s) => s.categories);
   const loading = useCategoriesStore((s) => s.loading);
 
@@ -18,10 +18,10 @@ export default function CategoriesTab() {
         title="Categories"
         count={loading && categories.length === 0 ? undefined : categories.length}
       >
-        <SortCategories />
-        <CreateCategoriesForm />
+        <SortCategoriesForm />
+        <CreateCategoryForm />
       </PageHeader>
-      <CategoriesList />
+      <CategoryList />
     </div>
   );
 }

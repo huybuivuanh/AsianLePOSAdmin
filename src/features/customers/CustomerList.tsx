@@ -29,7 +29,7 @@ const SORT_OPTIONS: { value: CustomerSort; label: string }[] = [
   { value: "blocked", label: "Blocked" },
 ];
 
-export default function CustomerList() {
+export function CustomerList() {
   const { customers, loading, error } = useCustomerStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [sort, setSort] = useState<CustomerSort>("created_desc");

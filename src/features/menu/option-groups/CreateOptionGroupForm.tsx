@@ -16,11 +16,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Timestamp } from "firebase/firestore";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
-import NumberStepper from "./NumberStepper";
+import { NumberStepper } from "./NumberStepper";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { alertDialog } from "@/stores/useModalStore";
 
-export default function CreateOptionGroupForm() {
+export function CreateOptionGroupForm() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [minSelection, setMinSelection] = useState(0);

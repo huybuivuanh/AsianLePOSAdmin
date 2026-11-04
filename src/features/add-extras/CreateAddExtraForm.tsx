@@ -17,7 +17,7 @@ import { Timestamp } from "firebase/firestore";
 import { useAddExtraStore } from "@/stores/useAddExtraStore";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
-export default function CreateAddExtraForm() {
+export function CreateAddExtraForm() {
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);

@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
-export default function UpdateOptionForm({ option }: { option: ItemOption }) {
+export function UpdateOptionForm({ option }: { option: ItemOption }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(option.name);
   const [price, setPrice] = useState(option.price);

@@ -3,10 +3,10 @@
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
-import CreateOptionGroupForm from "./CreateOptionGroupForm";
-import OptionGroupList from "./OptionGroupList";
+import { CreateOptionGroupForm } from "./CreateOptionGroupForm";
+import { OptionGroupList } from "./OptionGroupList";
 
-export default function OptionGroupsTab() {
+export function OptionGroupsSection() {
   const optionGroups = useOptionGroupStore((s) => s.optionGroups);
   const loading = useOptionGroupStore((s) => s.loading);
 

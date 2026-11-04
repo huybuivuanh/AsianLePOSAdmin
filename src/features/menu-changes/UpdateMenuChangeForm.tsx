@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { alertDialog } from "@/stores/useModalStore";
 
-export default function UpdateMenuChangeForm({
+export function UpdateMenuChangeForm({
   menuChange,
 }: {
   menuChange: MenuChange;

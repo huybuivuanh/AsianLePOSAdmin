@@ -9,7 +9,7 @@ import { tableCardClass } from "@/components/layout/RowParts";
 import { matchesQuery, sortByNameAndCreated } from "@/lib/list-utils";
 import { CreditTableRow } from "./CreditTableRow";
 
-export default function CreditList() {
+export function CreditList() {
   const { credits, loading, error } = useCreditStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"created" | "name">("created");

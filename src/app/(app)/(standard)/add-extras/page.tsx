@@ -1,8 +1,8 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/PageHeader";
-import CreateAddExtraForm from "@/features/add-extras/CreateAddExtraForm";
-import AddExtraList from "@/features/add-extras/AddExtraList";
+import { CreateAddExtraForm } from "@/features/add-extras/CreateAddExtraForm";
+import { AddExtraList } from "@/features/add-extras/AddExtraList";
 import { useAddExtraStore } from "@/stores/useAddExtraStore";
 
 export default function AddExtrasPage() {

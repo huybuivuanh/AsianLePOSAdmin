@@ -57,7 +57,7 @@ function SortableRow({ id, name }: { id: string; name: string }) {
   );
 }
 
-export default function SortOptionGroupsForm({ item }: { item: MenuItem }) {
+export function SortOptionGroupsForm({ item }: { item: MenuItem }) {
   const [open, setOpen] = useState(false);
   const [orderedIds, setOrderedIds] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);

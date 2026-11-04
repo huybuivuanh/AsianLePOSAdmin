@@ -24,7 +24,7 @@ import {
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { alertDialog } from "@/stores/useModalStore";
 
-export default function CreateUserForm() {
+export function CreateUserForm() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

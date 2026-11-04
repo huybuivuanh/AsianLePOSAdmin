@@ -4,16 +4,16 @@ import { useState } from "react";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { alertDialog, confirmDialog } from "@/stores/useModalStore";
-import UpdateItemForm from "./UpdateItemForm";
-import AddOptionGroupForm from "./AddOptionGroupForm";
-import SortOptionGroupsForm from "./SortOptionGroupsForm";
+import { UpdateItemForm } from "./UpdateItemForm";
+import { AddItemOptionGroupsForm } from "./AddItemOptionGroupsForm";
+import { SortOptionGroupsForm } from "./SortOptionGroupsForm";
 import { getOrderedOptionGroupRefs } from "@/lib/menu-item-option-groups";
 import {
   deleteMenuItem,
   removeOptionFromGroup,
   removeOptionGroupFromItem,
 } from "@/lib/linked-writes";
-import AddOptionForm from "@/features/menu/option-groups/AddOptionForm";
+import { AddGroupOptionsForm } from "@/features/menu/option-groups/AddGroupOptionsForm";
 import {
   ExpandChevron,
   RemoveButton,
@@ -177,7 +177,7 @@ export function ItemCard({ item }: Props) {
                     </p>
                   )}
 
-                  <AddOptionForm group={group} />
+                  <AddGroupOptionsForm group={group} />
                 </div>
               );
             })
@@ -186,7 +186,7 @@ export function ItemCard({ item }: Props) {
           )}
 
           <div className="flex flex-wrap gap-2">
-            <AddOptionGroupForm item={item} />
+            <AddItemOptionGroupsForm item={item} />
             <SortOptionGroupsForm item={item} />
           </div>
         </div>

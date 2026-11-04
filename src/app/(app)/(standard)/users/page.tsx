@@ -1,8 +1,8 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/PageHeader";
-import CreateUserForm from "@/features/users/CreateUserForm";
-import UserList from "@/features/users/UserList";
+import { CreateUserForm } from "@/features/users/CreateUserForm";
+import { UserList } from "@/features/users/UserList";
 import { useUserStore } from "@/stores/useUserStore";
 
 export default function UsersPage() {

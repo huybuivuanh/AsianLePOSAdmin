@@ -9,7 +9,7 @@ import { TableStatus } from "@/types/enum";
 import { EditTableDialog } from "./EditTableDialog";
 import { AddTableDialog } from "./AddTableDialog";
 
-export default function DashboardTablesSection() {
+export function TablesSection() {
   const { tables, loading } = useTableStore();
   const [selected, setSelected] = useState<Table | null>(null);
   const [addOpen, setAddOpen] = useState(false);

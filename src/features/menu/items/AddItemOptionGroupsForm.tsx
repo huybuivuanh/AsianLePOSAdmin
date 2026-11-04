@@ -22,7 +22,7 @@ import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { alertDialog } from "@/stores/useModalStore";
 import { setMenuItemOptionGroups } from "@/lib/linked-writes";
 
-export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
+export function AddItemOptionGroupsForm({ item }: { item: MenuItem }) {
   const { optionGroups } = useOptionGroupStore();
 
   const [open, setOpen] = useState(false);

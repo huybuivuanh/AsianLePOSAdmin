@@ -1,7 +1,7 @@
 "use client";
 
-import DashboardTablesSection from "@/features/tables/DashboardTablesSection";
+import { TablesSection } from "@/features/tables/TablesSection";
 
 export default function TablesPage() {
-  return <DashboardTablesSection />;
+  return <TablesSection />;
 }

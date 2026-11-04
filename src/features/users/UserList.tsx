@@ -1,12 +1,12 @@
 "use client";
 
 import { useUserStore } from "@/stores/useUserStore";
-import UpdateUserForm from "./UpdateUserForm";
+import { UpdateUserForm } from "./UpdateUserForm";
 import { formatTimestamp } from "@/lib/formatters";
 import { alertDialog, confirmDialog } from "@/stores/useModalStore";
 import { RowActions, tableCardClass } from "@/components/layout/RowParts";
 
-export default function UserList() {
+export function UserList() {
   // The listener is started by the users route layout.
   const { users, loading, deleteUser } = useUserStore();
 

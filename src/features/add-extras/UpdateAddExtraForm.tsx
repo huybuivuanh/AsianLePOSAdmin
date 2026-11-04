@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useAddExtraStore } from "@/stores/useAddExtraStore";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
-export default function UpdateAddExtraForm({
+export function UpdateAddExtraForm({
   extra,
 }: {
   extra: ExtraCatalogItem;

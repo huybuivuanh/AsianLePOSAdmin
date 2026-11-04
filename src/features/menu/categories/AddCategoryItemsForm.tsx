@@ -18,7 +18,7 @@ import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { alertDialog } from "@/stores/useModalStore";
 import { setCategoryItems } from "@/lib/linked-writes";
 
-export default function AddItemForm({ category }: { category: FoodCategory }) {
+export function AddCategoryItemsForm({ category }: { category: FoodCategory }) {
   const { items } = useItemStore();
 
   const [open, setOpen] = useState(false);

@@ -1,5 +1,5 @@
-import OptionGroupsTab from "@/features/menu/option-groups/OptionGroupsTab";
+import { OptionGroupsSection } from "@/features/menu/option-groups/OptionGroupsSection";
 
 export default function OptionGroupsPage() {
-  return <OptionGroupsTab />;
+  return <OptionGroupsSection />;
 }

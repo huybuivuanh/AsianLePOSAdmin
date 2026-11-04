@@ -16,10 +16,10 @@ import {
 import { formatCurrency } from "@/lib/formatters";
 import { deleteCategory, removeItemFromCategory } from "@/lib/linked-writes";
 import { cn } from "@/lib/utils";
-import AddItemForm from "./AddItemForm";
-import UpdateCategoriesForm from "./UpdateCategoriesForm";
+import { AddCategoryItemsForm } from "./AddCategoryItemsForm";
+import { UpdateCategoryForm } from "./UpdateCategoryForm";
 
-export default function CategoriesList() {
+export function CategoryList() {
   const { categories, loading } = useCategoriesStore();
   const { items } = useItemStore();
 
@@ -128,7 +128,7 @@ export default function CategoriesList() {
                     onDelete={() => handleDeleteCategory(cat)}
                     deleting={deleting}
                   >
-                    <UpdateCategoriesForm category={cat} />
+                    <UpdateCategoryForm category={cat} />
                   </RowActions>
                 </div>
 
@@ -160,7 +160,7 @@ export default function CategoriesList() {
                         No items in this category yet.
                       </p>
                     )}
-                    <AddItemForm category={cat} />
+                    <AddCategoryItemsForm category={cat} />
                   </div>
                 )}
               </li>

@@ -1,5 +1,5 @@
-import ItemsTab from "@/features/menu/items/ItemsTab";
+import { ItemsSection } from "@/features/menu/items/ItemsSection";
 
 export default function ItemsPage() {
-  return <ItemsTab />;
+  return <ItemsSection />;
 }

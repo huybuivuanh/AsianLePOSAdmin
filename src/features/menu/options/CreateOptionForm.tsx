@@ -17,7 +17,7 @@ import { Timestamp } from "firebase/firestore";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
-export default function CreateOptionForm() {
+export function CreateOptionForm() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);

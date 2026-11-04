@@ -1,8 +1,8 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/PageHeader";
-import CreateMenuChangeForm from "@/features/menu-changes/CreateMenuChangeForm";
-import MenuChangeList from "@/features/menu-changes/MenuChangeList";
+import { CreateMenuChangeForm } from "@/features/menu-changes/CreateMenuChangeForm";
+import { MenuChangeList } from "@/features/menu-changes/MenuChangeList";
 import { useMenuChangeStore } from "@/stores/useMenuChangeStore";
 
 export default function MenuChangesPage() {

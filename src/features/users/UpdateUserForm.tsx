@@ -24,7 +24,7 @@ import {
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { alertDialog } from "@/stores/useModalStore";
 
-export default function UpdateUserForm({ user }: { user: User }) {
+export function UpdateUserForm({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);

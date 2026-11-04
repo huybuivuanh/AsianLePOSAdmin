@@ -1,5 +1,5 @@
-import CategoriesTab from "@/features/menu/categories/CategoriesTab";
+import { CategoriesSection } from "@/features/menu/categories/CategoriesSection";
 
 export default function CategoriesPage() {
-  return <CategoriesTab />;
+  return <CategoriesSection />;
 }

@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/layout/RowParts";
 import { matchesQuery } from "@/lib/list-utils";
 import { MenuChangeCard } from "./MenuChangeCard";
 
-export default function MenuChangeList() {
+export function MenuChangeList() {
   const { menuChanges, loading, error } = useMenuChangeStore();
   const [searchTerm, setSearchTerm] = useState("");
 

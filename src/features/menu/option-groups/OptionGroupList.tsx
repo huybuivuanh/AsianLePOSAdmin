@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/layout/RowParts";
 import { matchesQuery } from "@/lib/list-utils";
 import { OptionGroupCard } from "./OptionGroupCard";
 
-export default function OptionGroupsList() {
+export function OptionGroupList() {
   const { optionGroups, loading } = useOptionGroupStore();
   const [searchTerm, setSearchTerm] = useState("");
 

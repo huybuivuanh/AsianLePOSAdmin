@@ -1,5 +1,5 @@
-import OptionsTab from "@/features/menu/options/OptionsTab";
+import { OptionsSection } from "@/features/menu/options/OptionsSection";
 
 export default function OptionsPage() {
-  return <OptionsTab />;
+  return <OptionsSection />;
 }

@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
-export default function CreateCategoryForm() {
+export function CreateCategoryForm() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);

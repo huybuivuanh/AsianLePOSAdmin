@@ -6,9 +6,9 @@ import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { alertDialog, confirmDialog } from "@/stores/useModalStore";
 import { deleteOptionGroup, removeOptionFromGroup } from "@/lib/linked-writes";
-import UpdateOptionGroupForm from "./UpdateOptionGroupForm";
-import AddOptionForm from "./AddOptionForm";
-import UpdateOptionForm from "@/features/menu/options/UpdateOptionForm";
+import { UpdateOptionGroupForm } from "./UpdateOptionGroupForm";
+import { AddGroupOptionsForm } from "./AddGroupOptionsForm";
+import { UpdateOptionForm } from "@/features/menu/options/UpdateOptionForm";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
@@ -174,7 +174,7 @@ export function OptionGroupCard({ group }: Props) {
             <p className="mb-3 text-sm text-foreground/60">No options in this group.</p>
           )}
 
-          <AddOptionForm group={group} />
+          <AddGroupOptionsForm group={group} />
         </div>
       ) : null}
     </li>

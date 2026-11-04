@@ -26,7 +26,7 @@ import { useItemStore } from "@/stores/useItemStore";
 import { KitchenType } from "@/types/enum";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
-export default function CreateItemForm() {
+export function CreateItemForm() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [price, setPrice] = useState<number | "">(0);

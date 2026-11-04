@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { alertDialog } from "@/stores/useModalStore";
 
-export default function UpdateCreditForm({ credit }: { credit: Credit }) {
+export function UpdateCreditForm({ credit }: { credit: Credit }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(credit.name ?? "");
   const [phoneNumber, setPhoneNumber] = useState(credit.phoneNumber ?? "");

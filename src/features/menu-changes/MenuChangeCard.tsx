@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useMenuChangeStore } from "@/stores/useMenuChangeStore";
 import { alertDialog, confirmDialog } from "@/stores/useModalStore";
-import UpdateMenuChangeForm from "./UpdateMenuChangeForm";
-import AddItemChangeForm from "./AddItemChangeForm";
-import UpdateItemChangeForm from "./UpdateItemChangeForm";
+import { UpdateMenuChangeForm } from "./UpdateMenuChangeForm";
+import { AddItemChangeForm } from "./AddItemChangeForm";
+import { UpdateItemChangeForm } from "./UpdateItemChangeForm";
 import {
   ExpandChevron,
   RemoveButton,

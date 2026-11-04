@@ -24,7 +24,7 @@ import { useItemStore } from "@/stores/useItemStore";
 import { KitchenType } from "@/types/enum";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
-export default function UpdateItemDialog({ item }: { item: MenuItem }) {
+export function UpdateItemForm({ item }: { item: MenuItem }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(item.name);
   const [price, setPrice] = useState(item.price);

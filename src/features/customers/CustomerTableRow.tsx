@@ -3,7 +3,7 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useCustomerStore } from "@/stores/useCustomerStore";
 import { Button } from "@/components/ui/button";
-import UpdateCustomerForm from "./UpdateCustomerForm";
+import { UpdateCustomerForm } from "./UpdateCustomerForm";
 import { RowActions } from "@/components/layout/RowParts";
 import { formatCurrency, formatTimestamp } from "@/lib/formatters";
 import { cn } from "@/lib/utils";

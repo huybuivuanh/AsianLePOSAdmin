@@ -15,11 +15,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
-import NumberStepper from "./NumberStepper";
+import { NumberStepper } from "./NumberStepper";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { alertDialog } from "@/stores/useModalStore";
 
-export default function UpdateOptionGroupForm({
+export function UpdateOptionGroupForm({
   group,
 }: {
   group: OptionGroup;

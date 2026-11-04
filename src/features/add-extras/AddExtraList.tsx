@@ -8,9 +8,9 @@ import { EmptyState, RowActions, rowCardClass } from "@/components/layout/RowPar
 import { formatCurrency } from "@/lib/formatters";
 import { matchesQuery } from "@/lib/list-utils";
 import { cn } from "@/lib/utils";
-import UpdateAddExtraForm from "./UpdateAddExtraForm";
+import { UpdateAddExtraForm } from "./UpdateAddExtraForm";
 
-export default function AddExtraList() {
+export function AddExtraList() {
   const { extras, loading, deleteExtra } = useAddExtraStore();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");

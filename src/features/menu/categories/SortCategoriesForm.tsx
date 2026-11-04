@@ -55,7 +55,7 @@ function SortableItem({ id, name }: { id: string; name: string }) {
   );
 }
 
-export default function SortCategories() {
+export function SortCategoriesForm() {
   const [open, setOpen] = useState(false);
   const { categories } = useCategoriesStore();
   const [orderedIds, setOrderedIds] = useState<string[]>([]);

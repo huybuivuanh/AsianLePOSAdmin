@@ -55,7 +55,7 @@ function Logo({ onClick }: { onClick?: () => void }) {
   );
 }
 
-export default function Navbar() {
+export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
