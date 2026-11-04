@@ -20,42 +20,47 @@ npm run lint     # Run ESLint
 src/
 ├── app/                    # Next.js App Router
 │   ├── (app)/              # Protected route group (auth-gated layout: Navbar + AppModal)
-│   │   ├── (standard)/     # Pages in a single centered column (dashboard, orders, customers, …)
-│   │   └── menu/           # Menu section: collapsible sidebar + /menu/{categories,items,option-groups,options}
+│   │   ├── (standard)/     # Full-width pages: dashboard (/), orders, tables, customers, credits, users, …
+│   │   └── menu/           # Collapsible sidebar + /menu/{categories,items,option-groups,options}
 │   ├── login/              # Sign-in page
 │   └── api/users/          # Server-side user management (firebase-admin)
-├── features/               # Domain feature modules
+├── features/               # Domain feature modules (named exports, file name = component name)
+│   ├── add-extras/         # AddExtraList, Create/UpdateAddExtraForm
 │   ├── credits/            # CreditList, CreditTableRow, Create/UpdateCreditForm
-│   ├── customers/          # CustomerList
+│   ├── customers/          # CustomerList, CustomerTableRow, Create/UpdateCustomerForm
 │   ├── menu/
-│   │   ├── categories/     # CategoriesList, CategoriesTab, Create/Update/AddItem forms
-│   │   ├── items/          # ItemList, ItemCard, ItemsTab, Create/Update/AddOptionGroup forms
-│   │   ├── option-groups/  # OptionGroupList, OptionGroupCard, OptionGroupsTab, forms
-│   │   ├── options/        # OptionList, OptionsTab, Create/UpdateOptionForm
-│   │   └── publish/        # PublishMenuToolbar
-│   ├── menu-changes/       # MenuChangeList, Create/UpdateMenuChangeForm
-│   ├── orders/             # OrderHistoryView, OrderCard, OrderItemBlock
-│   ├── tables/             # DashboardTablesSection, EditTableDialog, AddTableDialog
+│   │   ├── categories/     # CategoriesSection, CategoryList, Create/UpdateCategoryForm, SortCategoriesForm, AddCategoryItemsForm
+│   │   ├── items/          # ItemsSection, ItemList, ItemCard, Create/UpdateItemForm, AddItemOptionGroupsForm, SortOptionGroupsForm
+│   │   ├── option-groups/  # OptionGroupsSection, OptionGroupList, OptionGroupCard, Create/UpdateOptionGroupForm, AddGroupOptionsForm
+│   │   ├── options/        # OptionsSection, OptionList, Create/UpdateOptionForm
+│   │   ├── publish/        # PublishMenuToolbar
+│   │   └── MenuSidebar.tsx
+│   ├── menu-changes/       # MenuChangeList, MenuChangeCard, menu change + item change forms
+│   ├── orders/             # OrderHistoryView, OrderCard, OrderItemBlock, RewardsBadge
+│   ├── rewards/            # RewardsSignInCard (dashboard)
+│   ├── tables/             # TablesSection, AddTableDialog, EditTableDialog
 │   └── users/              # UserList, Create/UpdateUserForm
-├── stores/                 # Zustand stores, one per domain
+├── stores/                 # Zustand stores, one per domain (+ useModalStore for popups)
 ├── providers/              # AuthProvider
 ├── services/               # userService (calls Next.js API routes), rewardsService (Rewards Cloud Functions)
-├── lib/                    # Shared utilities
-│   ├── firebase-config.ts  # Firebase client SDK init
+├── lib/                    # Shared utilities and Firestore helpers
+│   ├── firebase-config.ts  # Firebase client SDK init (+ demo database switch)
 │   ├── firebase-admin.ts   # Firebase Admin SDK init
+│   ├── rewards-firebase.ts # Second Firebase app for the Rewards project
 │   ├── linked-writes.ts    # Atomic (batched) writes for linked menu docs
-│   ├── firestore-timestamp.ts
+│   ├── order-history-firestore.ts  # Order queries + print/paid/complete/cancel writes
+│   ├── order-loyalty.ts    # Reverses rewards points on cancel
+│   ├── order-calculations.ts  # orderItemsSubtotal, calculateTaxBreakdown (same math as POS)
+│   ├── rewards-badge.ts    # Rewards badge text (same as POS)
 │   ├── formatters.ts       # formatCurrency, formatTimestamp, formatOrderedAt, etc.
-│   ├── list-utils.ts       # matchesQuery, sortByAlphabet, sortByNameAndCreated
+│   ├── list-utils.ts       # matchesQuery, sortCustomers, sortByNameAndCreated
 │   ├── menu-item-option-groups.ts
 │   ├── option-group-updates.ts
-│   ├── order-calculations.ts  # orderItemsSubtotal, calculateTaxBreakdown (same math as POS)
-│   ├── order-loyalty.ts    # Reverses rewards points on cancel
-│   ├── rewards-firebase.ts # Second Firebase app for the Rewards project
-│   ├── order-history-firestore.ts
+│   ├── firestore-timestamp.ts
+│   ├── demo.ts
 │   └── utils.ts            # cn() helper
 ├── components/
-│   ├── ui/                 # Radix UI primitives (Button, Dialog, Input, etc.)
+│   ├── ui/                 # Radix UI primitives (Button, Dialog, Input, Select, …)
 │   └── layout/             # Navbar, PageHeader, SectionSidebar, RowParts, AppModal
 └── types/
     ├── global.d.ts         # All domain interfaces, declared globally (no import needed)
@@ -84,6 +89,7 @@ Firebase Auth with custom claims for role-based access. `AuthProvider` persists 
 ### Conventions
 
 - All interactive/stateful components are Client Components (`"use client"`).
+- Feature components use named exports and the file name matches the component name. Only route files (`page.tsx`, `layout.tsx`) use default exports.
 - Path alias `@/` maps to `src/`.
 - Tailwind v4 with `clsx` + `tailwind-merge` via `cn()` for conditional classes.
 - Firebase credentials live in `.env.local` (not tracked).
