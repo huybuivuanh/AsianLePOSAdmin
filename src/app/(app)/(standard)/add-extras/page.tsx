@@ -1,7 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CreateAddExtraForm } from "@/features/add-extras/CreateAddExtraForm";
+import { AddExtraForm } from "@/features/add-extras/AddExtraForm";
 import { AddExtraList } from "@/features/add-extras/AddExtraList";
 import { useAddExtraStore } from "@/stores/useAddExtraStore";
 
@@ -12,7 +12,7 @@ export default function AddExtrasPage() {
   return (
     <div className="min-w-0">
       <PageHeader title="Add Extras" count={loading && extras.length === 0 ? undefined : extras.length}>
-        <CreateAddExtraForm />
+        <AddExtraForm />
       </PageHeader>
       <AddExtraList />
     </div>

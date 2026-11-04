@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { useMenuChangeStore } from "@/stores/useMenuChangeStore";
 import { alertDialog, confirmDialog } from "@/stores/useModalStore";
-import { UpdateMenuChangeForm } from "./UpdateMenuChangeForm";
-import { AddItemChangeForm } from "./AddItemChangeForm";
-import { UpdateItemChangeForm } from "./UpdateItemChangeForm";
+import { MenuChangeForm } from "./MenuChangeForm";
+import { ItemChangeForm } from "./ItemChangeForm";
 import {
   ExpandChevron,
   RemoveButton,
@@ -83,7 +82,7 @@ export function MenuChangeCard({ menuChange }: Props) {
           </p>
         </div>
         <RowActions name={menuChange.name} onDelete={handleDelete} deleting={deleting}>
-          <UpdateMenuChangeForm menuChange={menuChange} />
+          <MenuChangeForm menuChange={menuChange} />
         </RowActions>
       </div>
 
@@ -106,10 +105,9 @@ export function MenuChangeCard({ menuChange }: Props) {
                     ) : null}
                   </span>
                   <div className="flex shrink-0 items-center gap-1">
-                    <UpdateItemChangeForm
+                    <ItemChangeForm
                       menuChange={menuChange}
-                      index={index}
-                      change={change}
+                      edit={{ index, change }}
                     />
                     <RemoveButton
                       label={`Remove ${change.from} to ${change.to}`}
@@ -123,7 +121,7 @@ export function MenuChangeCard({ menuChange }: Props) {
             <p className="mb-3 text-sm text-foreground/60">No item changes yet.</p>
           )}
 
-          <AddItemChangeForm menuChange={menuChange} />
+          <ItemChangeForm menuChange={menuChange} />
         </div>
       ) : null}
     </li>

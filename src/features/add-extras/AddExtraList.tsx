@@ -8,7 +8,7 @@ import { EmptyState, RowActions, rowCardClass } from "@/components/layout/RowPar
 import { formatCurrency } from "@/lib/formatters";
 import { matchesQuery } from "@/lib/list-utils";
 import { cn } from "@/lib/utils";
-import { UpdateAddExtraForm } from "./UpdateAddExtraForm";
+import { AddExtraForm } from "./AddExtraForm";
 
 export function AddExtraList() {
   const { extras, loading, deleteExtra } = useAddExtraStore();
@@ -85,7 +85,7 @@ export function AddExtraList() {
                   onDelete={() => handleDelete(extra)}
                   deleting={deleting}
                 >
-                  <UpdateAddExtraForm extra={extra} />
+                  <AddExtraForm extra={extra} />
                 </RowActions>
               </li>
             );
