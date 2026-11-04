@@ -26,3 +26,7 @@ export let clientDb = productionDb;
 export function setActiveDatabase(isDemo: boolean) {
   clientDb = isDemo ? demoDb : productionDb;
 }
+
+export function isDemoDatabase(): boolean {
+  return clientDb === demoDb;
+}

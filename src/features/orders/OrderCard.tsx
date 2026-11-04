@@ -8,6 +8,7 @@ import {
   completeOrder,
   cancelOrder,
   markOrderPaid,
+  type OrderCardPatch,
   type OrderHistoryLoadedOrder,
 } from "@/lib/order-history-firestore";
 import {
@@ -20,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { OrderItemBlock } from "./OrderItemBlock";
 import { RewardsBadge } from "./RewardsBadge";
+import { reverseCancelledOrderRewards } from "@/lib/order-loyalty";
 
 function orderCardSurface(
   status: OrderStatus,
@@ -48,13 +50,16 @@ export function OrderCard({
   order,
   expanded,
   onToggle,
-  onStatusChange,
+  onOrderChange,
   onOrderItemsChange,
 }: {
   order: OrderHistoryLoadedOrder;
   expanded: boolean;
   onToggle: () => void;
-  onStatusChange?: (orderId: string, status: OrderStatus) => void;
+  onOrderChange?: (
+    orderId: string,
+    patch: OrderCardPatch,
+  ) => void;
   onOrderItemsChange?: (
     orderId: string,
     orderItems: OrderHistoryLoadedOrder["orderItems"],
@@ -276,7 +281,16 @@ export function OrderCard({
                 try {
                   e.stopPropagation();
                   const status = await cancelOrder(order);
-                  onStatusChange?.(order.id, status);
+                  onOrderChange?.(order.id, { status });
+                  // Pressing Cancel on a cancelled order undoes it — only reverse points on a real cancel.
+                  if (status === OrderStatus.Cancelled) {
+                    const { warning, patch } = await reverseCancelledOrderRewards(
+                      order.orderType,
+                      order.id,
+                    );
+                    onOrderChange?.(order.id, patch);
+                    if (warning) alert(warning);
+                  }
                 } catch (error) {
                   console.error(error);
                   alert("Failed to cancel order.");
@@ -293,7 +307,7 @@ export function OrderCard({
                 try {
                   e.stopPropagation();
                   const status = await completeOrder(order);
-                  onStatusChange?.(order.id, status);
+                  onOrderChange?.(order.id, { status });
                 } catch (error) {
                   console.error(error);
                   alert("Failed to complete order.");

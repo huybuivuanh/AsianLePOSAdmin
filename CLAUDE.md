@@ -36,7 +36,7 @@ src/
 │   └── users/              # UserList, Create/UpdateUserForm
 ├── stores/                 # Zustand stores, one per domain
 ├── providers/              # AuthProvider
-├── services/               # userService (calls Next.js API routes)
+├── services/               # userService (calls Next.js API routes), rewardsService (Rewards Cloud Functions)
 ├── lib/                    # Shared utilities
 │   ├── firebase-config.ts  # Firebase client SDK init
 │   ├── firebase-admin.ts   # Firebase Admin SDK init
@@ -45,6 +45,9 @@ src/
 │   ├── list-utils.ts       # matchesQuery, sortByAlphabet, sortByNameAndCreated
 │   ├── menu-item-option-groups.ts
 │   ├── option-group-updates.ts
+│   ├── order-calculations.ts  # orderItemsSubtotal, calculateTaxBreakdown (same math as POS)
+│   ├── order-loyalty.ts    # Reverses rewards points on cancel
+│   ├── rewards-firebase.ts # Second Firebase app for the Rewards project
 │   ├── order-history-firestore.ts
 │   └── utils.ts            # cn() helper
 ├── components/
@@ -65,6 +68,10 @@ Two data-access patterns co-exist:
 ### Store subscriptions
 
 Stores are subscribed per-route in layout files under `src/app/(app)/`. Each route layout subscribes only to the stores it needs via a `useEffect` keyed on `[loading, user]`. Every Zustand store exposes a `subscribe(): () => void` method that returns its `onSnapshot` unsubscribe. When adding a new store, expose `subscribe` on it, then add it to the relevant route layout(s). Do not subscribe to stores inside feature components.
+
+### Rewards
+
+A second Firebase app connects to the Asian Le Rewards project (`NEXT_PUBLIC_REWARDS_FIREBASE_*`). Each browser signs in once as the shared POS account (role: "pos") from the Dashboard page; the login is separate from the admin login. Cancelling an order calls the Rewards `reverseOrder` function (skipped on the demo database).
 
 ### Auth
 

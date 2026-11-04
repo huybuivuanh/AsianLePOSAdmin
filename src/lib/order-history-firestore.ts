@@ -17,6 +17,11 @@ import { OrderStatus, OrderType, TableStatus } from "@/types/enum";
 export const TAKE_OUT_ORDERS_COLLECTION = "takeOutOrders";
 export const DINE_IN_ORDERS_COLLECTION = "dineInOrders";
 
+/** Fields an order card changes on the local copy of an order. */
+export type OrderCardPatch = Partial<
+  Pick<Order, "status" | "loyalty" | "taxBreakDown">
+>;
+
 export type OrderHistoryLoadedOrder =
   | (TakeOutOrder & { id: string })
   | (DineInOrder & { id: string });

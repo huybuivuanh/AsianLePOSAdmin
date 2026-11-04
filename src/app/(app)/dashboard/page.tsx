@@ -7,6 +7,7 @@ import {
   type OrderHistoryLoadedOrder,
 } from "@/lib/order-history-firestore";
 import { cn } from "@/lib/utils";
+import { RewardsSignInCard } from "@/features/rewards/RewardsSignInCard";
 
 type Tab = "items" | "staff";
 type ItemStat = { name: string; quantity: number; pct: number };
@@ -73,6 +74,8 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Sales analytics for the last 30 days — take-out and dine-in combined."
       />
+
+      <RewardsSignInCard />
 
       {!loading && !error && (
         <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">

@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { OrderStatus } from "@/types/enum";
 import {
   dateToLocalKey,
   fetchAllTakeOutOrders,
   fetchOrdersForHistory,
   isTakeOutLoadedOrder,
+  type OrderCardPatch,
   type OrderHistoryChannel,
   type OrderHistoryLoadedOrder,
 } from "@/lib/order-history-firestore";
@@ -85,17 +85,17 @@ export default function OrderHistoryView() {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   }, []);
 
-  const handleStatusChange = useCallback(
-    (orderId: string, status: OrderStatus) => {
+  const handleOrderChange = useCallback(
+    (orderId: string, patch: OrderCardPatch) => {
       setOrders((prev) =>
         prev.map((order) =>
-          order.id === orderId ? { ...order, status } : order,
+          order.id === orderId ? { ...order, ...patch } : order,
         ),
       );
       setGlobalResults((prev) =>
         prev
           ? prev.map((order) =>
-              order.id === orderId ? { ...order, status } : order,
+              order.id === orderId ? { ...order, ...patch } : order,
             )
           : prev,
       );
@@ -271,7 +271,7 @@ export default function OrderHistoryView() {
                     order={order}
                     expanded={Boolean(expanded[order.id])}
                     onToggle={() => toggle(order.id)}
-                    onStatusChange={handleStatusChange}
+                    onOrderChange={handleOrderChange}
                     onOrderItemsChange={handleOrderItemsChange}
                   />
                 </li>
@@ -329,7 +329,7 @@ export default function OrderHistoryView() {
                     order={order}
                     expanded={Boolean(expanded[order.id])}
                     onToggle={() => toggle(order.id)}
-                    onStatusChange={handleStatusChange}
+                    onOrderChange={handleOrderChange}
                     onOrderItemsChange={handleOrderItemsChange}
                   />
                 </li>
