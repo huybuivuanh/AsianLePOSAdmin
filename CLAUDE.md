@@ -25,21 +25,21 @@ src/
 │   ├── login/              # Sign-in page
 │   └── api/users/          # Server-side user management (firebase-admin)
 ├── features/               # Domain feature modules (named exports, file name = component name)
-│   ├── add-extras/         # AddExtraList, Create/UpdateAddExtraForm
-│   ├── credits/            # CreditList, CreditTableRow, Create/UpdateCreditForm
-│   ├── customers/          # CustomerList, CustomerTableRow, Create/UpdateCustomerForm
+│   ├── add-extras/         # AddExtraList, AddExtraForm
+│   ├── credits/            # CreditList, CreditTableRow, CreditForm
+│   ├── customers/          # CustomerList, CustomerTableRow, CustomerForm
 │   ├── menu/
-│   │   ├── categories/     # CategoriesSection, CategoryList, Create/UpdateCategoryForm, SortCategoriesForm, AddCategoryItemsForm
-│   │   ├── items/          # ItemsSection, ItemList, ItemCard, Create/UpdateItemForm, AddItemOptionGroupsForm, SortOptionGroupsForm
-│   │   ├── option-groups/  # OptionGroupsSection, OptionGroupList, OptionGroupCard, Create/UpdateOptionGroupForm, AddGroupOptionsForm
-│   │   ├── options/        # OptionsSection, OptionList, Create/UpdateOptionForm
+│   │   ├── categories/     # CategoriesSection, CategoryList, CategoryForm, SortCategoriesForm, AddCategoryItemsForm
+│   │   ├── items/          # ItemsSection, ItemList, ItemCard, ItemForm, AddItemOptionGroupsForm, SortOptionGroupsForm
+│   │   ├── option-groups/  # OptionGroupsSection, OptionGroupList, OptionGroupCard, OptionGroupForm, AddGroupOptionsForm
+│   │   ├── options/        # OptionsSection, OptionList, OptionForm
 │   │   ├── publish/        # PublishMenuToolbar
 │   │   └── MenuSidebar.tsx
-│   ├── menu-changes/       # MenuChangeList, MenuChangeCard, menu change + item change forms
+│   ├── menu-changes/       # MenuChangeList, MenuChangeCard, MenuChangeForm, ItemChangeForm
 │   ├── orders/             # OrderHistoryView, OrderCard, OrderItemBlock, RewardsBadge
 │   ├── rewards/            # RewardsSignInCard (dashboard)
 │   ├── tables/             # TablesSection, AddTableDialog, EditTableDialog
-│   └── users/              # UserList, Create/UpdateUserForm
+│   └── users/              # UserList, UserForm
 ├── stores/                 # Zustand stores, one per domain (+ useModalStore for popups)
 ├── providers/              # AuthProvider
 ├── services/               # userService (calls Next.js API routes), rewardsService (Rewards Cloud Functions)
@@ -61,7 +61,7 @@ src/
 │   └── utils.ts            # cn() helper
 ├── components/
 │   ├── ui/                 # Radix UI primitives (Button, Dialog, Input, Select, …)
-│   └── layout/             # Navbar, PageHeader, SectionSidebar, RowParts, AppModal
+│   └── layout/             # Navbar, PageHeader, SectionSidebar, RowParts, AppModal, EntityFormDialog
 └── types/
     ├── global.d.ts         # All domain interfaces, declared globally (no import needed)
     └── enum.ts             # Enums (OrderStatus, KitchenType, etc.) — runtime values, import from @/types/enum
@@ -97,6 +97,7 @@ Firebase Auth with custom claims for role-based access. `AuthProvider` persists 
 - **Formatting**: use helpers from `@/lib/formatters` (`formatTimestamp`, `formatCurrency`, etc.) — never inline `toLocaleString()` or `.toFixed(2)` directly in components.
 - **Search/sort**: use `matchesQuery` and `sortByNameAndCreated` from `@/lib/list-utils`.
 - **List components**: keep them thin — search state + filter + a loop. Extract per-item display into a `*Card` or `*Row` component that calls the store directly.
+- **Add/edit forms**: one `<Entity>Form` per entity handles both — no entity prop = add, entity prop = edit. Build it on `EntityFormDialog` and load field values in `onOpenChange(true)` (not `useState(prop)`), so edits always start from the latest data.
 - **Dialogs**: each dialog component owns its own loading/saving state and handlers. Pass only the minimal data needed (e.g. the selected entity) as props.
 - **UI style** (matches asian-le-website-admin): page header = `PageHeader` (title + count + actions). List rows use `rowCardClass` / `rowHeaderClass` / `RowActions` (Edit + red Delete) / `RemoveButton` / `EmptyState` from `@/components/layout/RowParts`. Brand colors `ink`, `gold`, `on-ink` live in `globals.css`.
 - **Linked menu data**: categories ↔ items, items ↔ option groups, option groups ↔ options keep id lists on both sides. Change or delete them only through `@/lib/linked-writes` (one Firestore batch each), never with two separate store calls.
