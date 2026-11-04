@@ -8,6 +8,7 @@ import {
   setDoc,
   updateDoc,
   where,
+  writeBatch,
   type DocumentData,
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
@@ -194,78 +195,61 @@ export const submitToPrintQueue = async (order: OrderDraft) => {
   await setDoc(printQueueRef, forPrint as Record<string, unknown>);
 };
 
-async function resetTableForFinishedOrder(
-  tableNumber: string,
-  orderId: string,
-): Promise<void> {
-  const q = query(
-    collection(clientDb, "tables"),
-    where("tableNumber", "==", tableNumber),
-    where("currentOrderId", "==", orderId),
-  );
-  const snap = await getDocs(q);
-  await Promise.all(
-    snap.docs.map((d) =>
-      updateDoc(d.ref, {
+/**
+ * Sets an order's status. When a dine-in order is finished (completed or cancelled),
+ * the table still holding it is freed in the same batch, so the order and its table
+ * can't end up disagreeing.
+ */
+async function setOrderStatus(order: OrderDraft, status: OrderStatus): Promise<void> {
+  const colName =
+    order.orderType === OrderType.TakeOut
+      ? TAKE_OUT_ORDERS_COLLECTION
+      : DINE_IN_ORDERS_COLLECTION;
+  const batch = writeBatch(clientDb);
+  batch.update(doc(collection(clientDb, colName), order.id!), { status });
+
+  const finished =
+    status === OrderStatus.Completed || status === OrderStatus.Cancelled;
+  if (order.orderType === OrderType.DineIn && finished && order.tableNumber) {
+    const tables = await getDocs(
+      query(
+        collection(clientDb, "tables"),
+        where("tableNumber", "==", order.tableNumber),
+        where("currentOrderId", "==", order.id),
+      ),
+    );
+    for (const t of tables.docs) {
+      batch.update(t.ref, {
         currentOrderId: null,
         status: TableStatus.Open,
         guests: 0,
-      }),
-    ),
-  );
+      });
+    }
+  }
+  await batch.commit();
 }
 
+/** Toggles Completed ↔ In Progress. */
 export const completeOrder = async (
   order: OrderDraft,
 ): Promise<OrderStatus> => {
   if (!order.id) throw new Error("Order ID is required to complete.");
-  const colName =
-    order.orderType === OrderType.TakeOut
-      ? TAKE_OUT_ORDERS_COLLECTION
-      : DINE_IN_ORDERS_COLLECTION;
   const status =
     order.status === OrderStatus.Completed
       ? OrderStatus.InProgress
       : OrderStatus.Completed;
-  const orderRef = doc(collection(clientDb, colName), order.id);
-  await updateDoc(orderRef, {
-    status: status,
-  });
-
-  if (
-    order.orderType === OrderType.DineIn &&
-    status === OrderStatus.Completed &&
-    order.tableNumber
-  ) {
-    await resetTableForFinishedOrder(order.tableNumber, order.id);
-  }
-
+  await setOrderStatus(order, status);
   return status;
 };
 
+/** Toggles Cancelled ↔ In Progress. */
 export const cancelOrder = async (order: OrderDraft): Promise<OrderStatus> => {
   if (!order.id) throw new Error("Order ID is required to cancel.");
-  const colName =
-    order.orderType === OrderType.TakeOut
-      ? TAKE_OUT_ORDERS_COLLECTION
-      : DINE_IN_ORDERS_COLLECTION;
   const status =
     order.status === OrderStatus.Cancelled
       ? OrderStatus.InProgress
       : OrderStatus.Cancelled;
-  const orderRef = doc(collection(clientDb, colName), order.id);
-  await updateDoc(orderRef, {
-    status: status,
-  });
-
-  if (
-    order.orderType === OrderType.DineIn &&
-    status === OrderStatus.Cancelled &&
-    order.tableNumber
-  ) {
-    await resetTableForFinishedOrder(order.tableNumber, order.id);
-  }
-
+  await setOrderStatus(order, status);
   return status;
 };
 
