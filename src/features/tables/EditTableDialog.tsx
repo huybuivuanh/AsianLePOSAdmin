@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog, confirmDialog } from "@/stores/useModalStore";
 
 type Props = {
   table: Table | null;
@@ -34,12 +35,13 @@ export function EditTableDialog({ table, onClose }: Props) {
     if (!table?.id) return;
     const next = tableNumber.trim();
     if (!next) {
-      alert("Table number cannot be empty.");
+      await alertDialog("Table number cannot be empty.");
       return;
     }
     if (next !== table.tableNumber && table.currentOrderId) {
-      const proceed = confirm(
+      const proceed = await confirmDialog(
         `Table "${table.tableNumber}" has an order in progress. Renaming it changes its ID, which the POS app relies on — the live order may lose its link to this table mid-service. Continue?`,
+        { title: "Order in progress", confirmLabel: "Rename anyway", danger: true },
       );
       if (!proceed) return;
     }
@@ -50,7 +52,7 @@ export function EditTableDialog({ table, onClose }: Props) {
     } catch (e) {
       console.error(e);
       const message = e instanceof Error ? e.message : "Failed to update table.";
-      alert(message);
+      await alertDialog(message);
     } finally {
       setSaving(false);
     }
@@ -58,13 +60,20 @@ export function EditTableDialog({ table, onClose }: Props) {
 
   const handleDelete = async () => {
     if (!table?.id) return;
+    if (
+      !(await confirmDialog(`Delete table "${table.tableNumber}"? This cannot be undone.`, {
+        danger: true,
+        confirmLabel: "Delete",
+      }))
+    )
+      return;
     setDeleting(true);
     try {
       await deleteTable(table.id);
       onClose();
     } catch (e) {
       console.error(e);
-      alert("Failed to delete table.");
+      await alertDialog("Couldn't delete table. Try again.");
     } finally {
       setDeleting(false);
     }

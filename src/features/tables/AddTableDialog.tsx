@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 type Props = {
   open: boolean;
@@ -34,7 +35,7 @@ export function AddTableDialog({ open, onOpenChange, nextTableNumber }: Props) {
   const handleCreate = async () => {
     const next = tableNumber.trim();
     if (!next) {
-      alert("Table number cannot be empty.");
+      await alertDialog("Table number cannot be empty.");
       return;
     }
     setCreating(true);
@@ -49,7 +50,7 @@ export function AddTableDialog({ open, onOpenChange, nextTableNumber }: Props) {
     } catch (e) {
       console.error(e);
       const message = e instanceof Error ? e.message : "Failed to create table.";
-      alert(message);
+      await alertDialog(message);
     } finally {
       setCreating(false);
     }
