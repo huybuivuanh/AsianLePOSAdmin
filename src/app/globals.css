@@ -1,7 +1,18 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Light mode only: `dark:` utilities apply only under an explicit `.dark` class (never set). */
 @custom-variant dark (&:is(.dark *));
+
+/* Brand colors shared with asian-le-website / asian-le-website-admin. */
+@theme {
+  --color-ink: #141210;
+  --color-ink-raised: #1d1a17;
+  --color-ink-line: #2e2925;
+  --color-on-ink: #f3eee6;
+  --color-on-ink-muted: #b8b0a4;
+  --color-gold: #d4b26a;
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -44,6 +55,7 @@
 }
 
 :root {
+  color-scheme: light;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
