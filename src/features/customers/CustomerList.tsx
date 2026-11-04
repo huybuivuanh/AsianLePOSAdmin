@@ -5,6 +5,7 @@ import { useCustomerStore } from "@/stores/useCustomerStore";
 import { CustomerTableRow } from "./CustomerTableRow";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
+import { tableCardClass } from "@/components/layout/RowParts";
 import {
   Select,
   SelectContent,
@@ -72,30 +73,32 @@ export default function CustomerList() {
 
   if (error) {
     return (
-      <div className="px-4 py-10 text-center text-sm text-destructive">
+      <p className="text-sm text-red-600" role="alert">
         {error}
-      </div>
+      </p>
     );
   }
 
   if (loading) {
     return (
-      <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-        Loading customers…
-      </div>
+      <p className="text-sm text-foreground/60">Loading customers…</p>
     );
   }
 
   return (
-    <div className="space-y-4 p-4 sm:p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="ml-1 text-md font-medium tracking-tight text-muted-foreground">
-          Customers Saved : {customers.length}
-        </p>
-        <div className="flex items-center gap-2">
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <SearchField
+          className="flex-1"
+          placeholder="Search by name or phone…"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          aria-label="Search customers"
+        />
+        <div className="flex shrink-0 items-center gap-2">
           <label
             htmlFor="customer-sort"
-            className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+            className="text-xs font-medium tracking-wide text-foreground/60 uppercase"
           >
             Sort by
           </label>
@@ -103,7 +106,7 @@ export default function CustomerList() {
             value={sort}
             onValueChange={(v) => setSort(v as CustomerSort)}
           >
-            <SelectTrigger id="customer-sort" size="sm" className="w-48">
+            <SelectTrigger id="customer-sort" className="h-10 w-48 rounded-xl">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -116,31 +119,25 @@ export default function CustomerList() {
           </Select>
         </div>
       </div>
-      <SearchField
-        placeholder="Search by name or phone…"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        aria-label="Search customers"
-      />
 
-      <div className="overflow-x-auto">
+      <div className={`${tableCardClass} overflow-x-auto`}>
         <table className="w-full min-w-[32rem] border-collapse text-sm">
           <thead>
-            <tr className="border-b border-border bg-muted/50">
+            <tr className="border-b border-foreground/10 bg-foreground/[0.03]">
               <th className="w-8 px-2 py-3" aria-hidden />
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-foreground/60 uppercase sm:px-4">
                 Name
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-foreground/60 uppercase sm:px-4">
                 Phone
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-foreground/60 uppercase sm:px-4">
                 Created
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-foreground/60 uppercase sm:px-4">
                 Status
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium tracking-wide text-foreground/60 uppercase sm:px-4">
                 Actions
               </th>
             </tr>
@@ -150,7 +147,7 @@ export default function CustomerList() {
               <tr>
                 <td
                   colSpan={6}
-                  className="px-4 py-12 text-center text-sm text-muted-foreground"
+                  className="px-4 py-12 text-center text-sm text-foreground/60"
                 >
                   No customers in Firestore yet.
                 </td>
@@ -159,7 +156,7 @@ export default function CustomerList() {
               <tr>
                 <td
                   colSpan={6}
-                  className="px-4 py-12 text-center text-sm text-muted-foreground"
+                  className="px-4 py-12 text-center text-sm text-foreground/60"
                 >
                   No customers match your search.
                 </td>
@@ -180,7 +177,7 @@ export default function CustomerList() {
 
       {filtered.length > 0 ? (
         <div className="flex items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-foreground/60">
             Showing {(page - 1) * PAGE_SIZE + 1}–
             {Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
           </p>
@@ -195,7 +192,7 @@ export default function CustomerList() {
               <ChevronLeft className="size-4" aria-hidden />
               Previous
             </Button>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-foreground/60">
               Page {page} of {pageCount}
             </span>
             <Button

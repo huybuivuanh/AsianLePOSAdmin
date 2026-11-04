@@ -5,6 +5,7 @@ import { useCreditStore } from "@/stores/useCreditStore";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { SearchField } from "@/components/ui/search-field";
+import { tableCardClass } from "@/components/layout/RowParts";
 import { matchesQuery, sortByNameAndCreated } from "@/lib/list-utils";
 import { CreditTableRow } from "./CreditTableRow";
 
@@ -30,39 +31,38 @@ export default function CreditList() {
 
   if (error) {
     return (
-      <div className="px-4 py-10 text-center text-sm text-destructive">
+      <p className="text-sm text-red-600" role="alert">
         {error}
-      </div>
+      </p>
     );
   }
 
   if (loading) {
     return (
-      <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-        Loading credits…
-      </div>
+      <p className="text-sm text-foreground/60">Loading credits…</p>
     );
   }
 
   return (
-    <div className="space-y-4 p-4 sm:p-5">
+    <div>
       <SearchField
+        className="mb-4"
         placeholder="Search by name or phone number…"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         aria-label="Search credits"
       />
 
-      <div className="overflow-x-auto">
+      <div className={`${tableCardClass} overflow-x-auto`}>
         <table className="w-full min-w-[56rem] border-collapse text-sm">
           <thead>
-            <tr className="border-b border-border bg-muted/50">
-              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
+            <tr className="border-b border-foreground/10 bg-foreground/[0.03]">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-foreground/60 sm:px-4">
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground"
+                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium uppercase tracking-wide text-foreground/60 hover:text-foreground"
                   onClick={() => {
                     setSortBy("name");
                     setNameSort((s) => (s === "asc" ? "desc" : "asc"));
@@ -78,24 +78,24 @@ export default function CreditList() {
                   ) : null}
                 </Button>
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-foreground/60 sm:px-4">
                 Phone number
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-foreground/60 sm:px-4">
                 Description
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-foreground/60 sm:px-4">
                 Amount
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-foreground/60 sm:px-4">
                 Completed
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-foreground/60 sm:px-4">
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground"
+                  className="-ml-2 h-auto px-2 py-1 text-xs font-medium uppercase tracking-wide text-foreground/60 hover:text-foreground"
                   onClick={() => {
                     setSortBy("created");
                     setCreatedSort((s) => (s === "desc" ? "asc" : "desc"));
@@ -111,17 +111,17 @@ export default function CreditList() {
                   ) : null}
                 </Button>
               </th>
-              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground sm:px-4">
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-foreground/60 sm:px-4">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody className="divide-y divide-foreground/10">
             {credits.length === 0 ? (
               <tr>
                 <td
                   colSpan={7}
-                  className="px-4 py-12 text-center text-sm text-muted-foreground"
+                  className="px-4 py-12 text-center text-sm text-foreground/60"
                 >
                   No credits yet. Use &quot;Add credit&quot; to create the first
                   entry.
@@ -131,7 +131,7 @@ export default function CreditList() {
               <tr>
                 <td
                   colSpan={7}
-                  className="px-4 py-12 text-center text-sm text-muted-foreground"
+                  className="px-4 py-12 text-center text-sm text-foreground/60"
                 >
                   No credits match your search.
                 </td>

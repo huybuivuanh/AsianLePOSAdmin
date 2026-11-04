@@ -4,8 +4,10 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { useCustomerStore } from "@/stores/useCustomerStore";
 import { Button } from "@/components/ui/button";
 import UpdateCustomerForm from "./UpdateCustomerForm";
+import { RowActions } from "@/components/layout/RowParts";
 import { formatCurrency, formatTimestamp } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
+import { alertDialog, confirmDialog } from "@/stores/useModalStore";
 
 type Props = {
   customer: Customer;
@@ -19,11 +21,17 @@ export function CustomerTableRow({ customer, expanded, onToggle }: Props) {
   const note = customer.note?.trim();
 
   const handleDelete = async () => {
-    if (!confirm("Delete this customer?")) return;
+    if (
+      !(await confirmDialog(`Delete "${customer.name}"? This cannot be undone.`, {
+        danger: true,
+        confirmLabel: "Delete",
+      }))
+    )
+      return;
     try {
       await deleteCustomer(customer.id!);
     } catch {
-      alert("Failed to delete customer");
+      await alertDialog("Couldn't delete customer. Try again.");
     }
   };
 
@@ -31,7 +39,7 @@ export function CustomerTableRow({ customer, expanded, onToggle }: Props) {
     try {
       await updateCustomer(customer.id!, { isBlocked: !customer.isBlocked });
     } catch {
-      alert("Failed to update customer");
+      await alertDialog("Couldn't update customer. Try again.");
     }
   };
 
@@ -39,8 +47,8 @@ export function CustomerTableRow({ customer, expanded, onToggle }: Props) {
     <>
       <tr
         className={cn(
-          "cursor-pointer transition-colors hover:bg-muted/40",
-          !expanded && "border-b border-border",
+          "cursor-pointer transition-colors hover:bg-foreground/[0.02]",
+          !expanded && "border-b border-foreground/10",
         )}
         onClick={onToggle}
       >
@@ -49,7 +57,7 @@ export function CustomerTableRow({ customer, expanded, onToggle }: Props) {
             type="button"
             variant="ghost"
             size="icon"
-            className="size-6 text-muted-foreground hover:text-foreground"
+            className="size-6 text-foreground/60 hover:text-foreground"
             aria-label={expanded ? "Collapse row" : "Expand row"}
             aria-expanded={expanded}
             onClick={(e) => {
@@ -76,25 +84,25 @@ export function CustomerTableRow({ customer, expanded, onToggle }: Props) {
             ) : null}
           </span>
         </td>
-        <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
+        <td className="whitespace-nowrap px-3 py-3 text-foreground/60 sm:px-4">
           {customer.phone}
         </td>
-        <td className="whitespace-nowrap px-3 py-3 text-muted-foreground sm:px-4">
+        <td className="whitespace-nowrap px-3 py-3 text-foreground/60 sm:px-4">
           {formatTimestamp(customer.createdAt)}
         </td>
         <td className="px-3 py-3 sm:px-4">
           <span
             className={
               customer.isBlocked
-                ? "inline-flex rounded-md bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive"
-                : "inline-flex rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700"
+                ? "inline-flex rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700"
+                : "inline-flex rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700"
             }
           >
             {customer.isBlocked ? "Blocked" : "Active"}
           </span>
         </td>
         <td className="px-3 py-3 sm:px-4" onClick={(e) => e.stopPropagation()}>
-          <div className="flex flex-wrap gap-2">
+          <RowActions name={customer.name} onDelete={handleDelete}>
             <UpdateCustomerForm customer={customer} />
             <Button
               type="button"
@@ -109,34 +117,26 @@ export function CustomerTableRow({ customer, expanded, onToggle }: Props) {
             >
               {customer.isBlocked ? "Unblock" : "Block"}
             </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              size="sm"
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>
-          </div>
+          </RowActions>
         </td>
       </tr>
       {expanded ? (
-        <tr className="border-b border-border bg-muted/20">
+        <tr className="border-b border-foreground/10 bg-foreground/[0.02]">
           <td />
           <td colSpan={5} className="px-3 py-4 sm:px-4">
             <dl className="space-y-1.5 text-sm">
               <div className="flex gap-2">
-                <dt className="font-medium text-muted-foreground">Note:</dt>
+                <dt className="font-medium text-foreground/60">Note:</dt>
                 <dd className="min-w-0 whitespace-pre-wrap text-foreground">
                   {note || "—"}
                 </dd>
               </div>
               <div className="flex gap-2">
-                <dt className="font-medium text-muted-foreground">Orders:</dt>
+                <dt className="font-medium text-foreground/60">Orders:</dt>
                 <dd className="text-foreground">{customer.numberOfOrders}</dd>
               </div>
               <div className="flex gap-2">
-                <dt className="font-medium text-muted-foreground">
+                <dt className="font-medium text-foreground/60">
                   Total spent:
                 </dt>
                 <dd className="text-foreground">

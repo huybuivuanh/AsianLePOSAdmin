@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function UpdateCreditForm({ credit }: { credit: Credit }) {
   const [open, setOpen] = useState(false);
@@ -59,7 +60,7 @@ export default function UpdateCreditForm({ credit }: { credit: Credit }) {
       setOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to update credit");
+      await alertDialog("Couldn't update credit. Try again.");
     } finally {
       setSaving(false);
     }

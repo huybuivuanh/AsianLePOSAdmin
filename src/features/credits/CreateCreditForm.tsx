@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
 import { useCreditStore } from "@/stores/useCreditStore";
 import {
   Dialog,
@@ -15,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function CreateCreditForm() {
   const [open, setOpen] = useState(false);
@@ -60,7 +60,7 @@ export default function CreateCreditForm() {
       setOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to add credit");
+      await alertDialog("Couldn't add credit. Try again.");
     } finally {
       setSaving(false);
     }
@@ -71,9 +71,8 @@ export default function CreateCreditForm() {
       <LoadingOverlay visible={saving} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button type="button" className="gap-2">
-            <Plus className="size-4" aria-hidden />
-            Add credit
+          <Button type="button">
+            + Add credit
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-xl">

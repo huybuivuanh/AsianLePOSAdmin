@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
 import { useCustomerStore } from "@/stores/useCustomerStore";
 import {
   Dialog,
@@ -16,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function CreateCustomerForm() {
   const [open, setOpen] = useState(false);
@@ -48,7 +48,7 @@ export default function CreateCustomerForm() {
       setOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to add customer");
+      await alertDialog("Couldn't add customer. Try again.");
     } finally {
       setSaving(false);
     }
@@ -59,9 +59,8 @@ export default function CreateCustomerForm() {
       <LoadingOverlay visible={saving} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button type="button" className="gap-2">
-            <Plus className="size-4" aria-hidden />
-            Add customer
+          <Button type="button">
+            + Add customer
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-xl">

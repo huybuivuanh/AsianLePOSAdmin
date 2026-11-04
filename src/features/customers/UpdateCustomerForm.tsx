@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function UpdateCustomerForm({
   customer,
@@ -47,7 +48,7 @@ export default function UpdateCustomerForm({
       setOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to update customer");
+      await alertDialog("Couldn't update customer. Try again.");
     } finally {
       setSaving(false);
     }
