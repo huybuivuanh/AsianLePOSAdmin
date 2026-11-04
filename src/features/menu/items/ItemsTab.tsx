@@ -1,17 +1,24 @@
 "use client";
 
+import { PageHeader } from "@/components/layout/PageHeader";
+import { useItemStore } from "@/stores/useItemStore";
+import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 import CreateItemForm from "./CreateItemForm";
 import ItemList from "./ItemList";
-import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 
 export default function ItemsTab() {
+  const items = useItemStore((s) => s.items);
+  const loading = useItemStore((s) => s.loading);
+
   return (
-    <div className="space-y-6 p-3 sm:p-4 md:p-6">
-      <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
-        <PublishMenuToolbar>
-          <CreateItemForm />
-        </PublishMenuToolbar>
-      </div>
+    <div className="min-w-0">
+      <PublishMenuToolbar />
+      <PageHeader
+        title="Items"
+        count={loading && items.length === 0 ? undefined : items.length}
+      >
+        <CreateItemForm />
+      </PageHeader>
       <ItemList />
     </div>
   );

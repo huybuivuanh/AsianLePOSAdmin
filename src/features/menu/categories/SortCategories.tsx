@@ -30,6 +30,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect } from "react";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
+import { reorderCategories } from "@/lib/linked-writes";
 
 function SortableItem({ id, name }: { id: string; name: string }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -46,7 +48,7 @@ function SortableItem({ id, name }: { id: string; name: string }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="cursor-grab rounded-lg border border-border bg-muted/50 px-3 py-2.5 text-sm font-medium active:cursor-grabbing"
+      className="cursor-grab rounded-lg border border-foreground/10 bg-foreground/[0.03] px-3 py-2.5 text-sm font-medium active:cursor-grabbing"
     >
       {name}
     </li>
@@ -55,7 +57,7 @@ function SortableItem({ id, name }: { id: string; name: string }) {
 
 export default function SortCategories() {
   const [open, setOpen] = useState(false);
-  const { categories, updateCategory } = useCategoriesStore();
+  const { categories } = useCategoriesStore();
   const [orderedIds, setOrderedIds] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -86,13 +88,11 @@ export default function SortCategories() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await Promise.all(
-        orderedIds.map((id, index) => updateCategory(id, { order: index }))
-      );
+      await reorderCategories(orderedIds);
       setOpen(false);
     } catch (err) {
       console.error("Failed to save category order:", err);
-      alert("Failed to save");
+      await alertDialog("Couldn't save. Try again.");
     } finally {
       setSaving(false);
     }

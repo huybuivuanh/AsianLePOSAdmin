@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { addButtonClass } from "@/components/layout/RowParts";
 import {
   Dialog,
   DialogContent,
@@ -13,12 +14,12 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { SearchField } from "@/components/ui/search-field";
 import { useItemStore } from "@/stores/useItemStore";
-import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
+import { setCategoryItems } from "@/lib/linked-writes";
 
 export default function AddItemForm({ category }: { category: FoodCategory }) {
-  const { items, updateItem } = useItemStore();
-  const { updateCategory } = useCategoriesStore();
+  const { items } = useItemStore();
 
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(category.itemIds ?? []);
@@ -34,31 +35,11 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // 1️⃣ Update category with selected item IDs
-      await updateCategory(category.id!, { itemIds: selected });
-
-      // 2️⃣ Sync each item so categoryIds[] matches the selection
-      const updatePromises = items.map((item) => {
-        const isSelected = selected.includes(item.id!);
-
-        if (isSelected) {
-          const updatedCategories = item.categoryIds?.includes(category.id!)
-            ? item.categoryIds
-            : [...(item.categoryIds ?? []), category.id!];
-          return updateItem(item.id!, { categoryIds: updatedCategories });
-        } else {
-          const updatedCategories =
-            item.categoryIds?.filter((cid) => cid !== category.id) ?? [];
-          return updateItem(item.id!, { categoryIds: updatedCategories });
-        }
-      });
-
-      await Promise.all(updatePromises);
-
+      await setCategoryItems(category.id!, selected);
       setOpen(false);
     } catch (err) {
       console.error("Failed to save category items:", err);
-      alert("Failed to save category items");
+      await alertDialog("Couldn't save category items. Try again.");
     } finally {
       setLoading(false);
     }
@@ -72,10 +53,19 @@ export default function AddItemForm({ category }: { category: FoodCategory }) {
   return (
     <>
       <LoadingOverlay visible={loading} />
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          if (next) {
+            setSelected(category.itemIds ?? []);
+            setSearchTerm("");
+          }
+          setOpen(next);
+        }}
+      >
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          + Add Items
+        <Button variant="ghost" size="sm" className={addButtonClass}>
+          + Add items
         </Button>
       </DialogTrigger>
 

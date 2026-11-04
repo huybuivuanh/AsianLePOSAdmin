@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { addButtonClass } from "@/components/layout/RowParts";
 import {
   Dialog,
   DialogContent,
@@ -13,16 +14,16 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { SearchField } from "@/components/ui/search-field";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
-import { useItemStore } from "@/stores/useItemStore";
 import {
   getOrderedOptionGroupRefs,
   mergeOptionGroupSelection,
 } from "@/lib/menu-item-option-groups";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
+import { setMenuItemOptionGroups } from "@/lib/linked-writes";
 
 export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
-  const { optionGroups, updateOptionGroup } = useOptionGroupStore();
-  const { updateItem } = useItemStore();
+  const { optionGroups } = useOptionGroupStore();
 
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
@@ -38,34 +39,14 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // 1️⃣ Update the item with the final selected optionGroup IDs
-      const optionGroupIds = mergeOptionGroupSelection(item, selected);
-      await updateItem(item.id!, { optionGroupIds });
-
-      // 2️⃣ Sync all option groups to match the selection
-      const updatePromises = optionGroups.map((group) => {
-        const isSelected = selected.includes(group.id!);
-
-        if (isSelected) {
-          // Ensure this item is included
-          const updatedItemIds = group.itemIds?.includes(item.id!)
-            ? group.itemIds
-            : [...(group.itemIds ?? []), item.id!];
-          return updateOptionGroup(group.id!, { itemIds: updatedItemIds });
-        } else {
-          // Ensure this item is removed
-          const updatedItemIds =
-            group.itemIds?.filter((id) => id !== item.id!) ?? [];
-          return updateOptionGroup(group.id!, { itemIds: updatedItemIds });
-        }
-      });
-
-      await Promise.all(updatePromises);
-
+      await setMenuItemOptionGroups(
+        item.id!,
+        mergeOptionGroupSelection(item, selected),
+      );
       setOpen(false);
     } catch (err) {
       console.error("Failed to save option groups:", err);
-      alert("Failed to save option groups");
+      await alertDialog("Couldn't save option groups. Try again.");
     } finally {
       setLoading(false);
     }
@@ -91,8 +72,8 @@ export default function AddOptionGroupForm({ item }: { item: MenuItem }) {
         }}
       >
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          + Add Option Groups
+        <Button variant="ghost" size="sm" className={addButtonClass}>
+          + Add option groups
         </Button>
       </DialogTrigger>
 

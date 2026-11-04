@@ -67,7 +67,7 @@ export default function UpdateItemDialog({ item }: { item: MenuItem }) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
-            Update
+            Edit
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">

@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Timestamp } from "firebase/firestore";
 import { useOptionStore } from "@/stores/useOptionStore";
-import { Plus } from "lucide-react";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function CreateOptionForm() {
@@ -52,9 +51,8 @@ export default function CreateOptionForm() {
       <LoadingOverlay visible={loading} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button type="button" className="gap-2">
-            <Plus className="size-4" aria-hidden />
-            New option
+          <Button type="button">
+            + Add option
           </Button>
         </DialogTrigger>
         <DialogContent>

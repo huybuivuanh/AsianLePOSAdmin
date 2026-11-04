@@ -1,63 +1,53 @@
 "use client";
 
-import { type ReactNode } from "react";
 import { Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMenuVersionStore } from "@/stores/useMenuVersionStore";
-import { formatTimestamp } from "@/lib/formatters";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { formatTimestamp } from "@/lib/formatters";
+import { useMenuVersionStore } from "@/stores/useMenuVersionStore";
+import { alertDialog, confirmDialog } from "@/stores/useModalStore";
 
-type PublishMenuToolbarProps = {
-  /** Controls shown before the Publish button (e.g. create / sort actions). */
-  children?: ReactNode;
-};
-
-export function PublishMenuToolbar({ children }: PublishMenuToolbarProps) {
+/** Slim bar above every menu section: current version + Publish button. */
+export function PublishMenuToolbar() {
   const { version, loading, publishMenu } = useMenuVersionStore();
 
   const handlePublish = async () => {
-    if (!confirm("Publish Menu?")) return;
+    if (
+      !(await confirmDialog("Publish the menu to the POS now?", {
+        confirmLabel: "Publish",
+      }))
+    )
+      return;
     try {
       await publishMenu();
     } catch (err) {
       console.error("Error publishing menu:", err);
+      await alertDialog("Couldn't publish the menu. Try again.");
     }
   };
 
   return (
     <>
       <LoadingOverlay visible={loading} />
-      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        {children}
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-foreground/10 bg-foreground/[0.02] px-4 py-3">
+        <p className="text-sm text-foreground/60">
+          {!loading && version ? (
+            <>
+              <span className="font-medium text-foreground">v{version.version}</span>
+              {" · Last published "}
+              <span className="font-medium text-foreground">
+                {version.lastUpdated ? formatTimestamp(version.lastUpdated) : "not yet"}
+              </span>
+            </>
+          ) : (
+            "Changes go live on the POS when you publish."
+          )}
+        </p>
+        <Button type="button" size="sm" onClick={handlePublish} className="gap-2">
+          <Rocket className="size-4" aria-hidden />
+          Publish menu
+        </Button>
       </div>
-      <Button
-        type="button"
-        onClick={handlePublish}
-        className="w-full gap-2 sm:w-auto"
-      >
-        <Rocket className="size-4" aria-hidden />
-        Publish menu
-      </Button>
-      {!loading && version ? (
-        <div className="flex flex-col gap-1 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3 sm:text-sm">
-          <span className="font-medium text-foreground">
-            v{version.version}
-          </span>
-          <span className="hidden text-muted-foreground/50 sm:inline" aria-hidden>
-            ·
-          </span>
-          <span className="break-words">
-            Last published{" "}
-            <span className="font-medium text-foreground">
-              {version.lastUpdated
-                ? formatTimestamp(version.lastUpdated)
-                : "— not yet —"}
-            </span>
-          </span>
-        </div>
-      ) : null}
-    </div>
     </>
   );
 }

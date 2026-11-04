@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { addButtonClass } from "@/components/layout/RowParts";
 import {
   Dialog,
   DialogContent,
@@ -14,13 +15,12 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { SearchField } from "@/components/ui/search-field";
 import { useOptionStore } from "@/stores/useOptionStore";
-import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
-import { patchClearDefaultIfNotInOptionIds } from "@/lib/option-group-updates";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
+import { setOptionGroupOptions } from "@/lib/linked-writes";
 
 export default function AddOptionForm({ group }: { group: OptionGroup }) {
-  const { options, updateOption } = useOptionStore();
-  const { updateOptionGroup } = useOptionGroupStore();
+  const { options } = useOptionStore();
 
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(group.optionIds ?? []);
@@ -36,36 +36,11 @@ export default function AddOptionForm({ group }: { group: OptionGroup }) {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // 1. Update the group with the final list of optionIds
-      await updateOptionGroup(group.id!, {
-        optionIds: selected,
-        ...patchClearDefaultIfNotInOptionIds(group, selected),
-      } as unknown as Partial<OptionGroup>);
-
-      // 2. Sync each option so its groupIds array matches the checkboxes
-      const updatePromises = options.map((option) => {
-        const isSelected = selected.includes(option.id!);
-
-        if (isSelected) {
-          // Ensure group is included
-          const updatedGroups = option.groupIds?.includes(group.id!)
-            ? option.groupIds
-            : [...(option.groupIds ?? []), group.id!];
-          return updateOption(option.id!, { groupIds: updatedGroups });
-        } else {
-          // Ensure group is removed
-          const updatedGroups =
-            option.groupIds?.filter((gid) => gid !== group.id) ?? [];
-          return updateOption(option.id!, { groupIds: updatedGroups });
-        }
-      });
-
-      await Promise.all(updatePromises);
-
+      await setOptionGroupOptions(group.id!, selected);
       setOpen(false);
     } catch (err) {
       console.error("Failed to save options for group:", err);
-      alert("Failed to save options for group");
+      await alertDialog("Couldn't save options for group. Try again.");
     } finally {
       setLoading(false);
     }
@@ -79,10 +54,19 @@ export default function AddOptionForm({ group }: { group: OptionGroup }) {
   return (
     <>
       <LoadingOverlay visible={loading} />
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          if (next) {
+            setSelected(group.optionIds ?? []);
+            setSearchTerm("");
+          }
+          setOpen(next);
+        }}
+      >
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm">
-            + Add Options
+          <Button variant="ghost" size="sm" className={addButtonClass}>
+            + Add options
           </Button>
         </DialogTrigger>
         <DialogContent className="mx-auto flex !max-w-[calc(100vw-1rem)] w-[calc(100vw-1rem)] max-h-[90dvh] !flex-col gap-4 items-stretch sm:w-[80vw] sm:!max-w-[90vw]">

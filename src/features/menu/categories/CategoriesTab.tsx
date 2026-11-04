@@ -1,19 +1,26 @@
 "use client";
 
-import CategoriesList from "./CategoriesList";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { useCategoriesStore } from "@/stores/useCategoriesStore";
+import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 import CreateCategoriesForm from "./CreateCategoriesForm";
 import SortCategories from "./SortCategories";
-import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
+import CategoriesList from "./CategoriesList";
 
 export default function CategoriesTab() {
+  const categories = useCategoriesStore((s) => s.categories);
+  const loading = useCategoriesStore((s) => s.loading);
+
   return (
-    <div className="space-y-6 p-3 sm:p-4 md:p-6">
-      <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
-        <PublishMenuToolbar>
-          <CreateCategoriesForm />
-          <SortCategories />
-        </PublishMenuToolbar>
-      </div>
+    <div className="min-w-0">
+      <PublishMenuToolbar />
+      <PageHeader
+        title="Categories"
+        count={loading && categories.length === 0 ? undefined : categories.length}
+      >
+        <SortCategories />
+        <CreateCategoriesForm />
+      </PageHeader>
       <CategoriesList />
     </div>
   );

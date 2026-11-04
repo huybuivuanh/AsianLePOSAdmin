@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function UpdateCategoriesForm({
   category,
@@ -34,7 +35,7 @@ export default function UpdateCategoriesForm({
       setOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to update category");
+      await alertDialog("Couldn't update category. Try again.");
     } finally {
       setSaving(false);
     }
@@ -46,7 +47,7 @@ export default function UpdateCategoriesForm({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
-            Update
+            Edit
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">

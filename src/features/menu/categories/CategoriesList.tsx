@@ -3,67 +3,72 @@
 import { useState } from "react";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { useItemStore } from "@/stores/useItemStore";
+import { alertDialog, confirmDialog } from "@/stores/useModalStore";
+import { SearchField } from "@/components/ui/search-field";
+import {
+  EmptyState,
+  ExpandChevron,
+  RemoveButton,
+  RowActions,
+  rowCardClass,
+  rowHeaderClass,
+} from "@/components/layout/RowParts";
+import { formatCurrency } from "@/lib/formatters";
+import { deleteCategory, removeItemFromCategory } from "@/lib/linked-writes";
+import { cn } from "@/lib/utils";
 import AddItemForm from "./AddItemForm";
 import UpdateCategoriesForm from "./UpdateCategoriesForm";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { SearchField } from "@/components/ui/search-field";
-
 
 export default function CategoriesList() {
-  const { categories, loading, deleteCategory, updateCategory } =
-    useCategoriesStore();
-  const { items, updateItem } = useItemStore();
+  const { categories, loading } = useCategoriesStore();
+  const { items } = useItemStore();
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const toggleExpand = (id: string) =>
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const handleDeleteCategory = async (category: FoodCategory) => {
-    if (!confirm("Are you sure you want to delete this category?")) return;
+    if (
+      !(await confirmDialog(`Delete "${category.name}"? This cannot be undone.`, {
+        danger: true,
+        confirmLabel: "Delete",
+      }))
+    )
+      return;
+    setDeletingId(category.id!);
     try {
-      const updatePromises = (items ?? [])
-        .filter((item) => item.categoryIds?.includes(category.id!))
-        .map((item) => {
-          const updatedCategoryIds =
-            item.categoryIds?.filter((cid) => cid !== category.id) ?? [];
-          return updateItem(item.id!, { categoryIds: updatedCategoryIds });
-        });
-
-      await Promise.all(updatePromises);
       await deleteCategory(category.id!);
     } catch (err) {
       console.error("Failed to delete category:", err);
-      alert("Failed to delete category");
+      await alertDialog(`Couldn't delete "${category.name}". Try again.`);
+    } finally {
+      setDeletingId(null);
     }
   };
 
   const handleRemoveItemFromCategory = async (
     category: FoodCategory,
-    itemId: string,
+    item: MenuItem,
   ) => {
-    if (!confirm("Remove this item from category?")) return;
+    if (
+      !(await confirmDialog(`Remove "${item.name}" from "${category.name}"?`, {
+        confirmLabel: "Remove",
+      }))
+    )
+      return;
     try {
-      const updatedCategoryItemIds =
-        category.itemIds?.filter((id) => id !== itemId) ?? [];
-      await updateCategory(category.id!, { itemIds: updatedCategoryItemIds });
-
-      const item = items.find((i) => i.id === itemId);
-      if (item) {
-        const updatedCategoryIds =
-          item.categoryIds?.filter((cid) => cid !== category.id) ?? [];
-        await updateItem(itemId, { categoryIds: updatedCategoryIds });
-      }
+      await removeItemFromCategory(category.id!, item.id!);
     } catch (err) {
       console.error("Failed to remove item from category:", err);
-      alert("Failed to remove item");
+      await alertDialog("Couldn't remove the item. Try again.");
     }
   };
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading categories…</p>;
+    return <p className="text-sm text-foreground/60">Loading categories…</p>;
   }
 
   const filteredCategories = categories.filter((cat) =>
@@ -71,96 +76,98 @@ export default function CategoriesList() {
   );
 
   return (
-    <div className="space-y-4">
+    <div>
       <SearchField
+        className="mb-4"
         placeholder="Search categories…"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         aria-label="Search categories"
       />
 
-      <ul className="space-y-3">
-        {filteredCategories.length > 0 ? (
-          filteredCategories.map((cat) => {
+      {categories.length === 0 ? (
+        <EmptyState title="No categories yet." hint="Add one to get started." />
+      ) : filteredCategories.length === 0 ? (
+        <EmptyState
+          title={`No categories match “${searchTerm.trim()}”.`}
+          hint="Try a different search."
+        />
+      ) : (
+        <ul className="space-y-2">
+          {filteredCategories.map((cat) => {
+            const isOpen = !!expanded[cat.id!];
             const catItems = items.filter((item) =>
               cat.itemIds?.includes(item.id!),
             );
+            const deleting = deletingId === cat.id;
 
             return (
-              <li
-                key={cat.id}
-                className="rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="h-auto min-w-0 max-w-full justify-start gap-2 px-2 py-1.5 font-semibold text-foreground hover:bg-muted"
-                    onClick={() => toggleExpand(cat.id!)}
-                  >
-                    {expanded[cat.id!] ? (
-                      <ChevronDown className="size-4 shrink-0 opacity-70" />
-                    ) : (
-                      <ChevronRight className="size-4 shrink-0 opacity-70" />
-                    )}
-                    <span className="truncate">{cat.name}</span>
-                  </Button>
-
-                  <div className="flex flex-wrap gap-2 shrink-0">
-                    <UpdateCategoriesForm category={cat} />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDeleteCategory(cat)}
-                    >
-                      Delete
-                    </Button>
+              <li key={cat.id} className={cn(rowCardClass, deleting && "opacity-50")}>
+                <div
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isOpen}
+                  className={rowHeaderClass}
+                  onClick={() => toggleExpand(cat.id!)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      toggleExpand(cat.id!);
+                    }
+                  }}
+                >
+                  <ExpandChevron expanded={isOpen} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-foreground">{cat.name}</p>
+                    <p className="text-sm text-foreground/50">
+                      {catItems.length} {catItems.length === 1 ? "item" : "items"}
+                    </p>
                   </div>
+                  <RowActions
+                    name={cat.name}
+                    onDelete={() => handleDeleteCategory(cat)}
+                    deleting={deleting}
+                  >
+                    <UpdateCategoriesForm category={cat} />
+                  </RowActions>
                 </div>
 
-                {expanded[cat.id!] && (
-                  <div className="mt-4 ml-1 space-y-3 border-t border-border/60 pt-4 sm:ml-6">
+                {isOpen && (
+                  <div className="border-t border-foreground/10 px-3 py-3 sm:px-4">
                     {catItems.length > 0 ? (
-                      catItems.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex flex-col gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
-                        >
-                          <span className="min-w-0 text-sm break-words text-foreground">
-                            {item.name} <span>· ${item.price.toFixed(2)}</span>
-                          </span>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="shrink-0 border-destructive/40 text-destructive hover:bg-destructive/10"
-                            onClick={() =>
-                              handleRemoveItemFromCategory(cat, item.id!)
-                            }
+                      <ul className="mb-3 divide-y divide-foreground/10">
+                        {catItems.map((item) => (
+                          <li
+                            key={item.id}
+                            className="flex items-center justify-between gap-3 py-2"
                           >
-                            Remove
-                          </Button>
-                        </div>
-                      ))
+                            <span className="min-w-0 text-sm break-words text-foreground">
+                              {item.name}
+                              <span className="text-foreground/50">
+                                {" · "}
+                                {formatCurrency(item.price)}
+                              </span>
+                            </span>
+                            <RemoveButton
+                              label={`Remove ${item.name} from ${cat.name}`}
+                              onClick={() => handleRemoveItemFromCategory(cat, item)}
+                            />
+                          </li>
+                        ))}
+                      </ul>
                     ) : (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="mb-3 text-sm text-foreground/60">
                         No items in this category yet.
                       </p>
                     )}
-
                     <AddItemForm category={cat} />
                   </div>
                 )}
               </li>
             );
-          })
-        ) : (
-          <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-            No categories match your search.
-          </p>
-        )}
-      </ul>
+          })}
+        </ul>
+      )}
     </div>
   );
 }

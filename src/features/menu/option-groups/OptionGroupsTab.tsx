@@ -1,17 +1,24 @@
 "use client";
 
+import { PageHeader } from "@/components/layout/PageHeader";
+import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
+import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 import CreateOptionGroupForm from "./CreateOptionGroupForm";
 import OptionGroupList from "./OptionGroupList";
-import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 
 export default function OptionGroupsTab() {
+  const optionGroups = useOptionGroupStore((s) => s.optionGroups);
+  const loading = useOptionGroupStore((s) => s.loading);
+
   return (
-    <div className="space-y-6 p-3 sm:p-4 md:p-6">
-      <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
-        <PublishMenuToolbar>
-          <CreateOptionGroupForm />
-        </PublishMenuToolbar>
-      </div>
+    <div className="min-w-0">
+      <PublishMenuToolbar />
+      <PageHeader
+        title="Option Groups"
+        count={loading && optionGroups.length === 0 ? undefined : optionGroups.length}
+      >
+        <CreateOptionGroupForm />
+      </PageHeader>
       <OptionGroupList />
     </div>
   );

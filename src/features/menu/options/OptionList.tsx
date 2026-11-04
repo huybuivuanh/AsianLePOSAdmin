@@ -2,46 +2,45 @@
 
 import { useState } from "react";
 import { useOptionStore } from "@/stores/useOptionStore";
-import UpdateOptionForm from "./UpdateOptionForm";
-import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
-import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
-import { Button } from "@/components/ui/button";
+import { alertDialog, confirmDialog } from "@/stores/useModalStore";
+import { deleteOption } from "@/lib/linked-writes";
 import { SearchField } from "@/components/ui/search-field";
+import {
+  EmptyState,
+  RowActions,
+  UnusedBadge,
+  rowCardClass,
+} from "@/components/layout/RowParts";
+import { formatCurrency } from "@/lib/formatters";
+import { cn } from "@/lib/utils";
+import UpdateOptionForm from "./UpdateOptionForm";
 
 export default function OptionsList() {
-  const { options, loading, deleteOption } = useOptionStore();
-  const { optionGroups, updateOptionGroup } = useOptionGroupStore();
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const { options, loading } = useOptionStore();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleDelete = async (option: ItemOption) => {
-    if (!confirm("Are you sure you want to delete this option?")) return;
-    setIsDeleting(option.id!);
+    if (
+      !(await confirmDialog(`Delete "${option.name}"? This cannot be undone.`, {
+        danger: true,
+        confirmLabel: "Delete",
+      }))
+    )
+      return;
+    setDeletingId(option.id!);
     try {
-      const updatePromises = (option.groupIds ?? []).map((groupId) => {
-        const group = optionGroups.find((g) => g.id === groupId);
-        if (!group) return Promise.resolve();
-        const updatedOptionIds =
-          group.optionIds?.filter((id) => id !== option.id) ?? [];
-        return updateOptionGroup(groupId, {
-          optionIds: updatedOptionIds,
-          ...patchClearDefaultIfOptionRemoved(group, option.id),
-        } as unknown as Partial<OptionGroup>);
-      });
-
-      await Promise.all(updatePromises);
-
       await deleteOption(option.id!);
     } catch (err) {
       console.error("Failed to delete option:", err);
-      alert("Failed to delete option");
+      await alertDialog(`Couldn't delete "${option.name}". Try again.`);
     } finally {
-      setIsDeleting(null);
+      setDeletingId(null);
     }
   };
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading options…</p>;
+    return <p className="text-sm text-foreground/60">Loading options…</p>;
   }
 
   const filteredOptions = options.filter((opt) =>
@@ -49,57 +48,58 @@ export default function OptionsList() {
   );
 
   return (
-    <div className="space-y-4">
+    <div>
       <SearchField
+        className="mb-4"
         placeholder="Search options…"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         aria-label="Search options"
       />
 
-      <ul className="space-y-3">
-        {filteredOptions.length > 0 ? (
-          filteredOptions.map((opt) => {
+      {options.length === 0 ? (
+        <EmptyState title="No options yet." hint="Add one to get started." />
+      ) : filteredOptions.length === 0 ? (
+        <EmptyState
+          title={`No options match “${searchTerm.trim()}”.`}
+          hint="Try a different search."
+        />
+      ) : (
+        <ul className="space-y-2">
+          {filteredOptions.map((opt) => {
             const isUnused = (opt.groupIds?.length ?? 0) === 0;
+            const deleting = deletingId === opt.id;
 
             return (
               <li
                 key={opt.id}
-                className="flex flex-col gap-3 rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5"
+                className={cn(
+                  rowCardClass,
+                  "flex items-center gap-3 px-3 py-3 sm:px-4",
+                  deleting && "opacity-50",
+                )}
               >
-                <div className="min-w-0">
-                  <p className="flex flex-wrap items-center gap-2 font-medium break-words text-foreground">
-                    <span>{opt.name}</span>
-                    {isUnused ? (
-                      <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
-                        Unused
-                      </span>
-                    ) : null}
+                <div className="min-w-0 flex-1">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <p className="truncate font-medium text-foreground">{opt.name}</p>
+                    {isUnused && <UnusedBadge />}
+                  </div>
+                  <p className="text-sm text-foreground/50">
+                    {formatCurrency(opt.price)}
                   </p>
-                  <p className="mt-0.5 text-sm">${opt.price.toFixed(2)}</p>
                 </div>
-
-                <div className="flex shrink-0 flex-wrap gap-2">
+                <RowActions
+                  name={opt.name}
+                  onDelete={() => handleDelete(opt)}
+                  deleting={deleting}
+                >
                   <UpdateOptionForm option={opt} />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(opt)}
-                    disabled={isDeleting === opt.id}
-                  >
-                    {isDeleting === opt.id ? "Deleting…" : "Delete"}
-                  </Button>
-                </div>
+                </RowActions>
               </li>
             );
-          })
-        ) : (
-          <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-            No options match your search.
-          </p>
-        )}
-      </ul>
+          })}
+        </ul>
+      )}
     </div>
   );
 }

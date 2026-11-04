@@ -1,17 +1,24 @@
 "use client";
 
+import { PageHeader } from "@/components/layout/PageHeader";
+import { useOptionStore } from "@/stores/useOptionStore";
+import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 import CreateOptionForm from "./CreateOptionForm";
 import OptionList from "./OptionList";
-import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
 
 export default function OptionsTab() {
+  const options = useOptionStore((s) => s.options);
+  const loading = useOptionStore((s) => s.loading);
+
   return (
-    <div className="space-y-6 p-3 sm:p-4 md:p-6">
-      <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
-        <PublishMenuToolbar>
-          <CreateOptionForm />
-        </PublishMenuToolbar>
-      </div>
+    <div className="min-w-0">
+      <PublishMenuToolbar />
+      <PageHeader
+        title="Options"
+        count={loading && options.length === 0 ? undefined : options.length}
+      >
+        <CreateOptionForm />
+      </PageHeader>
       <OptionList />
     </div>
   );

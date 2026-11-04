@@ -17,8 +17,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Timestamp } from "firebase/firestore";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import NumberStepper from "./NumberStepper";
-import { Plus } from "lucide-react";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function CreateOptionGroupForm() {
   const [open, setOpen] = useState(false);
@@ -34,7 +34,7 @@ export default function CreateOptionGroupForm() {
     e.preventDefault();
     if (!name.trim()) return;
     if (minSelection < 0 || maxSelection < 1 || minSelection > maxSelection) {
-      alert("Invalid min/max selections");
+      await alertDialog("Invalid min/max selections");
       return;
     }
 
@@ -64,9 +64,8 @@ export default function CreateOptionGroupForm() {
       <LoadingOverlay visible={loading} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button type="button" className="gap-2">
-            <Plus className="size-4" aria-hidden />
-            New option group
+          <Button type="button">
+            + Add option group
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">

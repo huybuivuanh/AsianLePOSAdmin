@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
-import { Plus } from "lucide-react";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function CreateCategoryForm() {
@@ -44,9 +43,8 @@ export default function CreateCategoryForm() {
       <LoadingOverlay visible={loading} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button type="button" className="gap-2">
-            <Plus className="size-4" aria-hidden />
-            New category
+          <Button type="button">
+            + Add category
           </Button>
         </DialogTrigger>
         <DialogContent>

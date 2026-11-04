@@ -24,7 +24,6 @@ import {
 import { Timestamp } from "firebase/firestore";
 import { useItemStore } from "@/stores/useItemStore";
 import { KitchenType } from "@/types/enum";
-import { Plus } from "lucide-react";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function CreateItemForm() {
@@ -67,9 +66,8 @@ export default function CreateItemForm() {
       <LoadingOverlay visible={loading} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button type="button" className="gap-2">
-            <Plus className="size-4" aria-hidden />
-            New item
+          <Button type="button">
+            + Add item
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">

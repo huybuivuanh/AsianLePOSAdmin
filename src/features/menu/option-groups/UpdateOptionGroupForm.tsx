@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import NumberStepper from "./NumberStepper";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function UpdateOptionGroupForm({
   group,
@@ -55,7 +56,7 @@ export default function UpdateOptionGroupForm({
     e.preventDefault();
     if (!name.trim()) return;
     if (minSelection < 0 || maxSelection < 1 || minSelection > maxSelection) {
-      alert("Invalid min/max selections");
+      await alertDialog("Invalid min/max selections");
       return;
     }
 
@@ -81,7 +82,7 @@ export default function UpdateOptionGroupForm({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
-            Update
+            Edit
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">

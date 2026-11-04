@@ -1,31 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import { useItemStore } from "@/stores/useItemStore";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { useOptionStore } from "@/stores/useOptionStore";
-import { useCategoriesStore } from "@/stores/useCategoriesStore";
+import { alertDialog, confirmDialog } from "@/stores/useModalStore";
 import UpdateItemForm from "./UpdateItemForm";
 import AddOptionGroupForm from "./AddOptionGroupForm";
 import SortOptionGroupsForm from "./SortOptionGroupsForm";
+import { getOrderedOptionGroupRefs } from "@/lib/menu-item-option-groups";
 import {
-  getOrderedOptionGroupRefs,
-  removeOptionGroupRef,
-} from "@/lib/menu-item-option-groups";
+  deleteMenuItem,
+  removeOptionFromGroup,
+  removeOptionGroupFromItem,
+} from "@/lib/linked-writes";
 import AddOptionForm from "@/features/menu/option-groups/AddOptionForm";
-import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
+import {
+  ExpandChevron,
+  RemoveButton,
+  RowActions,
+  UnusedBadge,
+  rowCardClass,
+  rowHeaderClass,
+} from "@/components/layout/RowParts";
+import { formatCurrency } from "@/lib/formatters";
+import { cn } from "@/lib/utils";
 
 type Props = { item: MenuItem };
 
 export function ItemCard({ item }: Props) {
-  const { deleteItem, updateItem } = useItemStore();
-  const { optionGroups, updateOptionGroup } = useOptionGroupStore();
-  const { options, updateOption } = useOptionStore();
-  const { categories, updateCategory } = useCategoriesStore();
+  const { optionGroups } = useOptionGroupStore();
+  const { options } = useOptionStore();
   const [expanded, setExpanded] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const itemOptionGroups = getOrderedOptionGroupRefs(item)
     .map((ref) => optionGroups.find((g) => g.id === ref.optionGroupId))
@@ -33,108 +39,90 @@ export function ItemCard({ item }: Props) {
   const isUnused = (item.categoryIds?.length ?? 0) === 0;
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this item?")) return;
+    if (
+      !(await confirmDialog(`Delete "${item.name}"? This cannot be undone.`, {
+        danger: true,
+        confirmLabel: "Delete",
+      }))
+    )
+      return;
+    setDeleting(true);
     try {
-      await Promise.all([
-        ...optionGroups
-          .filter((g) => g.itemIds?.includes(item.id!))
-          .map((g) =>
-            updateOptionGroup(g.id!, {
-              itemIds: g.itemIds!.filter((i) => i !== item.id),
-            }),
-          ),
-        ...categories
-          .filter((cat) => cat.itemIds?.includes(item.id!))
-          .map((cat) =>
-            updateCategory(cat.id!, {
-              itemIds: cat.itemIds!.filter((i) => i !== item.id),
-            }),
-          ),
-      ]);
-      await deleteItem(item.id!);
+      await deleteMenuItem(item.id!);
     } catch (err) {
       console.error("Failed to delete item:", err);
-      alert("Failed to delete item");
+      setDeleting(false);
+      await alertDialog(`Couldn't delete "${item.name}". Try again.`);
     }
   };
 
   const handleRemoveOptionGroup = async (groupToRemove: OptionGroup) => {
-    if (!confirm("Are you sure you want to remove this option group?")) return;
+    if (
+      !(await confirmDialog(
+        `Remove "${groupToRemove.name}" from "${item.name}"?`,
+        { confirmLabel: "Remove" },
+      ))
+    )
+      return;
     try {
-      await Promise.all([
-        updateItem(item.id!, {
-          optionGroupIds: removeOptionGroupRef(item, groupToRemove.id!),
-        }),
-        updateOptionGroup(groupToRemove.id!, {
-          itemIds:
-            groupToRemove.itemIds?.filter((i) => i !== item.id) ?? [],
-        }),
-      ]);
+      await removeOptionGroupFromItem(item.id!, groupToRemove.id!);
     } catch (err) {
       console.error("Failed to remove option group:", err);
-      alert("Failed to remove option group");
+      await alertDialog("Couldn't remove the option group. Try again.");
     }
   };
 
   const handleRemoveOption = async (group: OptionGroup, option: ItemOption) => {
-    if (!confirm("Are you sure you want to remove this option?")) return;
+    if (
+      !(await confirmDialog(`Remove "${option.name}" from "${group.name}"?`, {
+        confirmLabel: "Remove",
+      }))
+    )
+      return;
     try {
-      await Promise.all([
-        updateOptionGroup(group.id!, {
-          optionIds: group.optionIds?.filter((id) => id !== option.id) ?? [],
-          ...patchClearDefaultIfOptionRemoved(group, option.id),
-        } as unknown as Partial<OptionGroup>),
-        updateOption(option.id!, {
-          groupIds: option.groupIds?.filter((id) => id !== group.id) ?? [],
-        }),
-      ]);
+      await removeOptionFromGroup(group.id!, option.id!);
     } catch (err) {
       console.error("Failed to remove option:", err);
-      alert("Failed to remove option");
+      await alertDialog("Couldn't remove the option. Try again.");
     }
   };
 
-  return (
-    <li className="rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Button
-          type="button"
-          variant="ghost"
-          className="h-auto min-w-0 max-w-full justify-start gap-2 px-2 py-1.5 font-semibold text-foreground hover:bg-muted"
-          onClick={() => setExpanded((v) => !v)}
-        >
-          {expanded ? (
-            <ChevronDown className="size-4 shrink-0 opacity-70" />
-          ) : (
-            <ChevronRight className="size-4 shrink-0 opacity-70" />
-          )}
-          <span className="truncate">{item.name}</span>
-          {isUnused ? (
-            <span className="inline-flex shrink-0 items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
-              Unused
-            </span>
-          ) : null}
-        </Button>
+  const toggle = () => setExpanded((v) => !v);
 
-        <div className="flex shrink-0 flex-wrap gap-2">
-          <UpdateItemForm item={item} />
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            onClick={handleDelete}
-          >
-            Delete
-          </Button>
+  return (
+    <li className={cn(rowCardClass, deleting && "opacity-50")}>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        className={rowHeaderClass}
+        onClick={toggle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle();
+          }
+        }}
+      >
+        <ExpandChevron expanded={expanded} />
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 items-center gap-2">
+            <p className="truncate font-medium text-foreground">{item.name}</p>
+            {isUnused && <UnusedBadge />}
+          </div>
+          <p className="text-sm text-foreground/50">
+            {formatCurrency(item.price)} · {item.kitchenType}
+            {itemOptionGroups.length > 0 &&
+              ` · ${itemOptionGroups.length} option ${itemOptionGroups.length === 1 ? "group" : "groups"}`}
+          </p>
         </div>
+        <RowActions name={item.name} onDelete={handleDelete} deleting={deleting}>
+          <UpdateItemForm item={item} />
+        </RowActions>
       </div>
 
-      <p className="ml-1 mt-2 text-sm sm:ml-7">
-        ${item.price.toFixed(2)} <span>·</span> Kitchen: {item.kitchenType}
-      </p>
-
       {expanded ? (
-        <div className="ml-1 mt-4 space-y-3 border-t border-border/60 pt-4 sm:ml-6">
+        <div className="space-y-3 border-t border-foreground/10 px-3 py-3 sm:px-4">
           {itemOptionGroups.length > 0 ? (
             itemOptionGroups.map((group) => {
               const groupOptions = options.filter((opt) =>
@@ -143,69 +131,61 @@ export function ItemCard({ item }: Props) {
               return (
                 <div
                   key={group.id}
-                  className="space-y-3 rounded-lg border border-border/60 bg-muted/30 p-4"
+                  className="rounded-lg border border-foreground/10 bg-foreground/[0.02] p-3"
                 >
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <span className="min-w-0 font-medium break-words text-foreground">
-                      {group.name}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="shrink-0 border-destructive/40 text-destructive hover:bg-destructive/10"
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium break-words text-foreground">
+                        {group.name}
+                      </p>
+                      <p className="text-xs text-foreground/50">
+                        Min {group.minSelection} · Max {group.maxSelection}
+                      </p>
+                    </div>
+                    <RemoveButton
+                      label={`Remove ${group.name} from ${item.name}`}
                       onClick={() => handleRemoveOptionGroup(group)}
                     >
                       Remove group
-                    </Button>
+                    </RemoveButton>
                   </div>
 
-                  <p className="text-sm">
-                    Min {group.minSelection} · Max {group.maxSelection}
-                  </p>
-
-                  <div className="space-y-2 sm:ml-2">
-                    {groupOptions.length > 0 ? (
-                      groupOptions.map((opt) => (
-                        <div
+                  {groupOptions.length > 0 ? (
+                    <ul className="my-2 divide-y divide-foreground/10">
+                      {groupOptions.map((opt) => (
+                        <li
                           key={opt.id}
-                          className="flex flex-col gap-2 rounded-lg border border-border/60 bg-background px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
+                          className="flex items-center justify-between gap-3 py-1.5"
                         >
                           <span className="min-w-0 text-sm break-words">
-                            {opt.name}{" "}
-                            <span className="text-muted-foreground">
-                              · ${opt.price.toFixed(2)}
+                            {opt.name}
+                            <span className="text-foreground/50">
+                              {" · "}
+                              {formatCurrency(opt.price)}
                             </span>
                           </span>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="shrink-0 border-destructive/40 text-destructive hover:bg-destructive/10"
+                          <RemoveButton
+                            label={`Remove ${opt.name} from ${group.name}`}
                             onClick={() => handleRemoveOption(group, opt)}
-                          >
-                            Remove option
-                          </Button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        No options in this group.
-                      </p>
-                    )}
-                  </div>
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="my-2 text-sm text-foreground/60">
+                      No options in this group.
+                    </p>
+                  )}
 
                   <AddOptionForm group={group} />
                 </div>
               );
             })
           ) : (
-            <p className="text-sm text-muted-foreground">
-              No option groups assigned.
-            </p>
+            <p className="text-sm text-foreground/60">No option groups assigned.</p>
           )}
 
-          <div className="flex flex-wrap gap-2 pt-1">
+          <div className="flex flex-wrap gap-2">
             <AddOptionGroupForm item={item} />
             <SortOptionGroupsForm item={item} />
           </div>

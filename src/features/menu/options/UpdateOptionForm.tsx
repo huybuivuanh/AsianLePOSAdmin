@@ -43,7 +43,7 @@ export default function UpdateOptionForm({ option }: { option: ItemOption }) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
-            Update
+            Edit
           </Button>
         </DialogTrigger>
         <DialogContent>

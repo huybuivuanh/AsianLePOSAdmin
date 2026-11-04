@@ -33,6 +33,7 @@ import {
   reindexOptionGroupOrders,
 } from "@/lib/menu-item-option-groups";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 function SortableRow({ id, name }: { id: string; name: string }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -49,7 +50,7 @@ function SortableRow({ id, name }: { id: string; name: string }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="cursor-grab rounded-lg border border-border bg-muted/50 px-3 py-2.5 text-sm font-medium active:cursor-grabbing"
+      className="cursor-grab rounded-lg border border-foreground/10 bg-foreground/[0.03] px-3 py-2.5 text-sm font-medium active:cursor-grabbing"
     >
       {name}
     </li>
@@ -90,7 +91,7 @@ export default function SortOptionGroupsForm({ item }: { item: MenuItem }) {
       setOpen(false);
     } catch (err) {
       console.error("Failed to save option group order:", err);
-      alert("Failed to save");
+      await alertDialog("Couldn't save. Try again.");
     } finally {
       setSaving(false);
     }
