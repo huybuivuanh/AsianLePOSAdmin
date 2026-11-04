@@ -7,7 +7,6 @@ import {
   onSnapshot,
   addDoc,
   updateDoc,
-  deleteDoc,
   query,
   orderBy,
 } from "firebase/firestore";
@@ -21,7 +20,6 @@ type OptionGroupState = {
   subscribe: () => () => void;
   createOptionGroup: (group: OptionGroup) => Promise<void>;
   updateOptionGroup: (id: string, group: Partial<OptionGroup>) => Promise<void>;
-  deleteOptionGroup: (id: string) => Promise<void>;
 };
 
 export const useOptionGroupStore = create<OptionGroupState>((set) => ({
@@ -59,10 +57,5 @@ export const useOptionGroupStore = create<OptionGroupState>((set) => ({
   updateOptionGroup: async (id, group) => {
     const ref = doc(clientDb, "optionGroups", id);
     await updateDoc(ref, group);
-  },
-
-  deleteOptionGroup: async (id) => {
-    const ref = doc(clientDb, "optionGroups", id);
-    await deleteDoc(ref);
   },
 }));

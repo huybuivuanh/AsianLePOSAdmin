@@ -7,7 +7,6 @@ import {
   onSnapshot,
   addDoc,
   updateDoc,
-  deleteDoc,
   Timestamp,
 } from "firebase/firestore";
 import { clientDb } from "@/lib/firebase-config";
@@ -22,7 +21,6 @@ type CategoriesState = {
     id: string,
     category: Partial<FoodCategory>
   ) => Promise<void>;
-  deleteCategory: (id: string) => Promise<void>;
 };
 
 export const useCategoriesStore = create<CategoriesState>((set) => ({
@@ -56,10 +54,5 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
   updateCategory: async (id, category) => {
     const ref = doc(clientDb, "categories", id);
     await updateDoc(ref, category);
-  },
-
-  deleteCategory: async (id) => {
-    const ref = doc(clientDb, "categories", id);
-    await deleteDoc(ref);
   },
 }));

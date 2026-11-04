@@ -7,7 +7,6 @@ import {
   onSnapshot,
   addDoc,
   updateDoc,
-  deleteDoc,
   query,
   orderBy,
 } from "firebase/firestore";
@@ -22,7 +21,6 @@ type ItemState = {
   subscribe: () => () => void;
   createItem: (item: MenuItem) => Promise<void>;
   updateItem: (id: string, item: Partial<MenuItem>) => Promise<void>;
-  deleteItem: (id: string) => Promise<void>;
 };
 
 export const useItemStore = create<ItemState>((set) => ({
@@ -58,10 +56,5 @@ export const useItemStore = create<ItemState>((set) => ({
   updateItem: async (id, item) => {
     const ref = doc(clientDb, "menuItems", id);
     await updateDoc(ref, item);
-  },
-
-  deleteItem: async (id) => {
-    const ref = doc(clientDb, "menuItems", id);
-    await deleteDoc(ref);
   },
 }));

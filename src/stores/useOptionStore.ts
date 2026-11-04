@@ -5,7 +5,6 @@ import {
   collection,
   addDoc,
   updateDoc,
-  deleteDoc,
   doc,
   onSnapshot,
   query,
@@ -20,7 +19,6 @@ interface OptionStore {
   loading: boolean;
   createOption: (option: Omit<ItemOption, "id">) => Promise<void>;
   updateOption: (id: string, data: Partial<ItemOption>) => Promise<void>;
-  deleteOption: (id: string) => Promise<void>;
   subscribe: () => () => void;
 }
 
@@ -54,9 +52,5 @@ export const useOptionStore = create<OptionStore>((set) => ({
 
   updateOption: async (id, data) => {
     await updateDoc(doc(clientDb, "options", id), data);
-  },
-
-  deleteOption: async (id) => {
-    await deleteDoc(doc(clientDb, "options", id));
   },
 }));
