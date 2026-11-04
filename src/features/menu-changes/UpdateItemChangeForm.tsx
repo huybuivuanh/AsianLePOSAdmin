@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function UpdateItemChangeForm({
   menuChange,
@@ -44,7 +45,7 @@ export default function UpdateItemChangeForm({
       console.error(err);
       const message =
         err instanceof Error ? err.message : "Failed to update item change";
-      alert(message);
+      await alertDialog(message);
     } finally {
       setSaving(false);
     }

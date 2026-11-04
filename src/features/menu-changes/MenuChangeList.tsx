@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useMenuChangeStore } from "@/stores/useMenuChangeStore";
 import { SearchField } from "@/components/ui/search-field";
+import { EmptyState } from "@/components/layout/RowParts";
 import { matchesQuery } from "@/lib/list-utils";
 import { MenuChangeCard } from "./MenuChangeCard";
 
@@ -12,18 +13,14 @@ export default function MenuChangeList() {
 
   if (error) {
     return (
-      <div className="px-4 py-10 text-center text-sm text-destructive">
+      <p className="text-sm text-red-600" role="alert">
         {error}
-      </div>
+      </p>
     );
   }
 
   if (loading) {
-    return (
-      <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-        Loading menu changes…
-      </div>
-    );
+    return <p className="text-sm text-foreground/60">Loading menu changes…</p>;
   }
 
   const filtered = menuChanges.filter((mc) =>
@@ -35,28 +32,32 @@ export default function MenuChangeList() {
   );
 
   return (
-    <div className="space-y-4 p-4 sm:p-5">
+    <div>
       <SearchField
+        className="mb-4"
         placeholder="Search menu changes…"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         aria-label="Search menu changes"
       />
 
-      <ul className="space-y-3">
-        {menuChanges.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-            No menu changes yet. Use &quot;Add menu change&quot; to create the
-            first one.
-          </p>
-        ) : filtered.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-            No menu changes match your search.
-          </p>
-        ) : (
-          filtered.map((mc) => <MenuChangeCard key={mc.id} menuChange={mc} />)
-        )}
-      </ul>
+      {menuChanges.length === 0 ? (
+        <EmptyState
+          title="No menu changes yet."
+          hint="A menu change is a named set of substitutions, e.g. “Dinner for 5”."
+        />
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          title={`No menu changes match “${searchTerm.trim()}”.`}
+          hint="Try a different search."
+        />
+      ) : (
+        <ul className="space-y-2">
+          {filtered.map((mc) => (
+            <MenuChangeCard key={mc.id} menuChange={mc} />
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

@@ -2,116 +2,125 @@
 
 import { useState } from "react";
 import { useMenuChangeStore } from "@/stores/useMenuChangeStore";
+import { alertDialog, confirmDialog } from "@/stores/useModalStore";
 import UpdateMenuChangeForm from "./UpdateMenuChangeForm";
 import AddItemChangeForm from "./AddItemChangeForm";
 import UpdateItemChangeForm from "./UpdateItemChangeForm";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { formatCurrency, formatTimestamp } from "@/lib/formatters";
+import {
+  ExpandChevron,
+  RemoveButton,
+  RowActions,
+  rowCardClass,
+  rowHeaderClass,
+} from "@/components/layout/RowParts";
+import { formatCurrency } from "@/lib/formatters";
+import { cn } from "@/lib/utils";
 
 type Props = { menuChange: MenuChange };
 
 export function MenuChangeCard({ menuChange }: Props) {
   const { deleteMenuChange, removeItemChange } = useMenuChangeStore();
   const [expanded, setExpanded] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm(`Delete menu change "${menuChange.name}"?`)) return;
+    if (
+      !(await confirmDialog(
+        `Delete "${menuChange.name}"? This cannot be undone.`,
+        { danger: true, confirmLabel: "Delete" },
+      ))
+    )
+      return;
+    setDeleting(true);
     try {
       await deleteMenuChange(menuChange.id!);
     } catch (err) {
       console.error("Failed to delete menu change:", err);
-      alert("Failed to delete menu change");
+      setDeleting(false);
+      await alertDialog(`Couldn't delete "${menuChange.name}". Try again.`);
     }
   };
 
   const handleRemoveItemChange = async (index: number) => {
-    if (!confirm("Remove this item change?")) return;
+    const change = menuChange.changes[index];
+    if (
+      !(await confirmDialog(`Remove “${change.from} → ${change.to}”?`, {
+        confirmLabel: "Remove",
+      }))
+    )
+      return;
     try {
       await removeItemChange(menuChange.id!, index);
     } catch (err) {
       console.error("Failed to remove item change:", err);
-      alert("Failed to remove item change");
+      await alertDialog("Couldn't remove the item change. Try again.");
     }
   };
 
-  return (
-    <li className="rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Button
-          type="button"
-          variant="ghost"
-          className="h-auto min-w-0 max-w-full justify-start gap-2 px-2 py-1.5 font-semibold text-foreground hover:bg-muted"
-          onClick={() => setExpanded((v) => !v)}
-        >
-          {expanded ? (
-            <ChevronDown className="size-4 shrink-0 opacity-70" />
-          ) : (
-            <ChevronRight className="size-4 shrink-0 opacity-70" />
-          )}
-          <span className="truncate">{menuChange.name}</span>
-          <span className="inline-flex shrink-0 items-center rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-            {menuChange.changes.length}{" "}
-            {menuChange.changes.length === 1 ? "change" : "changes"}
-          </span>
-        </Button>
+  const toggle = () => setExpanded((v) => !v);
+  const count = menuChange.changes.length;
 
-        <div className="flex shrink-0 flex-wrap gap-2">
-          <UpdateMenuChangeForm menuChange={menuChange} />
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            onClick={handleDelete}
-          >
-            Delete
-          </Button>
+  return (
+    <li className={cn(rowCardClass, deleting && "opacity-50")}>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        className={rowHeaderClass}
+        onClick={toggle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle();
+          }
+        }}
+      >
+        <ExpandChevron expanded={expanded} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-medium text-foreground">{menuChange.name}</p>
+          <p className="text-sm text-foreground/50">
+            {count} {count === 1 ? "change" : "changes"}
+          </p>
         </div>
+        <RowActions name={menuChange.name} onDelete={handleDelete} deleting={deleting}>
+          <UpdateMenuChangeForm menuChange={menuChange} />
+        </RowActions>
       </div>
 
-      <p className="ml-1 mt-2 text-sm text-muted-foreground sm:ml-7">
-        Created {formatTimestamp(menuChange.createdAt)}
-      </p>
-
       {expanded ? (
-        <div className="ml-1 mt-4 space-y-3 border-t border-border/60 pt-4 sm:ml-6">
-          {menuChange.changes.length > 0 ? (
-            menuChange.changes.map((change, index) => (
-              <div
-                key={index}
-                className="flex flex-col gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <span className="min-w-0 text-sm break-words text-foreground">
-                  {change.from} → {change.to}
-                  {change.price > 0 ? (
-                    <span className="text-muted-foreground">
-                      {" "}
-                      · {formatCurrency(change.price)}
-                    </span>
-                  ) : null}
-                </span>
-                <div className="flex shrink-0 flex-wrap gap-2">
-                  <UpdateItemChangeForm
-                    menuChange={menuChange}
-                    index={index}
-                    change={change}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="border-destructive/40 text-destructive hover:bg-destructive/10"
-                    onClick={() => handleRemoveItemChange(index)}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              </div>
-            ))
+        <div className="border-t border-foreground/10 px-3 py-3 sm:px-4">
+          {count > 0 ? (
+            <ul className="mb-3 divide-y divide-foreground/10">
+              {menuChange.changes.map((change, index) => (
+                <li
+                  key={index}
+                  className="flex items-center justify-between gap-3 py-2"
+                >
+                  <span className="min-w-0 text-sm break-words text-foreground">
+                    {change.from} → {change.to}
+                    {change.price > 0 ? (
+                      <span className="text-foreground/50">
+                        {" · "}
+                        {formatCurrency(change.price)}
+                      </span>
+                    ) : null}
+                  </span>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <UpdateItemChangeForm
+                      menuChange={menuChange}
+                      index={index}
+                      change={change}
+                    />
+                    <RemoveButton
+                      label={`Remove ${change.from} to ${change.to}`}
+                      onClick={() => handleRemoveItemChange(index)}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
           ) : (
-            <p className="text-sm text-muted-foreground">
-              No item changes yet.
-            </p>
+            <p className="mb-3 text-sm text-foreground/60">No item changes yet.</p>
           )}
 
           <AddItemChangeForm menuChange={menuChange} />

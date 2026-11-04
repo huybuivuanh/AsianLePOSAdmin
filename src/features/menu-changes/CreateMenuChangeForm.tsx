@@ -14,8 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function CreateMenuChangeForm() {
   const [open, setOpen] = useState(false);
@@ -37,7 +37,7 @@ export default function CreateMenuChangeForm() {
       console.error(err);
       const message =
         err instanceof Error ? err.message : "Failed to create menu change";
-      alert(message);
+      await alertDialog(message);
     } finally {
       setSaving(false);
     }
@@ -48,9 +48,8 @@ export default function CreateMenuChangeForm() {
       <LoadingOverlay visible={saving} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button type="button" className="gap-2">
-            <Plus className="size-4" aria-hidden />
-            Add Menu Change
+          <Button type="button">
+            + Add menu change
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">

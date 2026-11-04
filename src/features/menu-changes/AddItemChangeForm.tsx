@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMenuChangeStore } from "@/stores/useMenuChangeStore";
+import { addButtonClass } from "@/components/layout/RowParts";
 import {
   Dialog,
   DialogContent,
@@ -13,8 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function AddItemChangeForm({
   menuChange,
@@ -44,7 +45,7 @@ export default function AddItemChangeForm({
       console.error(err);
       const message =
         err instanceof Error ? err.message : "Failed to add item change";
-      alert(message);
+      await alertDialog(message);
     } finally {
       setSaving(false);
     }
@@ -55,9 +56,8 @@ export default function AddItemChangeForm({
       <LoadingOverlay visible={saving} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button type="button" variant="outline" size="sm" className="gap-2">
-            <Plus className="size-4" aria-hidden />
-            Add change
+          <Button type="button" variant="ghost" size="sm" className={addButtonClass}>
+            + Add change
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
