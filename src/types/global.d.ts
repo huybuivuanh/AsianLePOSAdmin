@@ -142,6 +142,25 @@ declare global {
     paid: boolean;
     printed: boolean;
     createdAt: Timestamp;
+    /** Rewards member attached to this order (set on first redeem or collect). */
+    loyalty?: OrderLoyalty;
+  }
+
+  interface OrderLoyalty {
+    memberId: string;
+    memberName: string;
+    /** Set when points are collected (once per order). */
+    pointsEarned?: number;
+    collectedAt?: Timestamp;
+    /** Set when points are redeemed for an Amount discount. */
+    pointsRedeemed?: number;
+    redeemedAmount?: number;
+    /** Set when the order was cancelled and its points were reversed. */
+    reversedAt?: Timestamp;
+    /** Net balance change from the reverse (refunded redeem minus removed earn). */
+    pointsReversed?: number;
+    /** Cancelled, but the reverse call failed — points still need reversing. */
+    reversePending?: boolean;
   }
 
   interface TakeOutOrder extends Order {

@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { OrderItemBlock } from "./OrderItemBlock";
+import { RewardsBadge } from "./RewardsBadge";
 
 function orderCardSurface(
   status: OrderStatus,
@@ -132,6 +133,7 @@ export function OrderCard({
           <p className="text-base font-semibold text-gray-800">
             Ordered At: {formatOrderedAt(order.createdAt.toDate())}
           </p>
+          <RewardsBadge loyalty={order.loyalty} />
           {takeOut && order.fulfillment.kind === "scheduled" ? (
             <p className="text-base font-semibold text-gray-800">
               Preorder: {formatOrderedAt(order.fulfillment.scheduledAt.toDate())}
