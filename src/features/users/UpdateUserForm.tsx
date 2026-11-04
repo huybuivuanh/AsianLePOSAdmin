@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function UpdateUserForm({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
@@ -39,7 +40,7 @@ export default function UpdateUserForm({ user }: { user: User }) {
       setOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to update user");
+      await alertDialog("Couldn't update user. Try again.");
     } finally {
       setSaving(false);
     }

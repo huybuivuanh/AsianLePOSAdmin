@@ -21,8 +21,8 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { UserPlus } from "lucide-react";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { alertDialog } from "@/stores/useModalStore";
 
 export default function CreateUserForm() {
   const [open, setOpen] = useState(false);
@@ -45,7 +45,7 @@ export default function CreateUserForm() {
       setOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to register user");
+      await alertDialog("Couldn't register user. Try again.");
     } finally {
       setSaving(false);
     }
@@ -56,9 +56,8 @@ export default function CreateUserForm() {
       <LoadingOverlay visible={saving} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button type="button" className="gap-2">
-            <UserPlus className="size-4" aria-hidden />
-            Add user
+          <Button type="button">
+            + Add user
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
