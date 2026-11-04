@@ -55,6 +55,7 @@ src/
 │   ├── formatters.ts       # formatCurrency, formatTimestamp, formatOrderedAt, etc.
 │   ├── list-utils.ts       # matchesQuery, sortCustomers, sortByNameAndCreated
 │   ├── menu-item-option-groups.ts
+│   ├── menu-unused.ts      # isUnusedItem/OptionGroup/Option (Unused badge + filter)
 │   ├── option-group-updates.ts
 │   ├── firestore-timestamp.ts
 │   ├── demo.ts
