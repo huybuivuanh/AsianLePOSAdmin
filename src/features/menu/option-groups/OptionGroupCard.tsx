@@ -20,6 +20,7 @@ import {
   rowHeaderClass,
 } from "@/components/layout/RowParts";
 import { formatCurrency } from "@/lib/formatters";
+import { isUnusedOptionGroup } from "@/lib/menu-unused";
 import { cn } from "@/lib/utils";
 
 type Props = { group: OptionGroup };
@@ -34,7 +35,7 @@ export function OptionGroupCard({ group }: Props) {
   const groupOptions = options.filter((opt) =>
     group.optionIds?.includes(opt.id!),
   );
-  const isUnused = (group.itemIds?.length ?? 0) === 0;
+  const isUnused = isUnusedOptionGroup(group);
 
   const handleDelete = async () => {
     if (

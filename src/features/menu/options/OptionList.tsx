@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { alertDialog, confirmDialog } from "@/stores/useModalStore";
 import { deleteOption } from "@/lib/linked-writes";
@@ -9,16 +9,21 @@ import {
   EmptyState,
   RowActions,
   UnusedBadge,
+  UnusedFilterButton,
   rowCardClass,
 } from "@/components/layout/RowParts";
+import { isUnusedOption } from "@/lib/menu-unused";
 import { formatCurrency } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
+import { matchesQuery } from "@/lib/list-utils";
 import { OptionForm } from "./OptionForm";
 
 export function OptionList() {
   const { options, loading } = useOptionStore();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [unusedOnly, setUnusedOnly] = useState(false);
+  const unusedCount = useMemo(() => options.filter(isUnusedOption).length, [options]);
 
   const handleDelete = async (option: ItemOption) => {
     if (
@@ -43,31 +48,43 @@ export function OptionList() {
     return <p className="text-sm text-foreground/60">Loading options…</p>;
   }
 
-  const filteredOptions = options.filter((opt) =>
-    opt.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredOptions = options.filter(
+    (opt) => matchesQuery(searchTerm, opt.name) && (!unusedOnly || isUnusedOption(opt)),
   );
 
   return (
     <div>
-      <SearchField
-        className="mb-4"
-        placeholder="Search options…"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        aria-label="Search options"
-      />
+      <div className="mb-4 flex gap-2">
+        <SearchField
+          className="min-w-0 flex-1"
+          placeholder="Search options…"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          aria-label="Search options"
+        />
+        <UnusedFilterButton
+          active={unusedOnly}
+          count={unusedCount}
+          onToggle={() => setUnusedOnly((v) => !v)}
+          title="Options not in any option group"
+        />
+      </div>
 
       {options.length === 0 ? (
         <EmptyState title="No options yet." hint="Add one to get started." />
       ) : filteredOptions.length === 0 ? (
         <EmptyState
-          title={`No options match “${searchTerm.trim()}”.`}
-          hint="Try a different search."
+          title={
+            searchTerm.trim()
+              ? `No ${unusedOnly ? "unused " : ""}options match “${searchTerm.trim()}”.`
+              : "No unused options."
+          }
+          hint={unusedOnly ? "Turn off the Unused filter to see all options." : "Try a different search."}
         />
       ) : (
         <ul className="space-y-2">
           {filteredOptions.map((opt) => {
-            const isUnused = (opt.groupIds?.length ?? 0) === 0;
+            const isUnused = isUnusedOption(opt);
             const deleting = deletingId === opt.id;
 
             return (

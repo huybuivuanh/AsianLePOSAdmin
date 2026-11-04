@@ -124,3 +124,35 @@ export function UnusedBadge() {
     </span>
   );
 }
+
+/** Toggle next to a menu page's search box that shows only unused entries. */
+export function UnusedFilterButton({
+  active,
+  count,
+  onToggle,
+  title,
+}: {
+  active: boolean;
+  count: number;
+  onToggle: () => void;
+  /** Tooltip explaining what "unused" means on this page. */
+  title: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={active}
+      disabled={count === 0 && !active}
+      title={title}
+      className={cn(
+        "h-10 shrink-0 rounded-xl border px-3 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40 disabled:opacity-50",
+        active
+          ? "border-amber-400 bg-amber-100 text-amber-800"
+          : "border-foreground/20 text-foreground hover:bg-foreground/5",
+      )}
+    >
+      Unused {count}
+    </button>
+  );
+}

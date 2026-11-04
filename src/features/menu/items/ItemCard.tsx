@@ -23,6 +23,7 @@ import {
   rowHeaderClass,
 } from "@/components/layout/RowParts";
 import { formatCurrency } from "@/lib/formatters";
+import { isUnusedItem } from "@/lib/menu-unused";
 import { cn } from "@/lib/utils";
 
 type Props = { item: MenuItem };
@@ -36,7 +37,7 @@ export function ItemCard({ item }: Props) {
   const itemOptionGroups = getOrderedOptionGroupRefs(item)
     .map((ref) => optionGroups.find((g) => g.id === ref.optionGroupId))
     .filter((g): g is OptionGroup => g != null);
-  const isUnused = (item.categoryIds?.length ?? 0) === 0;
+  const isUnused = isUnusedItem(item);
 
   const handleDelete = async () => {
     if (
