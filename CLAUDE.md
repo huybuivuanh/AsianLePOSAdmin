@@ -19,7 +19,10 @@ npm run lint     # Run ESLint
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── (app)/              # Protected route group (auth-gated layout)
+│   ├── (app)/              # Protected route group (auth-gated layout: Navbar + AppModal)
+│   │   ├── (standard)/     # Pages in a single centered column (dashboard, orders, customers, …)
+│   │   └── menu/           # Menu section: collapsible sidebar + /menu/{categories,items,option-groups,options}
+│   ├── login/              # Sign-in page
 │   └── api/users/          # Server-side user management (firebase-admin)
 ├── features/               # Domain feature modules
 │   ├── credits/            # CreditList, CreditTableRow, Create/UpdateCreditForm
@@ -40,6 +43,7 @@ src/
 ├── lib/                    # Shared utilities
 │   ├── firebase-config.ts  # Firebase client SDK init
 │   ├── firebase-admin.ts   # Firebase Admin SDK init
+│   ├── linked-writes.ts    # Atomic (batched) writes for linked menu docs
 │   ├── firestore-timestamp.ts
 │   ├── formatters.ts       # formatCurrency, formatTimestamp, formatOrderedAt, etc.
 │   ├── list-utils.ts       # matchesQuery, sortByAlphabet, sortByNameAndCreated
@@ -52,7 +56,7 @@ src/
 │   └── utils.ts            # cn() helper
 ├── components/
 │   ├── ui/                 # Radix UI primitives (Button, Dialog, Input, etc.)
-│   └── layout/             # Navbar, PageHeader
+│   └── layout/             # Navbar, PageHeader, SectionSidebar, RowParts, AppModal
 └── types/
     ├── global.d.ts         # All domain interfaces, declared globally (no import needed)
     └── enum.ts             # Enums (OrderStatus, KitchenType, etc.) — runtime values, import from @/types/enum
@@ -88,3 +92,6 @@ Firebase Auth with custom claims for role-based access. `AuthProvider` persists 
 - **Search/sort**: use `matchesQuery` and `sortByNameAndCreated` from `@/lib/list-utils`.
 - **List components**: keep them thin — search state + filter + a loop. Extract per-item display into a `*Card` or `*Row` component that calls the store directly.
 - **Dialogs**: each dialog component owns its own loading/saving state and handlers. Pass only the minimal data needed (e.g. the selected entity) as props.
+- **UI style** (matches asian-le-website-admin): page header = `PageHeader` (title + count + actions). List rows use `rowCardClass` / `rowHeaderClass` / `RowActions` (Edit + red Delete) / `RemoveButton` / `EmptyState` from `@/components/layout/RowParts`. Brand colors `ink`, `gold`, `on-ink` live in `globals.css`.
+- **Linked menu data**: categories ↔ items, items ↔ option groups, option groups ↔ options keep id lists on both sides. Change or delete them only through `@/lib/linked-writes` (one Firestore batch each), never with two separate store calls.
+- **Popups**: never use `window.alert` / `window.confirm`. Use `alertDialog` / `confirmDialog` from `@/stores/useModalStore` (`{ danger: true, confirmLabel: "Delete" }` for deletes).
