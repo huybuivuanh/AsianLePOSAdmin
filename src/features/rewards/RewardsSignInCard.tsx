@@ -64,20 +64,20 @@ export function RewardsSignInCard() {
   };
 
   return (
-    <div className="mb-6 rounded-xl border border-border/80 bg-card px-4 py-4 shadow-sm">
+    <div className="mb-6 rounded-xl border border-foreground/10 bg-foreground/[0.02] px-4 py-4">
       <p className="text-base font-semibold text-foreground">Rewards</p>
 
       {!configured ? (
-        <p className="mt-0.5 text-sm text-muted-foreground">
+        <p className="mt-0.5 text-sm text-foreground/60">
           Rewards isn&apos;t set up (missing NEXT_PUBLIC_REWARDS_FIREBASE_*
           values).
         </p>
       ) : !ready ? (
-        <div className="mt-3 size-5 animate-spin rounded-full border-2 border-muted-foreground/20 border-t-primary" />
+        <div className="mt-3 size-5 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground" />
       ) : user ? (
         <div className="mt-2 flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-foreground/60">
               This browser is signed in to Rewards. Cancelled orders will have
               their points reversed.
             </p>
@@ -101,7 +101,7 @@ export function RewardsSignInCard() {
         </div>
       ) : (
         <form onSubmit={handleSignIn} className="mt-2">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground/60">
             Sign this browser in once so cancelling an order reverses its
             rewards points.
           </p>
@@ -125,7 +125,7 @@ export function RewardsSignInCard() {
             </Button>
           </div>
           {error ? (
-            <p className="mt-2 text-sm text-destructive">{error}</p>
+            <p className="mt-2 text-sm text-red-600">{error}</p>
           ) : null}
         </form>
       )}

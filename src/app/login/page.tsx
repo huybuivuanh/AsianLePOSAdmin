@@ -4,7 +4,7 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase-config";
 import { useRouter } from "next/navigation";
-import { Lock, LogIn } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,60 +43,55 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-gradient-to-b from-muted/60 to-muted px-4 py-10">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
-            <Lock className="size-7" aria-hidden />
+    <div className="flex min-h-dvh items-center justify-center p-4 py-6 sm:py-8">
+      <div className="w-full min-w-0 max-w-sm space-y-6">
+        <div className="flex flex-col items-center px-1 text-center">
+          <div className="flex items-center gap-1 text-foreground">
+            <span className="text-2xl font-extrabold tracking-wide">ASIAN</span>
+            <Image src="/logo.png" alt="" width={28} height={40} className="h-10 w-7 object-contain" unoptimized />
+            <span className="text-2xl font-extrabold tracking-wide">LE</span>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Sign in
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Admin dashboard — use your staff credentials.
-          </p>
+          <h1 className="mt-3 text-xl font-semibold text-foreground sm:text-2xl">POS Admin</h1>
+          <p className="mt-1 text-sm text-foreground/60">Sign in to continue</p>
         </div>
 
-        <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-lg sm:p-8">
-          {error ? (
-            <p
-              className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-              role="alert"
-            >
-              {error}
-            </p>
-          ) : null}
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@restaurant.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full gap-2" size="lg">
-              <LogIn className="size-4" aria-hidden />
-              Continue
-            </Button>
-          </form>
-        </div>
+        {error ? (
+          <p
+            className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm break-words text-red-600"
+            role="alert"
+          >
+            {error}
+          </p>
+        ) : null}
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div className="space-y-1">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@restaurant.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </div>
+          <Button type="submit" className="w-full" size="lg">
+            Sign in
+          </Button>
+        </form>
       </div>
     </div>
   );
