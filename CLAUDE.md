@@ -51,14 +51,8 @@ src/
 │   ├── ui/                 # Radix UI primitives (Button, Dialog, Input, etc.)
 │   └── layout/             # Navbar, PageHeader
 └── types/
-    ├── index.ts            # Barrel re-export (import from here)
-    ├── enum.ts             # Enums (OrderStatus, KitchenType, etc.)
-    ├── order.types.ts
-    ├── menu.types.ts
-    ├── user.types.ts
-    ├── credit.types.ts
-    ├── customer.types.ts
-    └── table.types.ts
+    ├── global.d.ts         # All domain interfaces, declared globally (no import needed)
+    └── enum.ts             # Enums (OrderStatus, KitchenType, etc.) — runtime values, import from @/types/enum
 ```
 
 ### Data flow
@@ -82,7 +76,7 @@ Firebase Auth with custom claims for role-based access. `AuthProvider` persists 
 - Path alias `@/` maps to `src/`.
 - Tailwind v4 with `clsx` + `tailwind-merge` via `cn()` for conditional classes.
 - Firebase credentials live in `.env.local` (not tracked).
-- **Types**: always import from `@/types` (the barrel). Never import from a domain type file directly.
+- **Types**: domain interfaces live in `src/types/global.d.ts` under `declare global` — use them directly without importing. Enums are runtime values, so import them from `@/types/enum`.
 - **Formatting**: use helpers from `@/lib/formatters` (`formatTimestamp`, `formatCurrency`, etc.) — never inline `toLocaleString()` or `.toFixed(2)` directly in components.
 - **Search/sort**: use `matchesQuery` and `sortByNameAndCreated` from `@/lib/list-utils`.
 - **List components**: keep them thin — search state + filter + a loop. Extract per-item display into a `*Card` or `*Row` component that calls the store directly.

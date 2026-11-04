@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/select";
 import { useItemStore } from "@/stores/useItemStore";
 import { KitchenType } from "@/types/enum";
-import type { MenuItem } from "@/types";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function UpdateItemDialog({ item }: { item: MenuItem }) {

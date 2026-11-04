@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useTableStore } from "@/stores/useTableStore";
-import type { Table } from "@/types";
 import {
   Dialog,
   DialogContent,

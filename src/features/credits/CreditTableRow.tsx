@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import UpdateCreditForm from "./UpdateCreditForm";
 import { CheckCircle2, RotateCcw } from "lucide-react";
 import { formatTimestamp } from "@/lib/formatters";
-import type { Credit } from "@/types";
 
 type Props = { credit: Credit };
 

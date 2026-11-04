@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useTableStore } from "@/stores/useTableStore";
-import type { Table } from "@/types";
 import { Button } from "@/components/ui/button";
 import { EditTableDialog } from "./EditTableDialog";
 import { AddTableDialog } from "./AddTableDialog";

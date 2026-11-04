@@ -8,7 +8,6 @@ import UpdateCategoriesForm from "./UpdateCategoriesForm";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchField } from "@/components/ui/search-field";
-import type { FoodCategory } from "@/types";
 
 
 export default function CategoriesList() {

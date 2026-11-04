@@ -7,7 +7,6 @@ import {
   updateUser,
   deleteUser,
 } from "@/services/userService";
-import type { User } from "@/types";
 
 type State = {
   users: User[];

@@ -1,5 +1,4 @@
 import { deleteField } from "firebase/firestore";
-import type { OptionGroup } from "@/types";
 
 /**
  * Firestore patch fields when an option is removed from a group and it was the default.

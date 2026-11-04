@@ -14,7 +14,6 @@ import {
 import { clientDb } from "@/lib/firebase-config";
 import { sortByAlphabet } from "@/lib/list-utils";
 import { asTimestamp } from "@/lib/firestore-timestamp";
-import type { ItemOption } from "@/types";
 
 interface OptionStore {
   options: ItemOption[];

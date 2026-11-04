@@ -1,4 +1,3 @@
-import type { OrderItem } from "@/types";
 
 export function OrderItemBlock({ item }: { item: OrderItem }) {
   return (

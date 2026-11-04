@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import UpdateCustomerForm from "./UpdateCustomerForm";
 import { formatCurrency, formatTimestamp } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
-import type { Customer } from "@/types";
 
 type Props = {
   customer: Customer;

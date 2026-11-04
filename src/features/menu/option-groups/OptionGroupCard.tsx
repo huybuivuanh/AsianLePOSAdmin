@@ -17,7 +17,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import type { ItemOption, OptionGroup } from "@/types";
 
 
 type Props = { group: OptionGroup };

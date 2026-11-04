@@ -32,7 +32,6 @@ import {
   getOrderedOptionGroupRefs,
   reindexOptionGroupOrders,
 } from "@/lib/menu-item-option-groups";
-import type { MenuItem } from "@/types";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 function SortableRow({ id, name }: { id: string; name: string }) {

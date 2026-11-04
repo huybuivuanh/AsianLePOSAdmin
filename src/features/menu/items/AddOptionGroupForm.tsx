@@ -18,7 +18,6 @@ import {
   getOrderedOptionGroupRefs,
   mergeOptionGroupSelection,
 } from "@/lib/menu-item-option-groups";
-import type { MenuItem } from "@/types";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 export default function AddOptionGroupForm({ item }: { item: MenuItem }) {

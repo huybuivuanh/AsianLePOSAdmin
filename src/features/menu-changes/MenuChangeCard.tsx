@@ -8,7 +8,6 @@ import UpdateItemChangeForm from "./UpdateItemChangeForm";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatTimestamp } from "@/lib/formatters";
-import type { MenuChange } from "@/types";
 
 type Props = { menuChange: MenuChange };
 

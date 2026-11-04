@@ -16,7 +16,6 @@ import AddOptionForm from "@/features/menu/option-groups/AddOptionForm";
 import { patchClearDefaultIfOptionRemoved } from "@/lib/option-group-updates";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ItemOption, MenuItem, OptionGroup } from "@/types";
 
 
 type Props = { item: MenuItem };

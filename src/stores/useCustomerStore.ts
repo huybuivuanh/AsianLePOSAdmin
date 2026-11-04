@@ -16,7 +16,6 @@ import {
 import { clientDb } from "@/lib/firebase-config";
 import { asTimestamp } from "@/lib/firestore-timestamp";
 import { sortByAlphabet } from "@/lib/list-utils";
-import type { Customer } from "@/types";
 
 const CUSTOMERS_VERSION_COLLECTION = "customersVersion";
 const CUSTOMERS_VERSION_DOC = "versionDoc";

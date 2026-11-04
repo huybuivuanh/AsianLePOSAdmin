@@ -1,4 +1,3 @@
-import type { Discount } from "@/types";
 import { DiscountType } from "@/types/enum";
 
 export function formatCurrency(amount: number): string {
