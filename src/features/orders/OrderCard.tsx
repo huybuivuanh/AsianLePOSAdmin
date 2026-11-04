@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { OrderItemBlock } from "./OrderItemBlock";
 import { RewardsBadge } from "./RewardsBadge";
 import { reverseCancelledOrderRewards } from "@/lib/order-loyalty";
+import { alertDialog } from "@/stores/useModalStore";
 
 function orderCardSurface(
   status: OrderStatus,
@@ -241,10 +242,10 @@ export function OrderCard({
                 try {
                   e.stopPropagation();
                   await submitToPrintQueue(order);
-                  alert("Order added to print queue successfully.");
+                  await alertDialog("Order added to print queue successfully.");
                 } catch (error) {
                   console.error(error);
-                  alert("Failed to print order.");
+                  await alertDialog("Couldn't print order. Try again.");
                 }
               }}
             >
@@ -264,7 +265,7 @@ export function OrderCard({
                   onOrderItemsChange?.(order.id, items);
                 } catch (error) {
                   console.error(error);
-                  alert("Failed to update paid status.");
+                  await alertDialog("Couldn't update paid status. Try again.");
                 }
               }}
             >
@@ -289,11 +290,11 @@ export function OrderCard({
                       order.id,
                     );
                     onOrderChange?.(order.id, patch);
-                    if (warning) alert(warning);
+                    if (warning) await alertDialog(warning);
                   }
                 } catch (error) {
                   console.error(error);
-                  alert("Failed to cancel order.");
+                  await alertDialog("Couldn't cancel order. Try again.");
                 }
               }}
             >
@@ -310,7 +311,7 @@ export function OrderCard({
                   onOrderChange?.(order.id, { status });
                 } catch (error) {
                   console.error(error);
-                  alert("Failed to complete order.");
+                  await alertDialog("Couldn't complete order. Try again.");
                 }
               }}
             >
