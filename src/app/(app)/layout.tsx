@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
+import { AppModal } from "@/components/layout/AppModal";
 import { useRewardsAuthStore } from "@/stores/useRewardsAuthStore";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -38,9 +39,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
       <Navbar />
-      <main className="min-h-0 w-full flex-1 px-3 py-4 sm:px-4 md:px-6 md:py-6">
-        {children}
-      </main>
+      {/* Each section supplies its own body layout: `menu/` adds a sidebar,
+          `(standard)/` is a single centered column. */}
+      {children}
+      <AppModal />
     </div>
   );
 }

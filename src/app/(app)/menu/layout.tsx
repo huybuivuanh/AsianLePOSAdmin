@@ -6,6 +6,7 @@ import { useItemStore } from "@/stores/useItemStore";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { useMenuVersionStore } from "@/stores/useMenuVersionStore";
+import { MenuSidebar } from "@/features/menu/MenuSidebar";
 
 export default function MenuLayout({
   children,
@@ -32,5 +33,10 @@ export default function MenuLayout({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, user]);
 
-  return <>{children}</>;
+  return (
+    <div className="flex min-w-0 flex-1">
+      <MenuSidebar />
+      <main className="min-w-0 flex-1 px-4 py-4 sm:px-6 sm:py-6">{children}</main>
+    </div>
+  );
 }

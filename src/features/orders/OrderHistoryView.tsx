@@ -172,13 +172,21 @@ export default function OrderHistoryView() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="min-w-0">
       <PageHeader
-        title="Order History"
-        description="See order history within 30 days."
+        title="Orders"
+        count={
+          searchMode
+            ? searching
+              ? undefined
+              : globalResults!.length
+            : loadedFor && !loading
+              ? filteredOrders.length
+              : undefined
+        }
       />
 
-      <div className="mb-6 rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
+      <div className="mb-4 rounded-xl border border-foreground/10 bg-foreground/[0.02] p-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="space-y-2 sm:min-w-[11rem]">
             <Label htmlFor="order-history-date">Date</Label>
@@ -215,7 +223,7 @@ export default function OrderHistoryView() {
         </div>
       </div>
 
-      <div className="mb-6 rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:p-5">
+      <div className="mb-4 rounded-xl border border-foreground/10 bg-foreground/[0.02] p-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
           <div className="flex-1 space-y-2">
             <Label htmlFor="order-history-global-search">
@@ -250,7 +258,7 @@ export default function OrderHistoryView() {
       </div>
 
       {searchError ? (
-        <p className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {searchError}
         </p>
       ) : null}
@@ -258,7 +266,7 @@ export default function OrderHistoryView() {
       {searchMode ? (
         <>
           {!searching && globalResults!.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+            <p className="rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-6 text-sm text-foreground/60">
               No take-out orders match &ldquo;{globalQuery}&rdquo;.
             </p>
           ) : null}
@@ -282,19 +290,19 @@ export default function OrderHistoryView() {
       ) : (
         <>
           {error ? (
-            <p className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
               {error}
             </p>
           ) : null}
 
           {!loadedFor && !loading ? (
-            <p className="text-center text-sm text-muted-foreground">
-              Choose a date and type, then press <strong>Load</strong>.
+            <p className="rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-6 text-sm text-foreground/60">
+              Choose a date and type, then press <strong className="text-foreground">Load</strong>.
             </p>
           ) : null}
 
           {loadedFor && !loading && orders.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+            <p className="rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-6 text-sm text-foreground/60">
               No orders for {loadedFor.key} (
               {loadedFor.ch === "takeOut" ? "Take Out" : "Dine In"}).
             </p>
@@ -316,7 +324,7 @@ export default function OrderHistoryView() {
           orders.length > 0 &&
           channel === "takeOut" &&
           filteredOrders.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+            <p className="rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-6 text-sm text-foreground/60">
               No orders match your search.
             </p>
           ) : null}

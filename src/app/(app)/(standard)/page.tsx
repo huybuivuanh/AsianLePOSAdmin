@@ -69,34 +69,35 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <PageHeader
-        title="Dashboard"
-        description="Sales analytics for the last 30 days — take-out and dine-in combined."
-      />
+    <div className="min-w-0">
+      <PageHeader title="Dashboard">
+        <p className="text-sm text-foreground/60">
+          Last 30 days · take-out and dine-in
+        </p>
+      </PageHeader>
 
       <RewardsSignInCard />
 
       {!loading && !error && (
         <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-border/80 bg-card px-4 py-4 shadow-sm">
-            <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          <div className="rounded-xl border border-foreground/10 bg-background px-4 py-4">
+            <p className="text-xs font-medium tracking-wide text-foreground/60 uppercase">
               Orders
             </p>
             <p className="mt-1 text-2xl font-semibold tabular-nums">
               {orders.length}
             </p>
           </div>
-          <div className="rounded-xl border border-border/80 bg-card px-4 py-4 shadow-sm">
-            <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          <div className="rounded-xl border border-foreground/10 bg-background px-4 py-4">
+            <p className="text-xs font-medium tracking-wide text-foreground/60 uppercase">
               Items Sold
             </p>
             <p className="mt-1 text-2xl font-semibold tabular-nums">
               {totalQuantity}
             </p>
           </div>
-          <div className="col-span-2 rounded-xl border border-border/80 bg-card px-4 py-4 shadow-sm sm:col-span-1">
-            <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          <div className="col-span-2 rounded-xl border border-foreground/10 bg-background px-4 py-4 sm:col-span-1">
+            <p className="text-xs font-medium tracking-wide text-foreground/60 uppercase">
               Unique Items
             </p>
             <p className="mt-1 text-2xl font-semibold tabular-nums">
@@ -106,8 +107,8 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm">
-        <div className="flex border-b border-border">
+      <div className="overflow-hidden rounded-xl border border-foreground/10 bg-background">
+        <div className="flex border-b border-foreground/10">
           {(["items", "staff"] as Tab[]).map((t) => (
             <button
               key={t}
@@ -116,8 +117,8 @@ export default function DashboardPage() {
               className={cn(
                 "px-5 py-3 text-sm font-medium transition-colors",
                 tab === t
-                  ? "border-b-2 border-primary text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? "border-b-2 border-foreground text-foreground"
+                  : "text-foreground/60 hover:text-foreground",
               )}
             >
               {t === "items" ? "Items" : "Staff"}
@@ -127,10 +128,10 @@ export default function DashboardPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="size-6 animate-spin rounded-full border-2 border-muted-foreground/20 border-t-primary" />
+            <div className="size-6 animate-spin rounded-full border-2 border-muted-foreground/20 border-t-foreground" />
           </div>
         ) : error ? (
-          <p className="px-4 py-10 text-center text-sm text-destructive">
+          <p className="px-4 py-10 text-center text-sm text-red-600">
             {error}
           </p>
         ) : tab === "items" ? (
@@ -152,7 +153,7 @@ function ItemsTable({
 }) {
   if (stats.length === 0) {
     return (
-      <p className="px-4 py-12 text-center text-sm text-muted-foreground">
+      <p className="px-4 py-12 text-center text-sm text-foreground/60">
         No items found in the last 30 days.
       </p>
     );
@@ -161,32 +162,32 @@ function ItemsTable({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="border-b border-border bg-muted/50">
-            <th className="w-10 px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          <tr className="border-b border-foreground/10 bg-foreground/[0.03]">
+            <th className="w-10 px-4 py-3 text-left text-xs font-medium tracking-wide text-foreground/60 uppercase">
               #
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <th className="px-4 py-3 text-left text-xs font-medium tracking-wide text-foreground/60 uppercase">
               Item
             </th>
-            <th className="px-4 py-3 text-right text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <th className="px-4 py-3 text-right text-xs font-medium tracking-wide text-foreground/60 uppercase">
               Qty
             </th>
-            <th className="px-4 py-3 text-right text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <th className="px-4 py-3 text-right text-xs font-medium tracking-wide text-foreground/60 uppercase">
               % of {total}
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border">
+        <tbody className="divide-y divide-foreground/10">
           {stats.map((row, i) => (
-            <tr key={row.name} className="transition-colors hover:bg-muted/40">
-              <td className="px-4 py-3 text-muted-foreground">{i + 1}</td>
+            <tr key={row.name} className="transition-colors hover:bg-foreground/[0.02]">
+              <td className="px-4 py-3 text-foreground/60">{i + 1}</td>
               <td className="px-4 py-3 font-medium text-foreground">
                 {row.name}
               </td>
               <td className="px-4 py-3 text-right tabular-nums">
                 {row.quantity}
               </td>
-              <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">
+              <td className="px-4 py-3 text-right tabular-nums text-foreground/60">
                 {row.pct.toFixed(1)}%
               </td>
             </tr>
@@ -206,7 +207,7 @@ function StaffTable({
 }) {
   if (stats.length === 0) {
     return (
-      <p className="px-4 py-12 text-center text-sm text-muted-foreground">
+      <p className="px-4 py-12 text-center text-sm text-foreground/60">
         No staff data found in the last 30 days.
       </p>
     );
@@ -215,30 +216,30 @@ function StaffTable({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="border-b border-border bg-muted/50">
-            <th className="w-10 px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          <tr className="border-b border-foreground/10 bg-foreground/[0.03]">
+            <th className="w-10 px-4 py-3 text-left text-xs font-medium tracking-wide text-foreground/60 uppercase">
               #
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <th className="px-4 py-3 text-left text-xs font-medium tracking-wide text-foreground/60 uppercase">
               Staff
             </th>
-            <th className="px-4 py-3 text-right text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <th className="px-4 py-3 text-right text-xs font-medium tracking-wide text-foreground/60 uppercase">
               Orders
             </th>
-            <th className="px-4 py-3 text-right text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <th className="px-4 py-3 text-right text-xs font-medium tracking-wide text-foreground/60 uppercase">
               % of {total}
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border">
+        <tbody className="divide-y divide-foreground/10">
           {stats.map((row, i) => (
-            <tr key={row.name} className="transition-colors hover:bg-muted/40">
-              <td className="px-4 py-3 text-muted-foreground">{i + 1}</td>
+            <tr key={row.name} className="transition-colors hover:bg-foreground/[0.02]">
+              <td className="px-4 py-3 text-foreground/60">{i + 1}</td>
               <td className="px-4 py-3 font-medium text-foreground">
                 {row.name}
               </td>
               <td className="px-4 py-3 text-right tabular-nums">{row.orders}</td>
-              <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">
+              <td className="px-4 py-3 text-right tabular-nums text-foreground/60">
                 {row.pct.toFixed(1)}%
               </td>
             </tr>

@@ -1,122 +1,179 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
+import { Menu, X } from "lucide-react";
 import { auth } from "@/lib/firebase-config";
-import { LayoutDashboard, Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/providers/AuthProvider";
+
+const navLinks = [
+  { href: "/", label: "Dashboard" },
+  { href: "/tables", label: "Tables" },
+  { href: "/orders", label: "Orders" },
+  { href: "/menu", label: "Menu" },
+  { href: "/menu-changes", label: "Menu Changes" },
+  { href: "/add-extras", label: "Add Extras" },
+  { href: "/customers", label: "Customers" },
+  { href: "/credits", label: "Credits" },
+  { href: "/users", label: "Users" },
+] as const;
+
+function isActivePath(pathname: string, href: string) {
+  return pathname === href || (href !== "/" && pathname.startsWith(href + "/"));
+}
+
+/** "ASIAN [Vietnam map] LE POS", styled like the website logo. */
+function Logo({ onClick }: { onClick?: () => void }) {
+  return (
+    <Link
+      href="/"
+      onClick={onClick}
+      aria-label="Asian Le POS Admin – Dashboard"
+      className="group flex shrink-0 items-center gap-1 rounded-md text-on-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+    >
+      <span className="text-xl font-extrabold tracking-wide transition group-hover:text-gold">
+        ASIAN
+      </span>
+      <Image
+        src="/logo.png"
+        alt=""
+        width={28}
+        height={40}
+        className="h-10 w-7 object-contain"
+        unoptimized
+      />
+      <span className="text-xl font-extrabold tracking-wide transition group-hover:text-gold">
+        LE
+      </span>
+      <span className="ml-1 text-xs font-bold tracking-widest text-gold uppercase">
+        POS
+      </span>
+    </Link>
+  );
+}
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleLogout = async () => {
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth >= 1280) setMobileOpen(false);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  async function handleSignOut() {
     setMobileOpen(false);
     await signOut(auth);
-    router.push("/login");
-  };
-
-  const links = [
-    { href: "/", label: "Dashboard" },
-    { href: "/tables", label: "Tables" },
-    { href: "/menu", label: "Menu" },
-    { href: "/menu-changes", label: "Menu Changes" },
-    { href: "/add-extras", label: "Add Extras" },
-    { href: "/users", label: "Users" },
-    { href: "/orders", label: "Orders" },
-    { href: "/customers", label: "Customers" },
-    { href: "/credits", label: "Credits" },
-  ];
+    router.replace("/login");
+  }
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-white/10 bg-slate-900 text-white shadow-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 py-3 sm:px-4">
-        <Link
-          href="/"
-          className="flex shrink-0 items-center gap-2 text-lg font-semibold tracking-tight text-white sm:text-xl"
-          onClick={() => setMobileOpen(false)}
-        >
-          <span className="flex size-9 items-center justify-center rounded-lg bg-white/10">
-            <LayoutDashboard className="size-5" aria-hidden />
-          </span>
-          <span className="truncate font-semibold tracking-tight">
-            {user?.displayName}
-          </span>
-        </Link>
-
-        <div className="hidden flex-1 items-center justify-center gap-1 md:flex">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                pathname === link.href
-                  ? "bg-white/15 text-white"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white",
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+    <header className="sticky top-0 z-40 w-full border-b border-ink-line bg-ink/95 text-on-ink backdrop-blur-md print:hidden">
+      <nav
+        aria-label="Main"
+        className="flex items-center gap-6 px-4 py-3 sm:px-6"
+      >
+        {/* Logo and right side share the leftover space equally, so the links sit in the true center. */}
+        <div className="flex flex-1 basis-0 justify-start">
+          <Logo onClick={() => setMobileOpen(false)} />
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-white/10 md:hidden"
-            aria-expanded={mobileOpen}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            onClick={() => setMobileOpen((o) => !o)}
-          >
-            {mobileOpen ? (
-              <X className="size-5" />
-            ) : (
-              <Menu className="size-5" />
-            )}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="border-red-400/50 bg-red-600 text-white hover:bg-red-700 hover:text-white"
-            onClick={handleLogout}
-          >
-            Log out
-          </Button>
-        </div>
-      </div>
-
-      {mobileOpen && (
-        <div className="border-t border-white/10 px-3 py-3 md:hidden">
-          <ul className="flex flex-col gap-1">
-            {links.map((link) => (
-              <li key={link.href}>
+        {/* Desktop links, centered */}
+        <ul className="hidden items-center gap-5 text-[15px] font-medium xl:flex">
+          {navLinks.map(({ href, label }) => {
+            const isActive = isActivePath(pathname, href);
+            return (
+              <li key={href}>
                 <Link
-                  href={link.href}
+                  href={href}
+                  aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                    pathname === link.href
-                      ? "bg-white/15 text-white"
-                      : "text-slate-200 hover:bg-white/10",
+                    "rounded-md py-2 whitespace-nowrap transition hover:text-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold",
+                    isActive ? "text-gold" : "text-on-ink",
                   )}
-                  onClick={() => setMobileOpen(false)}
                 >
-                  {link.label}
+                  {label}
                 </Link>
               </li>
-            ))}
-          </ul>
+            );
+          })}
+        </ul>
+
+        <div className="flex flex-1 basis-0 justify-end">
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="hidden min-h-11 xl:inline-flex items-center rounded-full border border-gold px-5 text-[15px] font-bold whitespace-nowrap text-gold transition hover:bg-gold hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+          >
+            Sign out
+          </button>
+
+          {/* Mobile */}
+          <button
+            type="button"
+            className="inline-flex size-11 items-center justify-center rounded-full text-on-ink transition hover:bg-ink-raised focus:outline-none focus-visible:ring-2 focus-visible:ring-gold xl:hidden"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
+            onClick={() => setMobileOpen((o) => !o)}
+          >
+            <span className="sr-only">{mobileOpen ? "Close menu" : "Open menu"}</span>
+            {mobileOpen ? (
+              <X className="size-6" aria-hidden />
+            ) : (
+              <Menu className="size-6" aria-hidden />
+            )}
+          </button>
         </div>
-      )}
-    </nav>
+      </nav>
+
+      <div
+        id="mobile-menu"
+        className={cn(
+          "grid transition-[grid-template-rows] duration-200 ease-out xl:hidden",
+          mobileOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        )}
+        aria-hidden={!mobileOpen}
+        inert={!mobileOpen}
+      >
+        <div className="overflow-hidden">
+          <div className="border-t border-ink-line px-4 pt-3 pb-6">
+            <ul>
+              {navLinks.map(({ href, label }) => {
+                const isActive = isActivePath(pathname, href);
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      onClick={() => setMobileOpen(false)}
+                      aria-current={isActive ? "page" : undefined}
+                      className={cn(
+                        "block rounded-xl px-3 py-3.5 text-base font-semibold transition hover:bg-ink-raised",
+                        isActive ? "text-gold" : "text-on-ink",
+                      )}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="mt-3 flex min-h-12 w-full items-center justify-center rounded-full border border-ink-line text-base font-semibold text-gold transition hover:bg-ink-raised"
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
   );
 }
