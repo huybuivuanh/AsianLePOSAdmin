@@ -6,9 +6,9 @@ import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { alertDialog, confirmDialog } from "@/stores/useModalStore";
 import { deleteOptionGroup, removeOptionFromGroup } from "@/lib/linked-writes";
-import { UpdateOptionGroupForm } from "./UpdateOptionGroupForm";
+import { OptionGroupForm } from "./OptionGroupForm";
 import { AddGroupOptionsForm } from "./AddGroupOptionsForm";
-import { UpdateOptionForm } from "@/features/menu/options/UpdateOptionForm";
+import { OptionForm } from "@/features/menu/options/OptionForm";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
@@ -119,7 +119,7 @@ export function OptionGroupCard({ group }: Props) {
           </p>
         </div>
         <RowActions name={group.name} onDelete={handleDelete} deleting={deleting}>
-          <UpdateOptionGroupForm group={group} />
+          <OptionGroupForm group={group} />
         </RowActions>
       </div>
 
@@ -161,7 +161,7 @@ export function OptionGroupCard({ group }: Props) {
                         Default
                       </Label>
                     </div>
-                    <UpdateOptionForm option={opt} />
+                    <OptionForm option={opt} />
                     <RemoveButton
                       label={`Remove ${opt.name} from ${group.name}`}
                       onClick={() => handleRemoveOption(opt)}

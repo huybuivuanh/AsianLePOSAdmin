@@ -3,7 +3,7 @@
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
-import { CreateOptionGroupForm } from "./CreateOptionGroupForm";
+import { OptionGroupForm } from "./OptionGroupForm";
 import { OptionGroupList } from "./OptionGroupList";
 
 export function OptionGroupsSection() {
@@ -17,7 +17,7 @@ export function OptionGroupsSection() {
         title="Option Groups"
         count={loading && optionGroups.length === 0 ? undefined : optionGroups.length}
       >
-        <CreateOptionGroupForm />
+        <OptionGroupForm />
       </PageHeader>
       <OptionGroupList />
     </div>

@@ -13,7 +13,7 @@ import {
 } from "@/components/layout/RowParts";
 import { formatCurrency } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
-import { UpdateOptionForm } from "./UpdateOptionForm";
+import { OptionForm } from "./OptionForm";
 
 export function OptionList() {
   const { options, loading } = useOptionStore();
@@ -93,7 +93,7 @@ export function OptionList() {
                   onDelete={() => handleDelete(opt)}
                   deleting={deleting}
                 >
-                  <UpdateOptionForm option={opt} />
+                  <OptionForm option={opt} />
                 </RowActions>
               </li>
             );

@@ -3,7 +3,7 @@
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useItemStore } from "@/stores/useItemStore";
 import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
-import { CreateItemForm } from "./CreateItemForm";
+import { ItemForm } from "./ItemForm";
 import { ItemList } from "./ItemList";
 
 export function ItemsSection() {
@@ -17,7 +17,7 @@ export function ItemsSection() {
         title="Items"
         count={loading && items.length === 0 ? undefined : items.length}
       >
-        <CreateItemForm />
+        <ItemForm />
       </PageHeader>
       <ItemList />
     </div>

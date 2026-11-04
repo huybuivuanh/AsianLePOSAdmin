@@ -3,7 +3,7 @@
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
-import { CreateOptionForm } from "./CreateOptionForm";
+import { OptionForm } from "./OptionForm";
 import { OptionList } from "./OptionList";
 
 export function OptionsSection() {
@@ -17,7 +17,7 @@ export function OptionsSection() {
         title="Options"
         count={loading && options.length === 0 ? undefined : options.length}
       >
-        <CreateOptionForm />
+        <OptionForm />
       </PageHeader>
       <OptionList />
     </div>

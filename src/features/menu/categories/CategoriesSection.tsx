@@ -3,7 +3,7 @@
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { PublishMenuToolbar } from "../publish/PublishMenuToolbar";
-import { CreateCategoryForm } from "./CreateCategoryForm";
+import { CategoryForm } from "./CategoryForm";
 import { SortCategoriesForm } from "./SortCategoriesForm";
 import { CategoryList } from "./CategoryList";
 
@@ -19,7 +19,7 @@ export function CategoriesSection() {
         count={loading && categories.length === 0 ? undefined : categories.length}
       >
         <SortCategoriesForm />
-        <CreateCategoryForm />
+        <CategoryForm />
       </PageHeader>
       <CategoryList />
     </div>

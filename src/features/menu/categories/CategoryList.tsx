@@ -17,7 +17,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { deleteCategory, removeItemFromCategory } from "@/lib/linked-writes";
 import { cn } from "@/lib/utils";
 import { AddCategoryItemsForm } from "./AddCategoryItemsForm";
-import { UpdateCategoryForm } from "./UpdateCategoryForm";
+import { CategoryForm } from "./CategoryForm";
 
 export function CategoryList() {
   const { categories, loading } = useCategoriesStore();
@@ -128,7 +128,7 @@ export function CategoryList() {
                     onDelete={() => handleDeleteCategory(cat)}
                     deleting={deleting}
                   >
-                    <UpdateCategoryForm category={cat} />
+                    <CategoryForm category={cat} />
                   </RowActions>
                 </div>
 

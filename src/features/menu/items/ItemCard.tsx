@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useOptionGroupStore } from "@/stores/useOptionGroupStore";
 import { useOptionStore } from "@/stores/useOptionStore";
 import { alertDialog, confirmDialog } from "@/stores/useModalStore";
-import { UpdateItemForm } from "./UpdateItemForm";
+import { ItemForm } from "./ItemForm";
 import { AddItemOptionGroupsForm } from "./AddItemOptionGroupsForm";
 import { SortOptionGroupsForm } from "./SortOptionGroupsForm";
 import { getOrderedOptionGroupRefs } from "@/lib/menu-item-option-groups";
@@ -117,7 +117,7 @@ export function ItemCard({ item }: Props) {
           </p>
         </div>
         <RowActions name={item.name} onDelete={handleDelete} deleting={deleting}>
-          <UpdateItemForm item={item} />
+          <ItemForm item={item} />
         </RowActions>
       </div>
 
