@@ -3,7 +3,7 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useCustomerStore } from "@/stores/useCustomerStore";
 import { Button } from "@/components/ui/button";
-import { UpdateCustomerForm } from "./UpdateCustomerForm";
+import { CustomerForm } from "./CustomerForm";
 import { RowActions } from "@/components/layout/RowParts";
 import { formatCurrency, formatTimestamp } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
@@ -103,7 +103,7 @@ export function CustomerTableRow({ customer, expanded, onToggle }: Props) {
         </td>
         <td className="px-3 py-3 sm:px-4" onClick={(e) => e.stopPropagation()}>
           <RowActions name={customer.name} onDelete={handleDelete}>
-            <UpdateCustomerForm customer={customer} />
+            <CustomerForm customer={customer} />
             <Button
               type="button"
               variant="outline"

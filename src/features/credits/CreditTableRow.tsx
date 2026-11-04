@@ -2,7 +2,7 @@
 
 import { useCreditStore } from "@/stores/useCreditStore";
 import { Button } from "@/components/ui/button";
-import { UpdateCreditForm } from "./UpdateCreditForm";
+import { CreditForm } from "./CreditForm";
 import { CheckCircle2, RotateCcw } from "lucide-react";
 import { RowActions } from "@/components/layout/RowParts";
 import { formatCurrency, formatTimestamp } from "@/lib/formatters";
@@ -66,7 +66,7 @@ export function CreditTableRow({ credit }: Props) {
       </td>
       <td className="px-3 py-3 sm:px-4">
         <RowActions name="credit" onDelete={handleDelete}>
-          <UpdateCreditForm credit={credit} />
+          <CreditForm credit={credit} />
           <Button
             type="button"
             variant="outline"

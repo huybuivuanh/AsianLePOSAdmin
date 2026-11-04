@@ -1,7 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CreateUserForm } from "@/features/users/CreateUserForm";
+import { UserForm } from "@/features/users/UserForm";
 import { UserList } from "@/features/users/UserList";
 import { useUserStore } from "@/stores/useUserStore";
 
@@ -12,7 +12,7 @@ export default function UsersPage() {
   return (
     <div className="min-w-0">
       <PageHeader title="Users" count={loading && users.length === 0 ? undefined : users.length}>
-        <CreateUserForm />
+        <UserForm />
       </PageHeader>
       <UserList />
     </div>

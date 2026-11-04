@@ -1,7 +1,7 @@
 "use client";
 
 import { useUserStore } from "@/stores/useUserStore";
-import { UpdateUserForm } from "./UpdateUserForm";
+import { UserForm } from "./UserForm";
 import { formatTimestamp } from "@/lib/formatters";
 import { alertDialog, confirmDialog } from "@/stores/useModalStore";
 import { RowActions, tableCardClass } from "@/components/layout/RowParts";
@@ -86,7 +86,7 @@ export function UserList() {
                 </td>
                 <td className="px-3 py-3 sm:px-4">
                   <RowActions name={user.name} onDelete={() => handleDelete(user)}>
-                    <UpdateUserForm user={user} />
+                    <UserForm user={user} />
                   </RowActions>
                 </td>
               </tr>

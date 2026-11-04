@@ -1,7 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CreateCreditForm } from "@/features/credits/CreateCreditForm";
+import { CreditForm } from "@/features/credits/CreditForm";
 import { CreditList } from "@/features/credits/CreditList";
 import { useCreditStore } from "@/stores/useCreditStore";
 
@@ -12,7 +12,7 @@ export default function CreditsPage() {
   return (
     <div className="min-w-0">
       <PageHeader title="Credits" count={loading && credits.length === 0 ? undefined : credits.length}>
-        <CreateCreditForm />
+        <CreditForm />
       </PageHeader>
       <CreditList />
     </div>
