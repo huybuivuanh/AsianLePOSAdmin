@@ -19,11 +19,11 @@ export default function Navbar() {
   const handleLogout = async () => {
     setMobileOpen(false);
     await signOut(auth);
-    router.push("/");
+    router.push("/login");
   };
 
   const links = [
-    { href: "/dashboard", label: "Dashboard" },
+    { href: "/", label: "Dashboard" },
     { href: "/tables", label: "Tables" },
     { href: "/menu", label: "Menu" },
     { href: "/menu-changes", label: "Menu Changes" },
@@ -38,7 +38,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-40 border-b border-white/10 bg-slate-900 text-white shadow-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 py-3 sm:px-4">
         <Link
-          href="/dashboard"
+          href="/"
           className="flex shrink-0 items-center gap-2 text-lg font-semibold tracking-tight text-white sm:text-xl"
           onClick={() => setMobileOpen(false)}
         >

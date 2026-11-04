@@ -28,7 +28,7 @@ export default function LoginPage() {
       const tokenResult = await user.getIdTokenResult();
 
       if (tokenResult.claims.role === "admin") {
-        router.push("/dashboard");
+        router.push("/");
       } else {
         setError("Access denied: You are not an admin.");
         await auth.signOut();
