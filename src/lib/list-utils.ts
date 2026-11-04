@@ -59,12 +59,14 @@ export type CustomerSort =
   | "name_desc"
   | "orders_desc"
   | "spent_desc"
-  | "status_asc";
+  | "active"
+  | "blocked";
 
 /**
  * Single-key sort for the customers list. Value-based sorts
- * (`orders_desc`, `spent_desc`, `status_asc`) fall back to name order
- * for ties so the list stays stable.
+ * (`orders_desc`, `spent_desc`) fall back to name order for ties so the
+ * list stays stable. `active` / `blocked` keep only those customers,
+ * newest first.
  */
 export function sortCustomers<
   T extends {
@@ -80,7 +82,12 @@ export function sortCustomers<
   const byCreated = (a: T, b: T) =>
     (a.createdAt?.toMillis?.() ?? 0) - (b.createdAt?.toMillis?.() ?? 0);
 
-  const out = [...rows];
+  const out =
+    sort === "active"
+      ? rows.filter((r) => !r.isBlocked)
+      : sort === "blocked"
+        ? rows.filter((r) => r.isBlocked)
+        : [...rows];
   out.sort((a, b) => {
     switch (sort) {
       case "name_asc":
@@ -90,6 +97,8 @@ export function sortCustomers<
       case "created_asc":
         return byCreated(a, b);
       case "created_desc":
+      case "active":
+      case "blocked":
         return -byCreated(a, b);
       case "orders_desc":
         return (
@@ -97,10 +106,6 @@ export function sortCustomers<
         );
       case "spent_desc":
         return (b.totalSpent ?? 0) - (a.totalSpent ?? 0) || byName(a, b);
-      case "status_asc":
-        return (
-          (a.isBlocked ? 1 : 0) - (b.isBlocked ? 1 : 0) || byName(a, b)
-        );
       default:
         return 0;
     }

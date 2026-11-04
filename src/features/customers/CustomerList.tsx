@@ -24,7 +24,8 @@ const SORT_OPTIONS: { value: CustomerSort; label: string }[] = [
   { value: "name_desc", label: "Name Z–A" },
   { value: "orders_desc", label: "Most orders" },
   { value: "spent_desc", label: "Most spent" },
-  { value: "status_asc", label: "Status (Active first)" },
+  { value: "active", label: "Active" },
+  { value: "blocked", label: "Blocked" },
 ];
 
 export default function CustomerList() {
